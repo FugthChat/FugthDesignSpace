@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fugth AI Frontend</title>
+    <style>
+        :root{--bg-color:#1a1b26;--panel-color:#24283b;--text-color:#c0caf5;--primary-color:#7aa2f7;--green:#9ece6a;--yellow:#e0af68;--red:#f7768e;--border-color:#414868}
+        body{font-family:sans-serif;margin:0;background-color:var(--bg-color);color:var(--text-color);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+        .header-bar{background-color:var(--panel-color);padding:8px 16px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:20px;flex-shrink:0}
+        .header-bar h1{font-size:1.2em;margin:0;color:var(--primary-color)}
+        .status-group{display:flex;align-items:center;gap:8px}
+        #status-dot{width:12px;height:12px;border-radius:50%}
+        main{display:flex;flex-grow:1;overflow:hidden}
+        .panel{padding:20px;height:100%;box-sizing:border-box;overflow-y:auto;display:flex;flex-direction:column}
+        .left-panel{background-color:var(--panel-color);border-right:1px solid var(--border-color);width:40%;flex-shrink:0}
+        .right-panel{flex-grow:1;}
+        label{display:block;margin-bottom:6px;font-size:.9em;font-weight:700}
+        textarea{width:100%;background-color:var(--bg-color);color:var(--text-color);border:1px solid var(--border-color);border-radius:4px;padding:8px;box-sizing:border-box;resize:vertical;flex-grow:1;font-family:monospace;font-size:14px;}
+        button{width:100%;padding:12px;margin-top:16px;background-color:var(--primary-color);color:var(--bg-color);border:none;border-radius:5px;font-size:1.1em;font-weight:700;cursor:pointer}
+        button:disabled{background-color:var(--border-color);cursor:not-allowed}
+        pre{white-space:pre-wrap;word-wrap:break-word;background-color:var(--panel-color);padding:15px;border-radius:5px;flex-grow:1;overflow-y:auto;}
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <h1>🚀 Fugth Design Space</h1>
+        <div class="status-group">
+            <div id="status-dot"></div>
+            <span id="ai-status">Connecting...</span>
+        </div>
+    </div>
+    <main>
+        <div class="panel left-panel">
+            <label for="prompt-input">Your Prompt:</label>
+            <textarea id="prompt-input" placeholder="e.g., Create a python script for a simple flask web server"></textarea>
+            <button id="generate-btn" disabled>Generate Code</button>
+        </div>
+        <div class="panel right-panel">
+            <label>Generated Code:</label>
+            <pre id="code-output">AI response will appear here...</pre>
+        </div>
+    </main>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const statusDot = document.getElementById('status-dot');
+        const aiStatus = document.getElementById('ai-status');
+        const generateBtn = document.getElementById('generate-btn');
+        const promptInput = document.getElementById('prompt-input');
+        const codeOutput = document.getElementById('code-output');
+        
+        // ** THE FIX IS HERE **
+        // Use the full, public URL of your Hugging Face Space backend
+        const API_URL = 'https://fugthchat-fugthdesignspace.hf.space';
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(API_URL + '/');
+                if (!response.ok) throw new Error('Server offline');
+                const data = await response.json();
+                
+                aiStatus.textContent = data.message;
+                if (data.status === "ready") {
+                    statusDot.style.backgroundColor = 'var(--green)';
+                    generateBtn.disabled = false;
+                } else {
+                    statusDot.style.backgroundColor = 'var(--yellow)';
+                    setTimeout(checkServerStatus, 5000);
+                }
+            } catch (error) {
+                aiStatus.textContent = 'Connection Failed. Retrying...';
+                statusDot.style.backgroundColor = 'var(--red)';
+                setTimeout(checkServerStatus, 5000);
+            }
+        }
+
+        async function generateCode() {
+            generateBtn.disabled = true;
+            aiStatus.textContent = 'AI is thinking...';
+            codeOutput.textContent = '';
+            try {
+                const response = await fetch(API_URL + '/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: promptInput.value })
+                });
+                if (!response.ok) throw new Error((await response.json()).detail);
+                
+                const data = await response.json();
+                codeOutput.textContent = data.response;
+                aiStatus.textContent = 'AI Model Ready';
+            } catch (error) {
+                codeOutput.textContent = `Error: ${error.message}`;
+                aiStatus.textContent = 'Error!';
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+
+        generateBtn.addEventListener('click', generateCode);
+        checkServerStatus();
+    });
+    </script>
+</body>
+</html>
