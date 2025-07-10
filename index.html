@@ -2,103 +2,330 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fugth AI Frontend</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fugth Design Space</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/dracula.min.css">
     <style>
-        :root{--bg-color:#1a1b26;--panel-color:#24283b;--text-color:#c0caf5;--primary-color:#7aa2f7;--green:#9ece6a;--yellow:#e0af68;--red:#f7768e;--border-color:#414868}
-        body{font-family:sans-serif;margin:0;background-color:var(--bg-color);color:var(--text-color);display:flex;flex-direction:column;height:100vh;overflow:hidden}
-        .header-bar{background-color:var(--panel-color);padding:8px 16px;border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:20px;flex-shrink:0}
-        .header-bar h1{font-size:1.2em;margin:0;color:var(--primary-color)}
-        .status-group{display:flex;align-items:center;gap:8px}
-        #status-dot{width:12px;height:12px;border-radius:50%}
-        main{display:flex;flex-grow:1;overflow:hidden}
-        .panel{padding:20px;height:100%;box-sizing:border-box;overflow-y:auto;display:flex;flex-direction:column}
-        .left-panel{background-color:var(--panel-color);border-right:1px solid var(--border-color);width:40%;flex-shrink:0}
-        .right-panel{flex-grow:1;}
-        label{display:block;margin-bottom:6px;font-size:.9em;font-weight:700}
-        textarea{width:100%;background-color:var(--bg-color);color:var(--text-color);border:1px solid var(--border-color);border-radius:4px;padding:8px;box-sizing:border-box;resize:vertical;flex-grow:1;font-family:monospace;font-size:14px;}
-        button{width:100%;padding:12px;margin-top:16px;background-color:var(--primary-color);color:var(--bg-color);border:none;border-radius:5px;font-size:1.1em;font-weight:700;cursor:pointer}
-        button:disabled{background-color:var(--border-color);cursor:not-allowed}
-        pre{white-space:pre-wrap;word-wrap:break-word;background-color:var(--panel-color);padding:15px;border-radius:5px;flex-grow:1;overflow-y:auto;}
+        :root {
+            --primary-bg: #1e1e2e;
+            --secondary-bg: #27293d;
+            --header-bg: #1a1b26;
+            --text-primary: #c0c5ce;
+            --text-secondary: #a9b1d6;
+            --accent-color: #7aa2f7;
+            --border-color: #414868;
+            --success-color: #9ece6a;
+            --warning-color: #ffc777;
+            --error-color: #f7768e;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: var(--font-family);
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            height: 50px;
+            flex-shrink: 0;
+        }
+
+        .header-bar .title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--text-secondary);
+        }
+        
+        .header-bar .title span {
+            color: var(--accent-color);
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+        }
+        .status-dot.ready { background-color: var(--success-color); }
+        .status-dot.loading { background-color: var(--warning-color); animation: pulse 1.5s infinite; }
+        .status-dot.error { background-color: var(--error-color); }
+
+        .ai-activity {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .main-workspace {
+            display: flex;
+            height: calc(100vh - 50px);
+        }
+
+        .left-panel {
+            width: 350px;
+            padding: 20px;
+            background-color: var(--secondary-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .input-group input[type="text"], .input-group textarea {
+            background-color: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .input-group textarea {
+            height: 200px;
+            resize: vertical;
+        }
+
+        .action-button {
+            padding: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #fff;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .action-button:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
+        }
+        
+        .action-button:not(:disabled):hover {
+            background-color: #9abeff;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .CodeMirror {
+            flex-grow: 1;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
     </style>
 </head>
 <body>
-    <div class="header-bar">
-        <h1>🚀 Fugth Design Space</h1>
-        <div class="status-group">
-            <div id="status-dot"></div>
-            <span id="ai-status">Connecting...</span>
-        </div>
+
+    <div class="container">
+        <header class="header-bar">
+            <div class="title">Fugth<span>DesignSpace</span></div>
+            <div class="status-container">
+                <div id="ai-activity" class="ai-activity">Initializing...</div>
+                <div class="status-indicator">
+                    <div id="status-dot" class="status-dot"></div>
+                    <span id="status-text">Connecting</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-workspace">
+            
+            <aside class="left-panel">
+                <div class="input-group">
+                    <label for="project-idea">🚀 Project Idea</label>
+                    <textarea id="project-idea" placeholder="Describe the application or script you want to build. For example: 'Create a Python script that takes a URL as input, scrapes all the headings, and saves them to a CSV file.'"></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <label for="project-name">📦 Project Name</label>
+                    <input type="text" id="project-name" value="my-awesome-project">
+                </div>
+
+                <button id="generate-btn" class="action-button" disabled>Generate Project</button>
+            </aside>
+
+            <section class="main-content">
+                <textarea id="code-editor"></textarea>
+            </section>
+
+        </main>
     </div>
-    <main>
-        <div class="panel left-panel">
-            <label for="prompt-input">Your Prompt:</label>
-            <textarea id="prompt-input" placeholder="e.g., Create a python script for a simple flask web server"></textarea>
-            <button id="generate-btn" disabled>Generate Code</button>
-        </div>
-        <div class="panel right-panel">
-            <label>Generated Code:</label>
-            <pre id="code-output">AI response will appear here...</pre>
-        </div>
-    </main>
+
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const statusDot = document.getElementById('status-dot');
-        const aiStatus = document.getElementById('ai-status');
-        const generateBtn = document.getElementById('generate-btn');
-        const promptInput = document.getElementById('prompt-input');
-        const codeOutput = document.getElementById('code-output');
-        
-        // ** THE FIX IS HERE **
-        // Use the full, public URL of your Hugging Face Space backend
-        const API_URL = 'https://fugthchat-fugthdesignspace.hf.space';
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- CONFIG ---
+            const BACKEND_URL = 'https://fugthchat-fugthdesignspace.hf.space'; // Corrected URL
 
-        async function checkServerStatus() {
-            try {
-                const response = await fetch(API_URL + '/');
-                if (!response.ok) throw new Error('Server offline');
-                const data = await response.json();
-                
-                aiStatus.textContent = data.message;
-                if (data.status === "ready") {
-                    statusDot.style.backgroundColor = 'var(--green)';
-                    generateBtn.disabled = false;
-                } else {
-                    statusDot.style.backgroundColor = 'var(--yellow)';
-                    setTimeout(checkServerStatus, 5000);
+            // --- UI ELEMENTS ---
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
+            const aiActivity = document.getElementById('ai-activity');
+            const generateBtn = document.getElementById('generate-btn');
+            const promptInput = document.getElementById('project-idea');
+            
+            // --- CODE EDITOR SETUP ---
+            const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+                lineNumbers: true,
+                mode: "python",
+                theme: "dracula",
+                readOnly: false
+            });
+            editor.setValue("# Your generated code will appear here...\n\n# Check the backend status in the top right.\n# Once ready, describe your project and click 'Generate Project'.");
+
+
+            // --- STATE MANAGEMENT ---
+            let isModelReady = false;
+            let isGenerating = false;
+
+            // --- API CALLS ---
+            const checkStatus = async () => {
+                try {
+                    const response = await fetch(`${BACKEND_URL}/`);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const data = await response.json();
+                    updateStatusUI(data.status, data.message);
+                } catch (error) {
+                    console.error("Failed to fetch status:", error);
+                    updateStatusUI('error', 'Failed to connect to backend.');
                 }
-            } catch (error) {
-                aiStatus.textContent = 'Connection Failed. Retrying...';
-                statusDot.style.backgroundColor = 'var(--red)';
-                setTimeout(checkServerStatus, 5000);
-            }
-        }
+            };
 
-        async function generateCode() {
-            generateBtn.disabled = true;
-            aiStatus.textContent = 'AI is thinking...';
-            codeOutput.textContent = '';
-            try {
-                const response = await fetch(API_URL + '/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: promptInput.value })
-                });
-                if (!response.ok) throw new Error((await response.json()).detail);
+            const generateCode = async () => {
+                if (!isModelReady || isGenerating) return;
+
+                const userPrompt = promptInput.value;
+                if (!userPrompt.trim()) {
+                    alert("Please enter a project idea.");
+                    return;
+                }
                 
-                const data = await response.json();
-                codeOutput.textContent = data.response;
-                aiStatus.textContent = 'AI Model Ready';
-            } catch (error) {
-                codeOutput.textContent = `Error: ${error.message}`;
-                aiStatus.textContent = 'Error!';
-            } finally {
-                generateBtn.disabled = false;
-            }
-        }
+                isGenerating = true;
+                updateUIAfterGenerationStart();
+                editor.setValue("# AI is thinking, please wait...\n\n" + editor.getValue());
 
-        generateBtn.addEventListener('click', generateCode);
-        checkServerStatus();
-    });
+                try {
+                    const response = await fetch(`${BACKEND_URL}/generate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: userPrompt }),
+                    });
+
+                    if (!response.ok) {
+                        const errData = await response.json();
+                        throw new Error(errData.detail || `Generation failed with status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    editor.setValue(data.response);
+
+                } catch (error) {
+                    console.error("Generation error:", error);
+                    editor.setValue(`# An error occurred during generation:\n\n${error.message}`);
+                } finally {
+                    isGenerating = false;
+                    updateUIAfterGenerationEnd();
+                }
+            };
+            
+            // --- UI UPDATES ---
+            const updateStatusUI = (status, message) => {
+                statusDot.className = 'status-dot'; // Reset classes
+                statusDot.classList.add(status);
+                statusText.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                
+                isModelReady = (status === 'ready');
+
+                if (isModelReady) {
+                    aiActivity.textContent = 'AI Ready';
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = 'Generate Project';
+                } else if (status === 'loading') {
+                    aiActivity.textContent = 'AI is loading...';
+                    generateBtn.disabled = true;
+                    generateBtn.textContent = 'Model Loading...';
+                } else { // error
+                    aiActivity.textContent = 'AI Error';
+                    generateBtn.disabled = true;
+                    generateBtn.textContent = 'Model Failed';
+                }
+            };
+
+            const updateUIAfterGenerationStart = () => {
+                generateBtn.disabled = true;
+                aiActivity.textContent = 'AI is thinking...';
+                statusDot.classList.add('loading'); // Use loading pulse for thinking
+            };
+
+            const updateUIAfterGenerationEnd = () => {
+                generateBtn.disabled = !isModelReady; // Re-enable only if model is still ready
+                aiActivity.textContent = 'AI Ready';
+                statusDot.classList.remove('loading'); // Stop pulse
+                checkStatus(); // Re-verify status
+            };
+
+
+            // --- EVENT LISTENERS ---
+            generateBtn.addEventListener('click', generateCode);
+
+            // --- INITIALIZATION ---
+            // Initial check and then poll every 5 seconds
+            checkStatus();
+            setInterval(checkStatus, 5000); 
+        });
     </script>
 </body>
 </html>
