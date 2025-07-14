@@ -3,329 +3,534 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fugth Design Space</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/python/python.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/dracula.min.css">
+    <title>MEP Management LLC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --primary-bg: #1e1e2e;
-            --secondary-bg: #27293d;
-            --header-bg: #1a1b26;
-            --text-primary: #c0c5ce;
-            --text-secondary: #a9b1d6;
-            --accent-color: #7aa2f7;
-            --border-color: #414868;
-            --success-color: #9ece6a;
-            --warning-color: #ffc777;
-            --error-color: #f7768e;
-            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
         }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: var(--font-family);
-            background-color: var(--primary-bg);
-            color: var(--text-primary);
-            overflow: hidden;
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
         }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .header-bar {
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            background-color: var(--header-bg);
-            border-bottom: 1px solid var(--border-color);
-            height: 50px;
-            flex-shrink: 0;
+            justify-content: center;
+            z-index: 50;
+            backdrop-filter: blur(4px);
         }
-
-        .header-bar .title {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--text-secondary);
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
-        
-        .header-bar .title span {
-            color: var(--accent-color);
+        .hero-bg-image {
+            background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
         }
-
-        .status-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--border-color);
-        }
-        .status-dot.ready { background-color: var(--success-color); }
-        .status-dot.loading { background-color: var(--warning-color); animation: pulse 1.5s infinite; }
-        .status-dot.error { background-color: var(--error-color); }
-
-        .ai-activity {
-            font-style: italic;
-            color: var(--text-secondary);
-        }
-
-        .main-workspace {
-            display: flex;
-            height: calc(100vh - 50px);
-        }
-
-        .left-panel {
-            width: 350px;
-            padding: 20px;
-            background-color: var(--secondary-bg);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group label {
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-        
-        .input-group input[type="text"], .input-group textarea {
-            background-color: var(--primary-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 10px;
-            color: var(--text-primary);
-            font-family: inherit;
-        }
-
-        .input-group textarea {
-            height: 200px;
-            resize: vertical;
-        }
-
-        .action-button {
-            padding: 12px;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #fff;
-            background-color: var(--accent-color);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .action-button:disabled {
-            background-color: var(--border-color);
-            cursor: not-allowed;
-        }
-        
-        .action-button:not(:disabled):hover {
-            background-color: #9abeff;
-        }
-
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .CodeMirror {
-            flex-grow: 1;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
-        }
-
     </style>
 </head>
-<body>
+<body class="text-gray-800">
 
-    <div class="container">
-        <header class="header-bar">
-            <div class="title">Fugth<span>DesignSpace</span></div>
-            <div class="status-container">
-                <div id="ai-activity" class="ai-activity">Initializing...</div>
-                <div class="status-indicator">
-                    <div id="status-dot" class="status-dot"></div>
-                    <span id="status-text">Connecting</span>
+    <!-- App Container -->
+    <div id="app" class="min-h-screen flex flex-col">
+
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40">
+            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <a href="#" id="home-link" class="text-2xl font-bold text-indigo-600">MEP Management</a>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="#" id="resident-portal-btn" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Resident Portal</a>
+                            <a href="#" id="owner-portal-btn" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Owner Portal</a>
+                            <a href="#" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">About Us</a>
+                            <a href="#" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                        </div>
+                    </div>
+                    <div class="-mr-2 flex md:hidden">
+                        <button type="button" id="mobile-menu-button" class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false">
+                            <span class="sr-only">Open main menu</span>
+                            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                            <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+            <!-- Mobile menu, show/hide based on menu state. -->
+            <div class="md:hidden hidden" id="mobile-menu">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#" id="resident-portal-btn-mobile" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Resident Portal</a>
+                    <a href="#" id="owner-portal-btn-mobile" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Owner Portal</a>
+                    <a href="#" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">About Us</a>
+                    <a href="#" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
                 </div>
             </div>
         </header>
 
-        <main class="main-workspace">
-            
-            <aside class="left-panel">
-                <div class="input-group">
-                    <label for="project-idea">🚀 Project Idea</label>
-                    <textarea id="project-idea" placeholder="Describe the application or script you want to build. For example: 'Create a Python script that takes a URL as input, scrapes all the headings, and saves them to a CSV file.'"></textarea>
-                </div>
-                
-                <div class="input-group">
-                    <label for="project-name">📦 Project Name</label>
-                    <input type="text" id="project-name" value="my-awesome-project">
-                </div>
-
-                <button id="generate-btn" class="action-button" disabled>Generate Project</button>
-            </aside>
-
-            <section class="main-content">
-                <textarea id="code-editor"></textarea>
-            </section>
-
+        <!-- Main Content -->
+        <main id="main-content" class="flex-grow">
+            <!-- Page content will be injected here -->
         </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t">
+            <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                <div class="text-center text-gray-500">
+                    &copy; 2024 MEP Management LLC. All rights reserved.
+                </div>
+            </div>
+        </footer>
+
     </div>
 
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal-overlay hidden">
+        <div class="modal-content fade-in">
+            <h2 id="login-title" class="text-2xl font-bold mb-2 text-center text-gray-800">Login</h2>
+            <p id="login-error" class="text-red-500 text-sm text-center mb-4 h-5"></p>
+            <form id="login-form">
+                <input type="hidden" id="login-type" value="">
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="text" id="email" placeholder="Nerd" class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" placeholder="Elisabeth" class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div class="flex items-center justify-between">
+                    <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Sign In</button>
+                </div>
+                 <button type="button" id="close-modal-btn" class="mt-4 w-full text-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-100 rounded-md">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // --- CONFIG ---
-            const BACKEND_URL = 'https://fugthchat-fugthdesignspace.hf.space'; // Corrected URL
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainContent = document.getElementById('main-content');
+            const loginModal = document.getElementById('login-modal');
+            const loginForm = document.getElementById('login-form');
+            const loginTitle = document.getElementById('login-title');
+            const loginTypeInput = document.getElementById('login-type');
+            const loginError = document.getElementById('login-error');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
 
-            // --- UI ELEMENTS ---
-            const statusDot = document.getElementById('status-dot');
-            const statusText = document.getElementById('status-text');
-            const aiActivity = document.getElementById('ai-activity');
-            const generateBtn = document.getElementById('generate-btn');
-            const promptInput = document.getElementById('project-idea');
-            
-            // --- CODE EDITOR SETUP ---
-            const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
-                lineNumbers: true,
-                mode: "python",
-                theme: "dracula",
-                readOnly: false
-            });
-            editor.setValue("# Your generated code will appear here...\n\n# Check the backend status in the top right.\n# Once ready, describe your project and click 'Generate Project'.");
+            // --- Page Templates ---
 
+            const homePageTemplate = `
+                <div class="fade-in">
+                    <!-- Hero Section -->
+                    <div class="relative hero-bg-image">
+                        <div class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
+                        <div class="relative max-w-7xl mx-auto py-32 px-4 sm:py-48 sm:px-6 lg:px-8 text-center">
+                            <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">Find Your Perfect Home</h1>
+                            <p class="mt-6 max-w-2xl mx-auto text-xl text-indigo-100">MEP Management offers premium properties and exceptional service for a seamless rental experience.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Available Properties Section -->
+                    <div class="bg-white">
+                        <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-24 lg:px-8">
+                            <div class="text-center">
+                                <h2 class="text-3xl font-extrabold text-gray-900">Available Properties</h2>
+                                <p class="mt-4 text-lg text-gray-500">Explore our featured listings.</p>
+                            </div>
+                            <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                                <div class="group relative">
+                                    <div class="w-full h-56 bg-gray-200 rounded-lg overflow-hidden">
+                                        <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1974&auto=format&fit=crop" alt="Modern house exterior" class="w-full h-full object-center object-cover group-hover:opacity-75 transition-opacity">
+                                    </div>
+                                    <div class="mt-4">
+                                        <h3 class="text-lg font-semibold text-gray-800">The Grand Lofts, Unit 7A</h3>
+                                        <p class="mt-1 text-md text-gray-600">$2,100 / month</p>
+                                    </div>
+                                </div>
+                                <div class="group relative">
+                                    <div class="w-full h-56 bg-gray-200 rounded-lg overflow-hidden">
+                                        <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=2070&auto=format&fit=crop" alt="Cozy apartment living room" class="w-full h-full object-center object-cover group-hover:opacity-75 transition-opacity">
+                                    </div>
+                                    <div class="mt-4">
+                                        <h3 class="text-lg font-semibold text-gray-800">Creekside Apartments, Unit 21B</h3>
+                                        <p class="mt-1 text-md text-gray-600">$1,750 / month</p>
+                                    </div>
+                                </div>
+                                <div class="group relative">
+                                    <div class="w-full h-56 bg-gray-200 rounded-lg overflow-hidden">
+                                        <img src="https://images.unsplash.com/photo-1598228723793-52759bba239c?q=80&w=1974&auto=format&fit=crop" alt="Suburban condo complex" class="w-full h-full object-center object-cover group-hover:opacity-75 transition-opacity">
+                                    </div>
+                                    <div class="mt-4">
+                                        <h3 class="text-lg font-semibold text-gray-800">Pineview Condos, Unit 11</h3>
+                                        <p class="mt-1 text-md text-gray-600">$1,900 / month</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            // --- STATE MANAGEMENT ---
-            let isModelReady = false;
-            let isGenerating = false;
+                    <!-- Features Section -->
+                    <div class="bg-gray-50">
+                        <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-24 lg:px-8">
+                            <div class="max-w-3xl mx-auto text-center">
+                                <h2 class="text-3xl font-extrabold text-gray-900">Management You Can Trust</h2>
+                            </div>
+                            <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-2">
+                                <div class="pt-6">
+                                    <div class="flow-root bg-white rounded-lg px-6 pb-8 shadow-sm">
+                                        <div class="-mt-6">
+                                            <div>
+                                                <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
+                                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                </span>
+                                            </div>
+                                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">For Residents</h3>
+                                            <p class="mt-5 text-base text-gray-500">Enjoy easy access to your lease, online rent payments, maintenance requests, and direct communication with our team. Your home, simplified.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pt-6">
+                                    <div class="flow-root bg-white rounded-lg px-6 pb-8 shadow-sm">
+                                        <div class="-mt-6">
+                                            <div>
+                                                <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
+                                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                                                </span>
+                                            </div>
+                                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">For Owners</h3>
+                                            <p class="mt-5 text-base text-gray-500">Maximize your investment with our robust portal. Track financials, view property status, and access detailed reports anytime, anywhere.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
 
-            // --- API CALLS ---
-            const checkStatus = async () => {
-                try {
-                    const response = await fetch(`${BACKEND_URL}/`);
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    const data = await response.json();
-                    updateStatusUI(data.status, data.message);
-                } catch (error) {
-                    console.error("Failed to fetch status:", error);
-                    updateStatusUI('error', 'Failed to connect to backend.');
+            const residentPortalTemplate = `
+                <div class="fade-in container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+                         <div>
+                            <h1 class="text-3xl font-bold text-gray-900">Resident Portal</h1>
+                            <div class="flex items-center gap-4 mt-4">
+                                <img class="h-16 w-16 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1887&auto=format&fit=crop" alt="Resident profile picture">
+                                <div>
+                                    <p class="text-xl text-gray-800 font-semibold">Welcome back, Jessica!</p>
+                                    <p class="text-sm text-gray-500">The Grand Lofts, Unit 4B</p>
+                                </div>
+                            </div>
+                         </div>
+                         <button id="logout-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-sm font-medium self-start sm:self-center">Log Out</button>
+                    </div>
+
+                    <!-- Dashboard Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left Column -->
+                        <div class="lg:col-span-2 space-y-8">
+                            <!-- Rent & Payments -->
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Rent & Payments</h2>
+                                <div class="flex flex-col sm:flex-row items-start justify-between gap-4">
+                                    <div>
+                                        <p class="text-gray-600">Next Payment Due: <strong>August 1, 2024</strong></p>
+                                        <p class="text-4xl font-bold text-indigo-600 mt-2">$1,850.00</p>
+                                    </div>
+                                    <button class="bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600 font-bold w-full sm:w-auto">Pay Now</button>
+                                </div>
+                                <hr class="my-6">
+                                <h3 class="text-lg font-semibold mb-4 text-gray-700">Payment History</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex justify-between items-center text-gray-600 p-3 bg-gray-50 rounded-lg"><span>July 1, 2024</span> <span>$1,850.00</span> <span class="text-green-600 font-medium">Paid</span></li>
+                                    <li class="flex justify-between items-center text-gray-600 p-3"><span>June 1, 2024</span> <span>$1,850.00</span> <span class="text-green-600 font-medium">Paid</span></li>
+                                    <li class="flex justify-between items-center text-gray-600 p-3 bg-gray-50 rounded-lg"><span>May 1, 2024</span> <span>$1,850.00</span> <span class="text-green-600 font-medium">Paid</span></li>
+                                </ul>
+                            </div>
+
+                            <!-- Maintenance Requests -->
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-xl font-semibold text-gray-800">Maintenance Requests</h2>
+                                    <button class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600">New Request</button>
+                                </div>
+                                <ul class="space-y-4">
+                                    <li class="p-4 border rounded-lg flex justify-between items-center">
+                                        <div>
+                                            <p class="font-semibold">Leaky Faucet (Kitchen)</p>
+                                            <p class="text-sm text-gray-500">Submitted: 07/10/2024</p>
+                                        </div>
+                                        <span class="px-3 py-1 text-sm font-medium bg-yellow-100 text-yellow-800 rounded-full">In Progress</span>
+                                    </li>
+                                    <li class="p-4 border rounded-lg flex justify-between items-center">
+                                        <div>
+                                            <p class="font-semibold">AC not cooling</p>
+                                            <p class="text-sm text-gray-500">Submitted: 06/25/2024</p>
+                                        </div>
+                                        <span class="px-3 py-1 text-sm font-medium bg-green-100 text-green-800 rounded-full">Completed</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="space-y-8">
+                            <!-- Community Announcements -->
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Announcements</h2>
+                                <ul class="space-y-4">
+                                    <li class="border-l-4 border-indigo-500 pl-4 py-2">
+                                        <p class="font-medium text-gray-700">Pool Maintenance</p>
+                                        <p class="text-sm text-gray-500">The community pool will be closed on July 15th for scheduled maintenance.</p>
+                                    </li>
+                                    <li class="border-l-4 border-indigo-500 pl-4 py-2">
+                                        <p class="font-medium text-gray-700">Package Room Update</p>
+                                        <p class="text-sm text-gray-500">Please pick up your packages within 48 hours to avoid returns.</p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- Important Documents -->
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Documents</h2>
+                                <ul class="space-y-2">
+                                    <li><a href="#" class="text-indigo-600 hover:underline">Lease Agreement.pdf</a></li>
+                                    <li><a href="#" class="text-indigo-600 hover:underline">Community Rules.pdf</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const ownerPortalTemplate = `
+                <div class="fade-in container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div class="flex justify-between items-center mb-6">
+                         <h1 class="text-3xl font-bold text-gray-900">Owner Portal</h1>
+                         <button id="logout-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-sm font-medium">Log Out</button>
+                    </div>
+                    <p class="text-lg text-gray-600 mb-8">Welcome back, Mr. Smith!</p>
+
+                    <!-- Dashboard Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-5 rounded-lg shadow-md">
+                            <h3 class="text-sm font-medium text-gray-500">Total Properties</h3>
+                            <p class="mt-1 text-3xl font-semibold text-gray-900">3</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg shadow-md">
+                            <h3 class="text-sm font-medium text-gray-500">Occupancy Rate</h3>
+                            <p class="mt-1 text-3xl font-semibold text-gray-900">95%</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg shadow-md">
+                            <h3 class="text-sm font-medium text-gray-500">Monthly Income</h3>
+                            <p class="mt-1 text-3xl font-semibold text-green-600">$25,400</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg shadow-md">
+                            <h3 class="text-sm font-medium text-gray-500">Open Issues</h3>
+                            <p class="mt-1 text-3xl font-semibold text-yellow-600">2</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-8">
+                            <!-- My Properties -->
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-xl font-semibold mb-4 text-gray-800">My Properties</h2>
+                                <div class="space-y-6">
+                                    <!-- Property 1 -->
+                                    <div class="flex gap-4 border p-4 rounded-lg items-center">
+                                        <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1974&auto=format&fit=crop" class="w-32 h-20 rounded-md object-cover" alt="Property 1">
+                                        <div class="flex-grow">
+                                            <h3 class="font-semibold text-lg">The Grand Lofts</h3>
+                                            <p class="text-sm text-gray-500">123 Main Street, Anytown</p>
+                                            <span class="mt-1 inline-block px-3 py-1 text-sm font-medium bg-green-100 text-green-800 rounded-full">100% Occupied</span>
+                                        </div>
+                                        <a href="#" class="text-indigo-600 hover:underline text-sm font-medium">View Details</a>
+                                    </div>
+                                    <!-- Property 2 -->
+                                    <div class="flex gap-4 border p-4 rounded-lg items-center">
+                                        <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=2070&auto=format&fit=crop" class="w-32 h-20 rounded-md object-cover" alt="Property 2">
+                                        <div class="flex-grow">
+                                            <h3 class="font-semibold text-lg">Creekside Apartments</h3>
+                                            <p class="text-sm text-gray-500">456 Oak Avenue, Anytown</p>
+                                            <span class="mt-1 inline-block px-3 py-1 text-sm font-medium bg-yellow-100 text-yellow-800 rounded-full">90% Occupied</span>
+                                        </div>
+                                        <a href="#" class="text-indigo-600 hover:underline text-sm font-medium">View Details</a>
+                                    </div>
+                                     <!-- Property 3 -->
+                                    <div class="flex gap-4 border p-4 rounded-lg items-center">
+                                        <img src="https://images.unsplash.com/photo-1598228723793-52759bba239c?q=80&w=1974&auto=format&fit=crop" class="w-32 h-20 rounded-md object-cover" alt="Property 3">
+                                        <div class="flex-grow">
+                                            <h3 class="font-semibold text-lg">Pineview Condos</h3>
+                                            <p class="text-sm text-gray-500">789 Pine Lane, Anytown</p>
+                                            <span class="mt-1 inline-block px-3 py-1 text-sm font-medium bg-green-100 text-green-800 rounded-full">100% Occupied</span>
+                                        </div>
+                                        <a href="#" class="text-indigo-600 hover:underline text-sm font-medium">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-1 space-y-8">
+                             <!-- Financials Chart -->
+                             <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Income vs Expense</h2>
+                                <div class="h-64"><canvas id="financialsChart"></canvas></div>
+                            </div>
+                            <!-- Reports -->
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Reports</h2>
+                                <ul class="space-y-2">
+                                    <li><a href="#" class="text-indigo-600 hover:underline">July 2024 - P&L Statement</a></li>
+                                    <li><a href="#" class="text-indigo-600 hover:underline">Q2 2024 - Occupancy Report</a></li>
+                                    <li><a href="#" class="text-indigo-600 hover:underline">2023 - Annual Summary</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // --- App Logic ---
+
+            function renderPage(template, afterRenderCallback = null) {
+                mainContent.innerHTML = template;
+                if (afterRenderCallback) {
+                    afterRenderCallback();
                 }
-            };
+                const logoutBtn = document.getElementById('logout-btn');
+                if(logoutBtn) logoutBtn.addEventListener('click', () => renderPage(homePageTemplate));
+            }
 
-            const generateCode = async () => {
-                if (!isModelReady || isGenerating) return;
+            function showLoginModal(type) {
+                loginTypeInput.value = type;
+                loginTitle.textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} Login`;
+                loginError.textContent = '';
+                loginModal.classList.remove('hidden');
+            }
 
-                const userPrompt = promptInput.value;
-                if (!userPrompt.trim()) {
-                    alert("Please enter a project idea.");
-                    return;
-                }
-                
-                isGenerating = true;
-                updateUIAfterGenerationStart();
-                editor.setValue("# AI is thinking, please wait...\n\n" + editor.getValue());
+            function hideLoginModal() {
+                loginModal.classList.add('hidden');
+                loginForm.reset();
+            }
 
-                try {
-                    const response = await fetch(`${BACKEND_URL}/generate`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ prompt: userPrompt }),
+            function renderOwnerChart() {
+                const ctx = document.getElementById('financialsChart');
+                if (ctx) {
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['April', 'May', 'June', 'July'],
+                            datasets: [{
+                                label: 'Income',
+                                data: [24000, 25400, 25400, 26000],
+                                backgroundColor: 'rgba(79, 70, 229, 0.8)',
+                                borderColor: 'rgba(79, 70, 229, 1)',
+                                borderWidth: 1,
+                                borderRadius: 4,
+                            }, {
+                                label: 'Expenses',
+                                data: [8000, 8500, 8200, 9000],
+                                backgroundColor: 'rgba(224, 231, 255, 0.8)',
+                                borderColor: 'rgba(165, 180, 252, 1)',
+                                borderWidth: 1,
+                                borderRadius: 4,
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: { beginAtZero: true, ticks: { callback: (value) => '$' + value / 1000 + 'k' } },
+                                x: { grid: { display: false } }
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } }
+                        }
                     });
-
-                    if (!response.ok) {
-                        const errData = await response.json();
-                        throw new Error(errData.detail || `Generation failed with status: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    editor.setValue(data.response);
-
-                } catch (error) {
-                    console.error("Generation error:", error);
-                    editor.setValue(`# An error occurred during generation:\n\n${error.message}`);
-                } finally {
-                    isGenerating = false;
-                    updateUIAfterGenerationEnd();
                 }
-            };
+            }
             
-            // --- UI UPDATES ---
-            const updateStatusUI = (status, message) => {
-                statusDot.className = 'status-dot'; // Reset classes
-                statusDot.classList.add(status);
-                statusText.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-                
-                isModelReady = (status === 'ready');
+            // --- Event Listeners ---
+            
+            document.getElementById('home-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                renderPage(homePageTemplate);
+            });
 
-                if (isModelReady) {
-                    aiActivity.textContent = 'AI Ready';
-                    generateBtn.disabled = false;
-                    generateBtn.textContent = 'Generate Project';
-                } else if (status === 'loading') {
-                    aiActivity.textContent = 'AI is loading...';
-                    generateBtn.disabled = true;
-                    generateBtn.textContent = 'Model Loading...';
-                } else { // error
-                    aiActivity.textContent = 'AI Error';
-                    generateBtn.disabled = true;
-                    generateBtn.textContent = 'Model Failed';
+            [document.getElementById('resident-portal-btn'), document.getElementById('resident-portal-btn-mobile')].forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if(mobileMenu) mobileMenu.classList.add('hidden');
+                    showLoginModal('resident');
+                });
+            });
+
+            [document.getElementById('owner-portal-btn'), document.getElementById('owner-portal-btn-mobile')].forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if(mobileMenu) mobileMenu.classList.add('hidden');
+                    showLoginModal('owner');
+                });
+            });
+
+            closeModalBtn.addEventListener('click', hideLoginModal);
+            loginModal.addEventListener('click', (e) => {
+                if (e.target === loginModal) hideLoginModal();
+            });
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const type = loginTypeInput.value;
+
+                if (email.toLowerCase() === 'nerd' && password === 'Elisabeth') {
+                    loginError.textContent = '';
+                    if (type === 'resident') {
+                        renderPage(residentPortalTemplate);
+                    } else if (type === 'owner') {
+                        renderPage(ownerPortalTemplate, renderOwnerChart);
+                    }
+                    hideLoginModal();
+                } else {
+                    loginError.textContent = 'Invalid credentials. Please try again.';
                 }
-            };
-
-            const updateUIAfterGenerationStart = () => {
-                generateBtn.disabled = true;
-                aiActivity.textContent = 'AI is thinking...';
-                statusDot.classList.add('loading'); // Use loading pulse for thinking
-            };
-
-            const updateUIAfterGenerationEnd = () => {
-                generateBtn.disabled = !isModelReady; // Re-enable only if model is still ready
-                aiActivity.textContent = 'AI Ready';
-                statusDot.classList.remove('loading'); // Stop pulse
-                checkStatus(); // Re-verify status
-            };
+            });
+            
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenuButton.querySelector('svg:first-child').classList.toggle('hidden');
+                mobileMenuButton.querySelector('svg:last-child').classList.toggle('hidden');
+            });
 
 
-            // --- EVENT LISTENERS ---
-            generateBtn.addEventListener('click', generateCode);
-
-            // --- INITIALIZATION ---
-            // Initial check and then poll every 5 seconds
-            checkStatus();
-            setInterval(checkStatus, 5000); 
+            // --- Initial Load ---
+            renderPage(homePageTemplate);
         });
     </script>
+
 </body>
 </html>
