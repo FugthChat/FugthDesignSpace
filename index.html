@@ -3,534 +3,750 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEP Management LLC</title>
+    <title>MEP Property Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            backdrop-filter: blur(4px);
-        }
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        .hero-bg-image {
-            background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop');
+            font-family: 'Roboto', sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
         }
+        .tab-content, .sub-tab-content { display: none; }
+        .tab-content.active, .sub-tab-content.active { display: block; }
+        .nav-link.active {
+            border-bottom-color: #0ea5e9;
+            color: #0ea5e9;
+            font-weight: 500;
+        }
+        .sub-nav-link.active {
+            background-color: #0ea5e9;
+            color: white;
+        }
+        .backdrop-blur-lg {
+             background-color: rgba(255, 255, 255, 0.9);
+        }
+        @supports (backdrop-filter: blur(16px)) {
+            .backdrop-blur-lg {
+                backdrop-filter: blur(16px);
+                background-color: rgba(255, 255, 255, 0.8);
+            }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            position: relative;
+            margin: auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+        .modal-close:hover { color: #1f2937; }
     </style>
 </head>
-<body class="text-gray-800">
+<body class="bg-slate-200">
 
-    <!-- App Container -->
-    <div id="app" class="min-h-screen flex flex-col">
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
 
-        <!-- Header -->
-        <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40">
-            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
-                    <div class="flex items-center">
-                        <a href="#" id="home-link" class="text-2xl font-bold text-indigo-600">MEP Management</a>
-                    </div>
-                    <div class="hidden md:block">
-                        <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="#" id="resident-portal-btn" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Resident Portal</a>
-                            <a href="#" id="owner-portal-btn" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Owner Portal</a>
-                            <a href="#" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">About Us</a>
-                            <a href="#" class="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-                        </div>
-                    </div>
-                    <div class="-mr-2 flex md:hidden">
-                        <button type="button" id="mobile-menu-button" class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false">
-                            <span class="sr-only">Open main menu</span>
-                            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                            <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+        <header class="backdrop-blur-lg rounded-xl shadow-2xl p-6 mb-8 border border-slate-200/50">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-building-wave text-4xl text-cyan-500"></i>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-sky-700">MEP Property Management</h1>
+                        <p class="text-sm text-slate-600 font-light">West Palm Beach, Florida</p>
                     </div>
                 </div>
-            </nav>
-            <!-- Mobile menu, show/hide based on menu state. -->
-            <div class="md:hidden hidden" id="mobile-menu">
-                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a href="#" id="resident-portal-btn-mobile" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Resident Portal</a>
-                    <a href="#" id="owner-portal-btn-mobile" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Owner Portal</a>
-                    <a href="#" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">About Us</a>
-                    <a href="#" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+                <div id="user-info" class="hidden items-center space-x-4">
+                    <span id="welcome-message" class="font-medium text-slate-700 hidden md:block"></span>
+                    <i class="fas fa-user-circle text-2xl text-slate-600"></i>
+                    <button id="logout-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 shadow-md hover:shadow-lg">Logout</button>
                 </div>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main id="main-content" class="flex-grow">
-            <!-- Page content will be injected here -->
-        </main>
+        <nav class="backdrop-blur-lg rounded-xl shadow-lg mb-8 border border-slate-200/50">
+            <div class="flex justify-center border-b border-slate-200 flex-wrap">
+                <a href="#" class="nav-link active text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent transition-all duration-300" data-tab="home"><i class="fas fa-home mr-2"></i>Home</a>
+                <a href="#" class="nav-link text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent transition-all duration-300" data-tab="user-login"><i class="fas fa-user-lock mr-2"></i>Resident Portal</a>
+                <a href="#" class="nav-link text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent transition-all duration-300" data-tab="mgmt-login"><i class="fas fa-cogs mr-2"></i>Management Portal</a>
+            </div>
+        </nav>
 
-        <!-- Footer -->
-        <footer class="bg-white border-t">
-            <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-                <div class="text-center text-gray-500">
-                    &copy; 2024 MEP Management LLC. All rights reserved.
+        <main id="main-content">
+
+            <div id="home" class="tab-content active backdrop-blur-lg p-6 sm:p-8 rounded-xl shadow-2xl border border-slate-200/50">
+                <div class="mb-6 border-b border-gray-200">
+                    <nav class="flex flex-wrap -mb-px" aria-label="Tabs">
+                        <a href="#" class="sub-nav-link active rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="welcome"><i class="fas fa-door-open mr-2"></i>Welcome</a>
+                        <a href="#" class="sub-nav-link rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="availability"><i class="fas fa-clipboard-list mr-2"></i>Availability</a>
+                        <a href="#" class="sub-nav-link rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="floorplans"><i class="fas fa-ruler-combined mr-2"></i>Floor Plans</a>
+                        <a href="#" class="sub-nav-link rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="amenities"><i class="fas fa-swimmer mr-2"></i>Amenities</a>
+                        <a href="#" class="sub-nav-link rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="neighborhood"><i class="fas fa-map-marked-alt mr-2"></i>Neighborhood</a>
+                        <a href="#" class="sub-nav-link rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="contact"><i class="fas fa-envelope mr-2"></i>Contact</a>
+                    </nav>
+                </div>
+
+                <div id="welcome" class="sub-tab-content active">
+                    <h2 class="text-4xl font-bold text-slate-800 mb-2">Your Oasis in West Palm Beach</h2>
+                    <p class="text-slate-600 mb-8 text-lg font-light">Discover premium living with MEP Property Management. Explore our available units and find your perfect home.</p>
+                    <div class="relative rounded-lg overflow-hidden shadow-xl">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" class="w-full h-auto" alt="Beautiful modern home exterior">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 text-white p-4">
+                            <h3 class="text-4xl font-bold">Live The Difference</h3>
+                            <p class="mt-2 max-w-lg">Luxury apartments with unparalleled amenities and a commitment to resident satisfaction.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="availability" class="sub-tab-content">
+                    <h3 class="text-2xl font-bold text-gray-700 mb-4">Current Availability</h3>
+                    <div class="flex flex-wrap gap-4 mb-6 bg-slate-100 p-4 rounded-lg">
+                        <div>
+                            <label for="filter-beds" class="block text-sm font-medium text-gray-700">Beds</label>
+                            <select id="filter-beds" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm rounded-md">
+                                <option>Any</option>
+                                <option>1 Bed</option>
+                                <option>2 Beds</option>
+                                <option>3 Beds</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="filter-date" class="block text-sm font-medium text-gray-700">Available By</label>
+                            <input type="date" id="filter-date" class="mt-1 block w-full pl-3 pr-4 py-2 border-gray-300 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm rounded-md">
+                        </div>
+                        <button id="filter-btn" class="self-end bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Apply Filters</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white shadow-md rounded-lg">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Floor Plan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beds/Baths</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sq. Ft.</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rent</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Available</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">205</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">The Sandpiper</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">1 Bed / 1 Bath</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">750</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">$2,150</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">Now</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><button class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold py-2 px-3 rounded-lg">Apply Now</button></td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">410</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">The Osprey</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">2 Bed / 2 Bath</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">1,100</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">$2,800</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">Aug 1, 2025</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><button class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold py-2 px-3 rounded-lg">Apply Now</button></td>
+                                </tr>
+                                 <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">301</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">The Pelican</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">3 Bed / 2 Bath</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">1,450</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">$3,500</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">Now</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><button class="bg-green-500 hover:bg-green-600 text-white text-sm font-bold py-2 px-3 rounded-lg">Apply Now</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="floorplans" class="sub-tab-content">
+                    <h3 class="text-2xl font-bold text-gray-700 mb-6">Our Floor Plans</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="bg-white rounded-lg shadow-xl overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" class="w-full h-48 object-cover" alt="Modern living room">
+                            <div class="p-6">
+                                <h4 class="font-bold text-xl">The Sandpiper</h4>
+                                <p class="text-sm text-gray-600">1 Bedroom / 1 Bath | 750 sq. ft.</p>
+                                <p class="font-semibold mt-2 text-lg text-sky-700">From $2,100/mo</p>
+                                <button class="mt-4 w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors" data-modal-target="floorplan-modal-1">View Details</button>
+                            </div>
+                        </div>
+                         <div class="bg-white rounded-lg shadow-xl overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                            <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1080&q=80" class="w-full h-48 object-cover" alt="Spacious two-bedroom apartment">
+                            <div class="p-6">
+                                <h4 class="font-bold text-xl">The Osprey</h4>
+                                <p class="text-sm text-gray-600">2 Bedroom / 2 Bath | 1,100 sq. ft.</p>
+                                <p class="font-semibold mt-2 text-lg text-sky-700">From $2,800/mo</p>
+                                <button class="mt-4 w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">View Details</button>
+                            </div>
+                        </div>
+                         <div class="bg-white rounded-lg shadow-xl overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                           <img src="https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" class="w-full h-48 object-cover" alt="Elegant three-bedroom apartment">
+                            <div class="p-6">
+                                <h4 class="font-bold text-xl">The Pelican</h4>
+                                <p class="text-sm text-gray-600">3 Bedroom / 2 Bath | 1,450 sq. ft.</p>
+                                <p class="font-semibold mt-2 text-lg text-sky-700">From $3,500/mo</p>
+                                <button class="mt-4 w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="amenities" class="sub-tab-content">
+                    <h3 class="text-2xl font-bold text-gray-700 mb-6">Community & Apartment Amenities</h3>
+                    <h4 class="text-xl font-semibold text-sky-800 mb-4 border-b pb-2">Community Features</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <div class="text-center"><i class="fas fa-swimming-pool text-4xl text-sky-500 mb-2"></i><p>Resort-Style Pool</p></div>
+                        <div class="text-center"><i class="fas fa-dumbbell text-4xl text-sky-500 mb-2"></i><p>24/7 Fitness Center</p></div>
+                        <div class="text-center"><i class="fas fa-dog text-4xl text-sky-500 mb-2"></i><p>Pet Spa & Park</p></div>
+                        <div class="text-center"><i class="fas fa-users text-4xl text-sky-500 mb-2"></i><p>Resident Clubhouse</p></div>
+                        <div class="text-center"><i class="fas fa-car text-4xl text-sky-500 mb-2"></i><p>EV Charging Stations</p></div>
+                        <div class="text-center"><i class="fas fa-box-open text-4xl text-sky-500 mb-2"></i><p>Package Lockers</p></div>
+                        <div class="text-center"><i class="fas fa-wifi text-4xl text-sky-500 mb-2"></i><p>Business Center</p></div>
+                        <div class="text-center"><i class="fas fa-fire-alt text-4xl text-sky-500 mb-2"></i><p>Outdoor Grilling</p></div>
+                    </div>
+                     <h4 class="text-xl font-semibold text-sky-800 mt-10 mb-4 border-b pb-2">Apartment Features</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <div class="text-center"><i class="fas fa-fan text-4xl text-teal-500 mb-2"></i><p>Smart Thermostats</p></div>
+                        <div class="text-center"><i class="fas fa-shield-alt text-4xl text-teal-500 mb-2"></i><p>Stainless Steel Appliances</p></div>
+                        <div class="text-center"><i class="fas fa-wind text-4xl text-teal-500 mb-2"></i><p>In-Unit Washer/Dryer</p></div>
+                        <div class="text-center"><i class="fas fa-ruler-horizontal text-4xl text-teal-500 mb-2"></i><p>Private Balconies</p></div>
+                    </div>
+                </div>
+
+                <div id="neighborhood" class="sub-tab-content">
+                     <h3 class="text-2xl font-bold text-gray-700 mb-6">Explore the Neighborhood</h3>
+                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                           <a href="https://www.google.com/maps" target="_blank">
+                               <img src="https://i.imgur.com/8QO9s4B.png" class="rounded-lg shadow-lg w-full h-full object-cover cursor-pointer" alt="Map of West Palm Beach area">
+                           </a>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <h4 class="font-bold text-lg"><i class="fas fa-utensils text-orange-500 mr-2"></i>Dining & Shopping</h4>
+                                <p class="text-gray-600">The Square, Clematis Street, Palm Beach Outlets</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <h4 class="font-bold text-lg"><i class="fas fa-tree text-green-500 mr-2"></i>Parks & Recreation</h4>
+                                <p class="text-gray-600">Howard Park, Grassy Waters Preserve, Palm Beach Lake Trail</p>
+                            </div>
+                             <div class="bg-white p-4 rounded-lg shadow">
+                                <h4 class="font-bold text-lg"><i class="fas fa-palette text-purple-500 mr-2"></i>Arts & Culture</h4>
+                                <p class="text-gray-600">Norton Museum of Art, Kravis Center for the Performing Arts</p>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+
+                 <div id="contact" class="sub-tab-content">
+                    <h3 class="text-2xl font-bold text-gray-700 mb-6">Get In Touch</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <form class="space-y-4">
+                             <div>
+                                <label for="contact-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                <input type="text" id="contact-name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
+                            </div>
+                            <div>
+                                <label for="contact-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                                <input type="email" id="contact-email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
+                            </div>
+                             <div>
+                                <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
+                                <textarea id="contact-message" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Schedule a Tour</button>
+                        </form>
+                        <div class="bg-sky-50 p-6 rounded-lg border border-sky-200">
+                            <h4 class="font-bold text-lg text-sky-900">Contact Information</h4>
+                            <p class="mt-2 text-sky-800"><i class="fas fa-map-marker-alt w-5"></i> 123 Luxury Lane, West Palm Beach, FL 33401</p>
+                            <p class="mt-2 text-sky-800"><i class="fas fa-phone w-5"></i> (561) 555-1234</p>
+                            <p class="mt-2 text-sky-800"><i class="fas fa-envelope w-5"></i> leasing@mep-wpb.com</p>
+                            <h4 class="font-bold text-lg text-sky-900 mt-6">Office Hours</h4>
+                            <p class="mt-2 text-sky-800">Mon - Fri: 9:00 AM - 6:00 PM</p>
+                            <p class="mt-2 text-sky-800">Saturday: 10:00 AM - 5:00 PM</p>
+                            <p class="mt-2 text-sky-800">Sunday: Closed</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div id="user-login" class="tab-content">
+                <div class="max-w-md mx-auto backdrop-blur-lg p-8 rounded-xl shadow-2xl border border-slate-200/50">
+                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6"><i class="fas fa-user-lock mr-2"></i>Resident Login</h2>
+                    <form id="user-login-form">
+                        <div class="mb-4">
+                            <label for="user-username" class="block text-gray-700 font-semibold mb-2">Username or Email</label>
+                            <input type="text" id="user-username" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="demo: Nerd">
+                        </div>
+                        <div class="mb-6">
+                            <label for="user-password" class="block text-gray-700 font-semibold mb-2">Password</label>
+                            <input type="password" id="user-password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="demo: Pass">
+                        </div>
+                        <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg hover:shadow-xl">Login</button>
+                        <p id="user-login-error" class="text-red-500 text-sm mt-4 text-center"></p>
+                    </form>
+                </div>
+            </div>
+
+            <div id="mgmt-login" class="tab-content">
+                 <div class="max-w-md mx-auto backdrop-blur-lg p-8 rounded-xl shadow-2xl border border-slate-200/50">
+                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6"><i class="fas fa-cogs mr-2"></i>Management Login</h2>
+                    <form id="mgmt-login-form">
+                        <div class="mb-4">
+                            <label for="mgmt-username" class="block text-gray-700 font-semibold mb-2">Username</label>
+                            <input type="text" id="mgmt-username" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="demo: Nerd">
+                        </div>
+                        <div class="mb-6">
+                            <label for="mgmt-password" class="block text-gray-700 font-semibold mb-2">Password</label>
+                            <input type="password" id="mgmt-password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="demo: Pass">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg hover:shadow-xl">Login</button>
+                        <p id="mgmt-login-error" class="text-red-500 text-sm mt-4 text-center"></p>
+                    </form>
+                </div>
+            </div>
+
+            <div id="user-dashboard" class="tab-content">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-8">
+                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">My Payments</h3>
+                            <div class="flex flex-wrap justify-between items-center bg-sky-100/70 p-4 rounded-lg border border-sky-200">
+                                <div>
+                                    <p class="text-sm text-sky-800">Total Due by Aug 1, 2025</p>
+                                    <p class="text-3xl font-bold text-sky-900">$2,450.00</p>
+                                </div>
+                                <button id="pay-rent-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-transform hover:scale-105 mt-4 sm:mt-0"><i class="fas fa-dollar-sign mr-2"></i>Pay Now</button>
+                            </div>
+                            <div class="mt-4">
+                                <h4 class="font-semibold text-gray-700">Payment History</h4>
+                                <ul class="mt-2 space-y-2">
+                                    <li class="flex justify-between items-center bg-white p-2 rounded"><span>July 1, 2025 - Rent Payment</span><span class="font-mono text-green-700">-$2,450.00</span></li>
+                                    <li class="flex justify-between items-center bg-white p-2 rounded"><span>June 1, 2025 - Rent Payment</span><span class="font-mono text-green-700">-$2,450.00</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-gray-800">Maintenance Requests</h3>
+                                <button id="new-request-btn" class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-transform hover:scale-105"><i class="fas fa-plus mr-2"></i>New Request</button>
+                            </div>
+                             <ul class="space-y-3">
+                                <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
+                                    <div><p class="font-semibold">Leaky Kitchen Faucet</p><p class="text-sm text-gray-500">Submitted: July 10, 2025</p></div>
+                                    <span class="text-sm font-bold text-green-600 bg-green-100 px-3 py-1 rounded-full">Completed</span>
+                                </li>
+                                <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
+                                    <div><p class="font-semibold">A/C Not Cooling</p><p class="text-sm text-gray-500">Submitted: July 14, 2025</p></div>
+                                    <span class="text-sm font-bold text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">In Progress</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-1 space-y-8">
+                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
+                             <h3 class="text-xl font-bold text-gray-800 mb-4">My Info</h3>
+                             <p class="font-semibold">Elizabeth Nerd</p>
+                             <p class="text-gray-600">Unit 410 - The Osprey</p>
+                             <p class="text-gray-600">Lease Ends: July 31, 2026</p>
+                             <h4 class="font-semibold mt-4">My Documents</h4>
+                             <a href="#" class="block text-sky-600 hover:underline mt-1"><i class="fas fa-file-pdf mr-2"></i>Lease Agreement.pdf</a>
+                        </div>
+                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-bullhorn text-indigo-500 mr-2"></i>Announcements</h3>
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-indigo-400 pl-4">
+                                    <p class="font-semibold">Pool Maintenance</p>
+                                    <p class="text-sm text-gray-600">The pool will be closed for cleaning on July 16th from 8am to 12pm.</p>
+                                </div>
+                                <div class="border-l-4 border-indigo-400 pl-4">
+                                    <p class="font-semibold">Food Truck Friday!</p>
+                                    <p class="text-sm text-gray-600">Join us this Friday at 6pm in the main courtyard for tacos and live music!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mgmt-dashboard" class="tab-content">
+                <div class="space-y-8">
+                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="backdrop-blur-lg p-4 rounded-xl shadow-lg text-center border border-slate-200/50">
+                            <p class="text-3xl font-bold text-green-600">96%</p><p class="text-sm text-gray-600">Occupancy</p>
+                        </div>
+                        <div class="backdrop-blur-lg p-4 rounded-xl shadow-lg text-center border border-slate-200/50">
+                            <p class="text-3xl font-bold text-sky-600">$1.2M</p><p class="text-sm text-gray-600">Rent Collected (YTD)</p>
+                        </div>
+                        <div class="backdrop-blur-lg p-4 rounded-xl shadow-lg text-center border border-slate-200/50">
+                            <p class="text-3xl font-bold text-orange-600">4</p><p class="text-sm text-gray-600">Open Work Orders</p>
+                        </div>
+                        <div class="backdrop-blur-lg p-4 rounded-xl shadow-lg text-center border border-slate-200/50">
+                            <p class="text-3xl font-bold text-indigo-600">7</p><p class="text-sm text-gray-600">Units Leased (MTD)</p>
+                        </div>
+                    </div>
+                    <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Property Analytics</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="md:col-span-2"><canvas id="incomeChart"></canvas></div>
+                            <div><canvas id="occupancyChart"></canvas></div>
+                        </div>
+                    </div>
+                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Pending Maintenance</h3>
+                            <ul class="space-y-3">
+                                <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
+                                    <div><p class="font-semibold">A/C Not Cooling (Unit 410)</p><p class="text-sm text-gray-500">Priority: <span class="text-red-600">High</span></p></div>
+                                    <button class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded">View</button>
+                                </li>
+                                <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
+                                    <div><p class="font-semibold">Garbage Disposal Jammed (Unit 102)</p><p class="text-sm text-gray-500">Priority: <span class="text-yellow-600">Medium</span></p></div>
+                                    <button class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded">View</button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">New Applications</h3>
+                             <ul class="space-y-3">
+                                <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
+                                    <div><p class="font-semibold">John Smith (Floor Plan: The Sandpiper)</p><p class="text-sm text-gray-500">Submitted: July 15, 2025</p></div>
+                                    <button class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded">Review</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <div id="floorplan-modal-1" class="modal">
+            <div class="modal-content backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200/50">
+                <span class="modal-close" data-modal-close>×</span>
+                <h2 class="text-2xl font-bold mb-4">The Sandpiper - 1 Bed / 1 Bath</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <img src="https://i.imgur.com/u3vY0cT.png" class="w-full object-contain rounded-lg mb-4" alt="Floorplan for The Sandpiper">
+                     <div>
+                         <h4 class="font-bold">Key Features:</h4>
+                         <ul class="list-disc list-inside text-gray-700 mt-2">
+                            <li>750 sq. ft. of living space</li>
+                            <li>Gourmet kitchen with island</li>
+                            <li>Private balcony</li>
+                            <li>Walk-in closet</li>
+                            <li>In-unit laundry</li>
+                         </ul>
+                         <button class="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors">Check Availability</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="payment-modal" class="modal">
+             <div class="modal-content backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200/50">
+                <span class="modal-close" data-modal-close>×</span>
+                <h2 class="text-2xl font-bold mb-4">Make a Secure Payment</h2>
+                <form>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-2">Payment Amount</label>
+                        <input type="text" class="w-full px-4 py-2 border rounded-lg" value="$2,450.00" disabled>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-2">Card Number</label>
+                        <input type="text" class="w-full px-4 py-2 border rounded-lg" placeholder="•••• •••• •••• ••••">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                             <label class="block text-gray-700 font-semibold mb-2">Expiry Date</label>
+                             <input type="text" class="w-full px-4 py-2 border rounded-lg" placeholder="MM / YY">
+                        </div>
+                        <div>
+                             <label class="block text-gray-700 font-semibold mb-2">CVC</label>
+                             <input type="text" class="w-full px-4 py-2 border rounded-lg" placeholder="•••">
+                        </div>
+                    </div>
+                    <a href="#" class="text-sky-600 hover:underline">Pay with Bank Account (ACH) instead</a>
+                    <button type="submit" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Submit Payment</button>
+                </form>
+             </div>
+        </div>
+
+        <div id="maintenance-modal" class="modal">
+             <div class="modal-content backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200/50">
+                <span class="modal-close" data-modal-close>×</span>
+                <h2 class="text-2xl font-bold mb-4">New Maintenance Request</h2>
+                <form class="space-y-4">
+                     <div>
+                        <label for="maint-category" class="block text-gray-700 font-semibold mb-2">Category</label>
+                        <select id="maint-category" class="w-full px-4 py-2 border rounded-lg">
+                            <option>Plumbing</option>
+                            <option>Electrical</option>
+                            <option>Appliances</option>
+                            <option>HVAC</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label for="maint-urgency" class="block text-gray-700 font-semibold mb-2">Urgency</label>
+                        <select id="maint-urgency" class="w-full px-4 py-2 border rounded-lg">
+                            <option>Low - Non-urgent</option>
+                            <option>Medium - Standard</option>
+                            <option>High - Urgent</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="maint-desc" class="block text-gray-700 font-semibold mb-2">Description</label>
+                        <textarea id="maint-desc" rows="3" class="w-full px-4 py-2 border rounded-lg" placeholder="Please provide a detailed description of the issue."></textarea>
+                    </div>
+                    <div>
+                         <label class="block text-gray-700 font-semibold mb-2">Upload Photo (Optional)</label>
+                         <input type="file" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"/>
+                    </div>
+                    <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Submit Request</button>
+                </form>
+             </div>
+        </div>
+
+
+        <footer class="text-center text-slate-100/80 mt-12 text-sm">
+            <p>© 2025 MEP Property Management. All rights reserved. | For demonstration purposes only.</p>
         </footer>
 
     </div>
 
-    <!-- Login Modal -->
-    <div id="login-modal" class="modal-overlay hidden">
-        <div class="modal-content fade-in">
-            <h2 id="login-title" class="text-2xl font-bold mb-2 text-center text-gray-800">Login</h2>
-            <p id="login-error" class="text-red-500 text-sm text-center mb-4 h-5"></p>
-            <form id="login-form">
-                <input type="hidden" id="login-type" value="">
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                    <input type="text" id="email" placeholder="Nerd" class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                </div>
-                <div class="mb-6">
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" id="password" placeholder="Elisabeth" class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                </div>
-                <div class="flex items-center justify-between">
-                    <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Sign In</button>
-                </div>
-                 <button type="button" id="close-modal-btn" class="mt-4 w-full text-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-100 rounded-md">Cancel</button>
-            </form>
-        </div>
-    </div>
-
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const mainContent = document.getElementById('main-content');
-            const loginModal = document.getElementById('login-modal');
-            const loginForm = document.getElementById('login-form');
-            const loginTitle = document.getElementById('login-title');
-            const loginTypeInput = document.getElementById('login-type');
-            const loginError = document.getElementById('login-error');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- STATE MANAGEMENT ---
+        const state = {
+            loggedInUser: null, // 'user' or 'mgmt'
+            userName: null,
+            activeTab: 'home',
+            activeSubTab: 'welcome',
+        };
 
-            // --- Page Templates ---
+        // --- ELEMENT SELECTORS ---
+        const mainContent = document.getElementById('main-content');
+        const userInfo = document.getElementById('user-info');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const logoutButton = document.getElementById('logout-button');
+        const navLinks = document.querySelectorAll('.nav-link');
 
-            const homePageTemplate = `
-                <div class="fade-in">
-                    <!-- Hero Section -->
-                    <div class="relative hero-bg-image">
-                        <div class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
-                        <div class="relative max-w-7xl mx-auto py-32 px-4 sm:py-48 sm:px-6 lg:px-8 text-center">
-                            <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">Find Your Perfect Home</h1>
-                            <p class="mt-6 max-w-2xl mx-auto text-xl text-indigo-100">MEP Management offers premium properties and exceptional service for a seamless rental experience.</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Available Properties Section -->
-                    <div class="bg-white">
-                        <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-24 lg:px-8">
-                            <div class="text-center">
-                                <h2 class="text-3xl font-extrabold text-gray-900">Available Properties</h2>
-                                <p class="mt-4 text-lg text-gray-500">Explore our featured listings.</p>
-                            </div>
-                            <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                                <div class="group relative">
-                                    <div class="w-full h-56 bg-gray-200 rounded-lg overflow-hidden">
-                                        <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1974&auto=format&fit=crop" alt="Modern house exterior" class="w-full h-full object-center object-cover group-hover:opacity-75 transition-opacity">
-                                    </div>
-                                    <div class="mt-4">
-                                        <h3 class="text-lg font-semibold text-gray-800">The Grand Lofts, Unit 7A</h3>
-                                        <p class="mt-1 text-md text-gray-600">$2,100 / month</p>
-                                    </div>
-                                </div>
-                                <div class="group relative">
-                                    <div class="w-full h-56 bg-gray-200 rounded-lg overflow-hidden">
-                                        <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=2070&auto=format&fit=crop" alt="Cozy apartment living room" class="w-full h-full object-center object-cover group-hover:opacity-75 transition-opacity">
-                                    </div>
-                                    <div class="mt-4">
-                                        <h3 class="text-lg font-semibold text-gray-800">Creekside Apartments, Unit 21B</h3>
-                                        <p class="mt-1 text-md text-gray-600">$1,750 / month</p>
-                                    </div>
-                                </div>
-                                <div class="group relative">
-                                    <div class="w-full h-56 bg-gray-200 rounded-lg overflow-hidden">
-                                        <img src="https://images.unsplash.com/photo-1598228723793-52759bba239c?q=80&w=1974&auto=format&fit=crop" alt="Suburban condo complex" class="w-full h-full object-center object-cover group-hover:opacity-75 transition-opacity">
-                                    </div>
-                                    <div class="mt-4">
-                                        <h3 class="text-lg font-semibold text-gray-800">Pineview Condos, Unit 11</h3>
-                                        <p class="mt-1 text-md text-gray-600">$1,900 / month</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Features Section -->
-                    <div class="bg-gray-50">
-                        <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-24 lg:px-8">
-                            <div class="max-w-3xl mx-auto text-center">
-                                <h2 class="text-3xl font-extrabold text-gray-900">Management You Can Trust</h2>
-                            </div>
-                            <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-2">
-                                <div class="pt-6">
-                                    <div class="flow-root bg-white rounded-lg px-6 pb-8 shadow-sm">
-                                        <div class="-mt-6">
-                                            <div>
-                                                <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
-                                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                </span>
-                                            </div>
-                                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">For Residents</h3>
-                                            <p class="mt-5 text-base text-gray-500">Enjoy easy access to your lease, online rent payments, maintenance requests, and direct communication with our team. Your home, simplified.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="pt-6">
-                                    <div class="flow-root bg-white rounded-lg px-6 pb-8 shadow-sm">
-                                        <div class="-mt-6">
-                                            <div>
-                                                <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
-                                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                                                </span>
-                                            </div>
-                                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">For Owners</h3>
-                                            <p class="mt-5 text-base text-gray-500">Maximize your investment with our robust portal. Track financials, view property status, and access detailed reports anytime, anywhere.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            const residentPortalTemplate = `
-                <div class="fade-in container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
-                         <div>
-                            <h1 class="text-3xl font-bold text-gray-900">Resident Portal</h1>
-                            <div class="flex items-center gap-4 mt-4">
-                                <img class="h-16 w-16 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1887&auto=format&fit=crop" alt="Resident profile picture">
-                                <div>
-                                    <p class="text-xl text-gray-800 font-semibold">Welcome back, Jessica!</p>
-                                    <p class="text-sm text-gray-500">The Grand Lofts, Unit 4B</p>
-                                </div>
-                            </div>
-                         </div>
-                         <button id="logout-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-sm font-medium self-start sm:self-center">Log Out</button>
-                    </div>
-
-                    <!-- Dashboard Grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <!-- Left Column -->
-                        <div class="lg:col-span-2 space-y-8">
-                            <!-- Rent & Payments -->
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Rent & Payments</h2>
-                                <div class="flex flex-col sm:flex-row items-start justify-between gap-4">
-                                    <div>
-                                        <p class="text-gray-600">Next Payment Due: <strong>August 1, 2024</strong></p>
-                                        <p class="text-4xl font-bold text-indigo-600 mt-2">$1,850.00</p>
-                                    </div>
-                                    <button class="bg-green-500 text-white px-8 py-3 rounded-lg hover:bg-green-600 font-bold w-full sm:w-auto">Pay Now</button>
-                                </div>
-                                <hr class="my-6">
-                                <h3 class="text-lg font-semibold mb-4 text-gray-700">Payment History</h3>
-                                <ul class="space-y-3">
-                                    <li class="flex justify-between items-center text-gray-600 p-3 bg-gray-50 rounded-lg"><span>July 1, 2024</span> <span>$1,850.00</span> <span class="text-green-600 font-medium">Paid</span></li>
-                                    <li class="flex justify-between items-center text-gray-600 p-3"><span>June 1, 2024</span> <span>$1,850.00</span> <span class="text-green-600 font-medium">Paid</span></li>
-                                    <li class="flex justify-between items-center text-gray-600 p-3 bg-gray-50 rounded-lg"><span>May 1, 2024</span> <span>$1,850.00</span> <span class="text-green-600 font-medium">Paid</span></li>
-                                </ul>
-                            </div>
-
-                            <!-- Maintenance Requests -->
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h2 class="text-xl font-semibold text-gray-800">Maintenance Requests</h2>
-                                    <button class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600">New Request</button>
-                                </div>
-                                <ul class="space-y-4">
-                                    <li class="p-4 border rounded-lg flex justify-between items-center">
-                                        <div>
-                                            <p class="font-semibold">Leaky Faucet (Kitchen)</p>
-                                            <p class="text-sm text-gray-500">Submitted: 07/10/2024</p>
-                                        </div>
-                                        <span class="px-3 py-1 text-sm font-medium bg-yellow-100 text-yellow-800 rounded-full">In Progress</span>
-                                    </li>
-                                    <li class="p-4 border rounded-lg flex justify-between items-center">
-                                        <div>
-                                            <p class="font-semibold">AC not cooling</p>
-                                            <p class="text-sm text-gray-500">Submitted: 06/25/2024</p>
-                                        </div>
-                                        <span class="px-3 py-1 text-sm font-medium bg-green-100 text-green-800 rounded-full">Completed</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Right Column -->
-                        <div class="space-y-8">
-                            <!-- Community Announcements -->
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Announcements</h2>
-                                <ul class="space-y-4">
-                                    <li class="border-l-4 border-indigo-500 pl-4 py-2">
-                                        <p class="font-medium text-gray-700">Pool Maintenance</p>
-                                        <p class="text-sm text-gray-500">The community pool will be closed on July 15th for scheduled maintenance.</p>
-                                    </li>
-                                    <li class="border-l-4 border-indigo-500 pl-4 py-2">
-                                        <p class="font-medium text-gray-700">Package Room Update</p>
-                                        <p class="text-sm text-gray-500">Please pick up your packages within 48 hours to avoid returns.</p>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- Important Documents -->
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Documents</h2>
-                                <ul class="space-y-2">
-                                    <li><a href="#" class="text-indigo-600 hover:underline">Lease Agreement.pdf</a></li>
-                                    <li><a href="#" class="text-indigo-600 hover:underline">Community Rules.pdf</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            const ownerPortalTemplate = `
-                <div class="fade-in container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div class="flex justify-between items-center mb-6">
-                         <h1 class="text-3xl font-bold text-gray-900">Owner Portal</h1>
-                         <button id="logout-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-sm font-medium">Log Out</button>
-                    </div>
-                    <p class="text-lg text-gray-600 mb-8">Welcome back, Mr. Smith!</p>
-
-                    <!-- Dashboard Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white p-5 rounded-lg shadow-md">
-                            <h3 class="text-sm font-medium text-gray-500">Total Properties</h3>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">3</p>
-                        </div>
-                        <div class="bg-white p-5 rounded-lg shadow-md">
-                            <h3 class="text-sm font-medium text-gray-500">Occupancy Rate</h3>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">95%</p>
-                        </div>
-                        <div class="bg-white p-5 rounded-lg shadow-md">
-                            <h3 class="text-sm font-medium text-gray-500">Monthly Income</h3>
-                            <p class="mt-1 text-3xl font-semibold text-green-600">$25,400</p>
-                        </div>
-                        <div class="bg-white p-5 rounded-lg shadow-md">
-                            <h3 class="text-sm font-medium text-gray-500">Open Issues</h3>
-                            <p class="mt-1 text-3xl font-semibold text-yellow-600">2</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="lg:col-span-2 space-y-8">
-                            <!-- My Properties -->
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-xl font-semibold mb-4 text-gray-800">My Properties</h2>
-                                <div class="space-y-6">
-                                    <!-- Property 1 -->
-                                    <div class="flex gap-4 border p-4 rounded-lg items-center">
-                                        <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1974&auto=format&fit=crop" class="w-32 h-20 rounded-md object-cover" alt="Property 1">
-                                        <div class="flex-grow">
-                                            <h3 class="font-semibold text-lg">The Grand Lofts</h3>
-                                            <p class="text-sm text-gray-500">123 Main Street, Anytown</p>
-                                            <span class="mt-1 inline-block px-3 py-1 text-sm font-medium bg-green-100 text-green-800 rounded-full">100% Occupied</span>
-                                        </div>
-                                        <a href="#" class="text-indigo-600 hover:underline text-sm font-medium">View Details</a>
-                                    </div>
-                                    <!-- Property 2 -->
-                                    <div class="flex gap-4 border p-4 rounded-lg items-center">
-                                        <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=2070&auto=format&fit=crop" class="w-32 h-20 rounded-md object-cover" alt="Property 2">
-                                        <div class="flex-grow">
-                                            <h3 class="font-semibold text-lg">Creekside Apartments</h3>
-                                            <p class="text-sm text-gray-500">456 Oak Avenue, Anytown</p>
-                                            <span class="mt-1 inline-block px-3 py-1 text-sm font-medium bg-yellow-100 text-yellow-800 rounded-full">90% Occupied</span>
-                                        </div>
-                                        <a href="#" class="text-indigo-600 hover:underline text-sm font-medium">View Details</a>
-                                    </div>
-                                     <!-- Property 3 -->
-                                    <div class="flex gap-4 border p-4 rounded-lg items-center">
-                                        <img src="https://images.unsplash.com/photo-1598228723793-52759bba239c?q=80&w=1974&auto=format&fit=crop" class="w-32 h-20 rounded-md object-cover" alt="Property 3">
-                                        <div class="flex-grow">
-                                            <h3 class="font-semibold text-lg">Pineview Condos</h3>
-                                            <p class="text-sm text-gray-500">789 Pine Lane, Anytown</p>
-                                            <span class="mt-1 inline-block px-3 py-1 text-sm font-medium bg-green-100 text-green-800 rounded-full">100% Occupied</span>
-                                        </div>
-                                        <a href="#" class="text-indigo-600 hover:underline text-sm font-medium">View Details</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="lg:col-span-1 space-y-8">
-                             <!-- Financials Chart -->
-                             <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Income vs Expense</h2>
-                                <div class="h-64"><canvas id="financialsChart"></canvas></div>
-                            </div>
-                            <!-- Reports -->
-                            <div class="bg-white p-6 rounded-lg shadow-md">
-                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Reports</h2>
-                                <ul class="space-y-2">
-                                    <li><a href="#" class="text-indigo-600 hover:underline">July 2024 - P&L Statement</a></li>
-                                    <li><a href="#" class="text-indigo-600 hover:underline">Q2 2024 - Occupancy Report</a></li>
-                                    <li><a href="#" class="text-indigo-600 hover:underline">2023 - Annual Summary</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // --- App Logic ---
-
-            function renderPage(template, afterRenderCallback = null) {
-                mainContent.innerHTML = template;
-                if (afterRenderCallback) {
-                    afterRenderCallback();
-                }
-                const logoutBtn = document.getElementById('logout-btn');
-                if(logoutBtn) logoutBtn.addEventListener('click', () => renderPage(homePageTemplate));
-            }
-
-            function showLoginModal(type) {
-                loginTypeInput.value = type;
-                loginTitle.textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} Login`;
-                loginError.textContent = '';
-                loginModal.classList.remove('hidden');
-            }
-
-            function hideLoginModal() {
-                loginModal.classList.add('hidden');
-                loginForm.reset();
-            }
-
-            function renderOwnerChart() {
-                const ctx = document.getElementById('financialsChart');
-                if (ctx) {
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['April', 'May', 'June', 'July'],
-                            datasets: [{
-                                label: 'Income',
-                                data: [24000, 25400, 25400, 26000],
-                                backgroundColor: 'rgba(79, 70, 229, 0.8)',
-                                borderColor: 'rgba(79, 70, 229, 1)',
-                                borderWidth: 1,
-                                borderRadius: 4,
-                            }, {
-                                label: 'Expenses',
-                                data: [8000, 8500, 8200, 9000],
-                                backgroundColor: 'rgba(224, 231, 255, 0.8)',
-                                borderColor: 'rgba(165, 180, 252, 1)',
-                                borderWidth: 1,
-                                borderRadius: 4,
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                y: { beginAtZero: true, ticks: { callback: (value) => '$' + value / 1000 + 'k' } },
-                                x: { grid: { display: false } }
-                            },
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { position: 'bottom' } }
-                        }
-                    });
-                }
-            }
-            
-            // --- Event Listeners ---
-            
-            document.getElementById('home-link').addEventListener('click', (e) => {
-                e.preventDefault();
-                renderPage(homePageTemplate);
+        // --- RENDER FUNCTIONS ---
+        function renderContent() {
+            // Render main tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.toggle('active', tab.id === state.activeTab);
+            });
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.dataset.tab === state.activeTab || (state.activeTab.includes('dashboard') && link.dataset.tab.includes(state.loggedInUser)));
             });
 
-            [document.getElementById('resident-portal-btn'), document.getElementById('resident-portal-btn-mobile')].forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if(mobileMenu) mobileMenu.classList.add('hidden');
-                    showLoginModal('resident');
+            // Render sub-tabs if on home page
+            if (state.activeTab === 'home') {
+                document.querySelectorAll('.sub-tab-content').forEach(subTab => {
+                    subTab.classList.toggle('active', subTab.id === state.activeSubTab);
                 });
-            });
-
-            [document.getElementById('owner-portal-btn'), document.getElementById('owner-portal-btn-mobile')].forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if(mobileMenu) mobileMenu.classList.add('hidden');
-                    showLoginModal('owner');
+                document.querySelectorAll('.sub-nav-link').forEach(link => {
+                    link.classList.toggle('active', link.dataset.subtab === state.activeSubTab);
                 });
-            });
+            }
 
-            closeModalBtn.addEventListener('click', hideLoginModal);
-            loginModal.addEventListener('click', (e) => {
-                if (e.target === loginModal) hideLoginModal();
-            });
+            // If a dashboard is active, render its charts
+            if (state.activeTab === 'mgmt-dashboard') {
+                renderMgmtCharts();
+            }
+        }
 
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const type = loginTypeInput.value;
+        let incomeChartInstance, occupancyChartInstance;
+        function renderMgmtCharts() {
+            const incomeCtx = document.getElementById('incomeChart')?.getContext('2d');
+            const occupancyCtx = document.getElementById('occupancyChart')?.getContext('2d');
+            
+            if (incomeChartInstance) incomeChartInstance.destroy();
+            if (occupancyChartInstance) occupancyChartInstance.destroy();
 
-                if (email.toLowerCase() === 'nerd' && password === 'Elisabeth') {
-                    loginError.textContent = '';
-                    if (type === 'resident') {
-                        renderPage(residentPortalTemplate);
-                    } else if (type === 'owner') {
-                        renderPage(ownerPortalTemplate, renderOwnerChart);
+            if (incomeCtx) {
+                incomeChartInstance = new Chart(incomeCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Income ($k)',
+                            data: [120, 135, 130, 145, 150, 155],
+                            backgroundColor: 'rgba(2, 132, 199, 0.6)',
+                            borderColor: 'rgba(2, 132, 199, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { responsive: true }
+                });
+            }
+
+            if (occupancyCtx) {
+                occupancyChartInstance = new Chart(occupancyCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Occupied', 'Vacant'],
+                        datasets: [{
+                            data: [96, 4],
+                            backgroundColor: ['rgba(22, 163, 74, 0.7)', 'rgba(220, 38, 38, 0.7)'],
+                            borderColor: ['rgba(22, 163, 74, 1)', 'rgba(220, 38, 38, 1)'],
+                            borderWidth: 1
+                        }]
+                    },
+                     options: { responsive: true, plugins: { legend: { position: 'top'}}}
+                });
+            }
+        }
+        
+        function updateLoginUI() {
+            if (state.loggedInUser) {
+                userInfo.classList.remove('hidden');
+                userInfo.classList.add('flex');
+                welcomeMessage.textContent = `Welcome, ${state.userName}!`;
+                navLinks.forEach(link => {
+                    const tab = link.dataset.tab;
+                    link.style.display = 'inline-flex';
+                    if (state.loggedInUser === 'user') {
+                        if (tab === 'mgmt-login') link.style.display = 'none';
+                        if (tab === 'user-login') link.innerHTML = '<i class="fas fa-tachometer-alt mr-2"></i>My Dashboard';
+                    } else if (state.loggedInUser === 'mgmt') {
+                        if (tab === 'user-login') link.style.display = 'none';
+                        if (tab === 'mgmt-login') link.innerHTML = '<i class="fas fa-chart-line mr-2"></i>Dashboard';
                     }
-                    hideLoginModal();
+                });
+            } else {
+                 userInfo.classList.add('hidden');
+                 navLinks.forEach(link => {
+                     link.style.display = 'inline-flex';
+                     if(link.dataset.tab === 'user-login') link.innerHTML = '<i class="fas fa-user-lock mr-2"></i>Resident Portal';
+                     if(link.dataset.tab === 'mgmt-login') link.innerHTML = '<i class="fas fa-cogs mr-2"></i>Management Portal';
+                 });
+            }
+        }
+
+        // --- EVENT HANDLERS ---
+        function handleNavClick(e) {
+            e.preventDefault();
+            const target = e.target.closest('.nav-link');
+            if (target) {
+                const tabId = target.dataset.tab;
+                if (state.loggedInUser === 'user' && tabId === 'user-login') {
+                    state.activeTab = 'user-dashboard';
+                } else if (state.loggedInUser === 'mgmt' && tabId === 'mgmt-login') {
+                    state.activeTab = 'mgmt-dashboard';
                 } else {
-                    loginError.textContent = 'Invalid credentials. Please try again.';
+                    state.activeTab = tabId;
                 }
-            });
+                renderContent();
+            }
+        }
+
+        function handleSubNavClick(e) {
+            e.preventDefault();
+            const target = e.target.closest('.sub-nav-link');
+            if(target) {
+                state.activeSubTab = target.dataset.subtab;
+                renderContent();
+            }
+        }
+
+        function handleLogin(e, userType) {
+            e.preventDefault();
+            const username = e.target.querySelector('input[type="text"]').value;
+            const password = e.target.querySelector('input[type="password"]').value;
+            const errorEl = e.target.querySelector('p[id$="-error"]');
+
+            if (username === 'Nerd' && password === 'Pass') {
+                state.loggedInUser = userType;
+                state.userName = userType === 'user' ? 'Elizabeth' : 'Management';
+                state.activeTab = `${userType}-dashboard`;
+                errorEl.textContent = '';
+                updateLoginUI();
+                renderContent();
+            } else {
+                errorEl.textContent = 'Invalid username or password.';
+            }
+        }
+
+        function handleLogout() {
+            state.loggedInUser = null;
+            state.userName = null;
+            state.activeTab = 'home';
+            state.activeSubTab = 'welcome';
+            updateLoginUI();
+            renderContent();
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.style.display = 'flex';
+        }
+
+        function closeModal(modal) {
+            if(modal) modal.style.display = 'none';
+        }
+
+        // --- ATTACH EVENT LISTENERS ---
+        document.querySelector('nav').addEventListener('click', handleNavClick);
+        document.querySelector('#home').addEventListener('click', handleSubNavClick);
+        document.getElementById('user-login-form')?.addEventListener('submit', (e) => handleLogin(e, 'user'));
+        document.getElementById('mgmt-login-form')?.addEventListener('submit', (e) => handleLogin(e, 'mgmt'));
+        if(logoutButton) logoutButton.addEventListener('click', handleLogout);
+        
+        // Dynamic event listeners for modals (delegated to the body)
+        document.body.addEventListener('click', (e) => {
+            // Open modal
+            const modalTarget = e.target.closest('[data-modal-target]');
+            if (modalTarget) {
+                 openModal(modalTarget.dataset.modalTarget);
+            }
             
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-                mobileMenuButton.querySelector('svg:first-child').classList.toggle('hidden');
-                mobileMenuButton.querySelector('svg:last-child').classList.toggle('hidden');
-            });
+            // Close modal via 'x' button or clicking the background
+            if (e.target.matches('.modal-close') || e.target.matches('.modal')) {
+                 closeModal(e.target.closest('.modal'));
+            }
 
-
-            // --- Initial Load ---
-            renderPage(homePageTemplate);
+            // Dashboard buttons that open modals
+            if (e.target.id === 'pay-rent-btn') openModal('payment-modal');
+            if (e.target.id === 'new-request-btn') openModal('maintenance-modal');
         });
-    </script>
 
+        // --- INITIAL RENDER ---
+        updateLoginUI();
+        renderContent();
+    });
+    </script>
 </body>
 </html>
