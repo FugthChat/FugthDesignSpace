@@ -2,154 +2,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instant Web IDE</title>
+    <title>Simple Runner</title>
     <style>
-        :root {
-            --editor-bg: #282c34;
-            --preview-bg: #ffffff;
-            --text-color: #abb2bf;
-            --border-color: #444857;
-            --header-bg: #21252b;
-        }
-
+        /* Basic styling to make it work */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            display: flex;
-            height: 100vh;
-            background-color: var(--editor-bg);
-            color: var(--text-color);
-            flex-direction: column;
+            font-family: monospace;
         }
 
-        .container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .editor-pane, .preview-pane {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .preview-pane {
-            border-left: 2px solid var(--border-color);
-        }
-
-        .code-editor {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .editor-header {
-            background-color: var(--header-bg);
-            padding: 8px 12px;
-            font-weight: bold;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        textarea {
-            flex-grow: 1;
-            background-color: var(--editor-bg);
-            color: var(--text-color);
-            border: none;
-            padding: 15px;
-            font-family: 'Fira Code', 'Courier New', Courier, monospace;
-            font-size: 16px;
-            resize: none;
-            outline: none;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        textarea:last-of-type {
-            border-bottom: none;
-        }
-
-        iframe {
+        /* The big text box for your code */
+        #code-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
+            padding: 15px;
+            padding-top: 60px; /* Make space for the button */
+            box-sizing: border-box; /* Important for padding */
             border: none;
-            background-color: var(--preview-bg);
+            outline: none;
+            resize: none;
+            background-color: #222;
+            color: #eee;
+            font-size: 16px;
+        }
+
+        /* The run button in the top right */
+        #run-button {
+            position: fixed; /* Stays in the corner */
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="editor-pane">
-            <div class="code-editor">
-                <div class="editor-header">HTML</div>
-                <textarea id="html-code" placeholder=""></textarea>
-            </div>
-            <div class="code-editor">
-                <div class="editor-header">CSS</div>
-                <textarea id="css-code" placeholder="/* Your CSS here */"></textarea>
-            </div>
-            <div class="code-editor">
-                <div class="editor-header">JavaScript</div>
-                <textarea id="js-code" placeholder="// Your JavaScript here"></textarea>
-            </div>
-        </div>
-        <div class="preview-pane">
-            <iframe id="preview-frame" title="Live Preview"></iframe>
-        </div>
-    </div>
+    <textarea id="code-canvas" placeholder="Paste your full HTML, CSS, and JS code here..."></textarea>
+
+    <button id="run-button">Run ▶</button>
 
     <script>
-        // Get references to the textarea and iframe elements
-        const htmlCode = document.getElementById('html-code');
-        const cssCode = document.getElementById('css-code');
-        const jsCode = document.getElementById('js-code');
-        const previewFrame = document.getElementById('preview-frame');
+        const runButton = document.getElementById('run-button');
+        const codeCanvas = document.getElementById('code-canvas');
 
-        /**
-         * A simple debounce function to prevent the preview from updating on every keystroke,
-         * which improves performance.
-         */
-        function debounce(func, delay) {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), delay);
-            };
-        }
+        // Listen for clicks on the run button
+        runButton.addEventListener('click', () => {
+            // Get all the text from the text box
+            const codeToRun = codeCanvas.value;
 
-        /**
-         * Updates the iframe's content with the code from the textareas.
-         */
-        function updatePreview() {
-            const documentContent = `
-                <html>
-                    <head>
-                        <style>${cssCode.value}</style>
-                    </head>
-                    <body>
-                        ${htmlCode.value}
-                        <script>${jsCode.value}<\/script>
-                    </body>
-                </html>
-            `;
-            previewFrame.srcdoc = documentContent;
-        }
-        
-        // Use debounce to update the preview 300ms after the user stops typing
-        const debouncedUpdate = debounce(updatePreview, 300);
-
-        // Add event listeners to all textareas to trigger the update
-        [htmlCode, cssCode, jsCode].forEach(editor => {
-            editor.addEventListener('input', debouncedUpdate);
+            // Open a new tab and write the code into it
+            const newTab = window.open();
+            newTab.document.open();
+            newTab.document.write(codeToRun);
+            newTab.document.close();
         });
-
-        // Initial update to show the blank preview
-        updatePreview();
-
     </script>
 
 </body>
