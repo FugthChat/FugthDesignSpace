@@ -96,27 +96,8 @@
             height: 100%;
         }
 
-        .editor-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .editor-container:last-child {
-            border-bottom: none;
-        }
-
-        .editor-header {
-            padding: 5px 10px;
-            background-color: var(--bg-secondary);
-            font-weight: bold;
-            font-size: 14px;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border-color);
-        }
-
         .CodeMirror {
+            flex-grow: 1;
             height: 100% !important;
             font-size: 15px;
         }
@@ -222,18 +203,7 @@
 
     <div class="container">
         <div id="editor-pane">
-            <div class="editor-container">
-                <div class="editor-header">HTML</div>
-                <textarea id="html-code"></textarea>
-            </div>
-            <div class="editor-container">
-                <div class="editor-header">CSS</div>
-                <textarea id="css-code"></textarea>
-            </div>
-            <div class="editor-container">
-                <div class="editor-header">JavaScript</div>
-                <textarea id="js-code"></textarea>
-            </div>
+            <textarea id="code-canvas"></textarea>
         </div>
 
         <div id="resizer"></div>
@@ -298,73 +268,47 @@
         };
 
         // --- Editor Initialization (CodeMirror) ---
-        const createEditor = (id, mode) => {
-            return CodeMirror.fromTextArea(document.getElementById(id), {
-                mode: mode,
-                theme: 'dracula',
-                lineNumbers: true,
-                autoCloseTags: true,
-            });
-        };
-
-        const htmlEditor = createEditor('html-code', 'htmlmixed');
-        const cssEditor = createEditor('css-code', 'css');
-        const jsEditor = createEditor('js-code', 'javascript');
-        
-        const editors = [htmlEditor, cssEditor, jsEditor];
+        const mainEditor = CodeMirror.fromTextArea(document.getElementById('code-canvas'), {
+            mode: 'htmlmixed',
+            theme: 'dracula',
+            lineNumbers: true,
+            autoCloseTags: true,
+        });
 
         // --- Core Functionality ---
         function updatePreview() {
-            const html = htmlEditor.getValue();
-            const css = cssEditor.getValue();
-            const js = jsEditor.getValue();
+            let content = mainEditor.getValue();
 
             const consoleInterceptor = `
                 <script>
                     const originalConsole = window.console;
                     window.console = {
                         ...originalConsole,
-                        log: (...args) => {
-                            window.parent.postMessage({ type: 'log', message: args }, '*');
-                            originalConsole.log(...args);
-                        },
-                        error: (...args) => {
-                            window.parent.postMessage({ type: 'error', message: args }, '*');
-                            originalConsole.error(...args);
-                        },
-                        warn: (...args) => {
-                            window.parent.postMessage({ type: 'warn', message: args }, '*');
-                            originalConsole.warn(...args);
-                        },
-                        info: (...args) => {
-                            window.parent.postMessage({ type: 'info', message: args }, '*');
-                            originalConsole.info(...args);
-                        }
+                        log: (...args) => { window.parent.postMessage({ type: 'log', message: args }, '*'); originalConsole.log(...args); },
+                        error: (...args) => { window.parent.postMessage({ type: 'error', message: args }, '*'); originalConsole.error(...args); },
+                        warn: (...args) => { window.parent.postMessage({ type: 'warn', message: args }, '*'); originalConsole.warn(...args); },
+                        info: (...args) => { window.parent.postMessage({ type: 'info', message: args }, '*'); originalConsole.info(...args); }
                     };
-                    window.addEventListener('error', e => {
-                       window.parent.postMessage({ type: 'error', message: [e.message] }, '*');
-                    });
+                    window.addEventListener('error', e => { window.parent.postMessage({ type: 'error', message: [e.message] }, '*'); });
                 <\/script>
             `;
 
-            let bootstrapLink = settings.includeBootstrap ? '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">' : '';
-            let jqueryScript = settings.includeJQuery ? '<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>' : '';
+            // Inject libraries and console interceptor intelligently
+            if (settings.includeBootstrap && content.includes('</head>')) {
+                const bootstrapLink = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">';
+                content = content.replace('</head>', `${bootstrapLink}</head>`);
+            }
+            if (content.includes('</body>')) {
+                let scriptsToInject = consoleInterceptor;
+                if (settings.includeJQuery) {
+                    scriptsToInject = `<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>` + scriptsToInject;
+                }
+                content = content.replace('</body>', `${scriptsToInject}</body>`);
+            } else {
+                 content += consoleInterceptor; // Fallback
+            }
             
-            const documentContent = `
-                <html>
-                    <head>
-                        ${bootstrapLink}
-                        <style>${css}</style>
-                    </head>
-                    <body>
-                        ${html}
-                        ${jqueryScript}
-                        ${consoleInterceptor}
-                        <script>${js}<\/script>
-                    </body>
-                </html>
-            `;
-            previewFrame.srcdoc = documentContent;
+            previewFrame.srcdoc = content;
         }
 
         function debounce(func, delay) {
@@ -376,9 +320,7 @@
         }
         const debouncedUpdate = debounce(updatePreview, 500);
 
-        editors.forEach(editor => {
-            editor.on('change', debouncedUpdate);
-        });
+        mainEditor.on('change', debouncedUpdate);
 
         // --- Console Forwarding ---
         window.addEventListener('message', (event) => {
@@ -421,24 +363,23 @@
         // --- Persistence (LocalStorage) ---
         function saveCode() {
             const data = {
-                html: htmlEditor.getValue(),
-                css: cssEditor.getValue(),
-                js: jsEditor.getValue(),
+                code: mainEditor.getValue(),
                 settings: settings
             };
-            localStorage.setItem('fugthwebcode_data', JSON.stringify(data));
+            localStorage.setItem('fugthwebcode_single_canvas_data', JSON.stringify(data));
             saveBtn.textContent = 'Saved!';
             setTimeout(() => { saveBtn.textContent = 'Save' }, 1500);
         }
 
         function loadCode() {
-            const data = JSON.parse(localStorage.getItem('fugthwebcode_data'));
+            const data = JSON.parse(localStorage.getItem('fugthwebcode_single_canvas_data'));
             if (data) {
-                htmlEditor.setValue(data.html || '');
-                cssEditor.setValue(data.css || '');
-                jsEditor.setValue(data.js || '');
+                mainEditor.setValue(data.code || '');
                 settings = data.settings || settings;
                 applySettings();
+            } else {
+                // Set a default boilerplate for new users
+                mainEditor.setValue('<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <title>Document</title>\n    <style>\n        body {\n            font-family: sans-serif;\n            background-color: #222;\n            color: #eee;\n        }\n    </style>\n</head>\n<body>\n    <h1>Hello, World!</h1>\n    \n    <script>\n        console.log("Welcome to FugthWebCode!");\n    </script>\n</body>\n</html>');
             }
         }
 
@@ -446,23 +387,7 @@
 
         // --- Export to HTML ---
         exportBtn.addEventListener('click', () => {
-            const content = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>FugthWebCode Export</title>
-                    ${settings.includeBootstrap ? '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">' : ''}
-                    <style>${cssEditor.getValue()}</style>
-                </head>
-                <body>
-                    ${htmlEditor.getValue()}
-                    ${settings.includeJQuery ? '<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>' : ''}
-                    <script>${jsEditor.getValue()}<\/script>
-                </body>
-                </html>
-            `;
-            const blob = new Blob([content], { type: 'text/html' });
+            const blob = new Blob([mainEditor.getValue()], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -473,18 +398,16 @@
         
         // --- Settings Modal & Theming ---
         function applySettings() {
-            // Theme
             const isDark = settings.theme === 'dark';
             document.body.className = isDark ? 'dark-theme' : '';
-            editors.forEach(editor => editor.setOption('theme', isDark ? 'dracula' : 'neat'));
+            mainEditor.setOption('theme', isDark ? 'dracula' : 'neat');
             document.getElementById('dark-theme').checked = isDark;
             document.getElementById('light-theme').checked = !isDark;
             
-            // Libraries
             document.getElementById('include-bootstrap-css').checked = settings.includeBootstrap;
             document.getElementById('include-jquery').checked = settings.includeJQuery;
-
-            updatePreview(); // Re-render with new library settings
+            
+            updatePreview();
         }
         
         settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
@@ -510,7 +433,6 @@
             settings.includeJQuery = e.target.checked;
             updatePreview();
         });
-
 
         // --- Initial Load ---
         loadCode();
