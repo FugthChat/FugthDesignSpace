@@ -3,1044 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEP Community Management</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Instant Web IDE</title>
     <style>
+        :root {
+            --editor-bg: #282c34;
+            --preview-bg: #ffffff;
+            --text-color: #abb2bf;
+            --border-color: #444857;
+            --header-bg: #21252b;
+        }
+
         body {
-            font-family: 'Roboto', sans-serif;
-            background-image: url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1992&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: var(--editor-bg);
+            color: var(--text-color);
+            flex-direction: column;
         }
-        .tab-content, .sub-tab-content, .mgmt-sub-content { display: none; }
-        .tab-content.active, .sub-tab-content.active, .mgmt-sub-content.active { display: block; }
-        .nav-link.active, .mgmt-sub-nav-link.active {
-            border-bottom-color: #0ea5e9;
-            color: #0ea5e9;
-            font-weight: 500;
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
         }
-        .sub-nav-link.active {
-            background-color: #0ea5e9;
-            color: white;
+
+        .editor-pane, .preview-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        .backdrop-blur-lg {
-             background-color: rgba(255, 255, 255, 0.92);
+
+        .preview-pane {
+            border-left: 2px solid var(--border-color);
         }
-        @supports (backdrop-filter: blur(20px)) {
-            .backdrop-blur-lg {
-                backdrop-filter: blur(20px);
-                background-color: rgba(255, 255, 255, 0.85);
-            }
+
+        .code-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
+
+        .editor-header {
+            background-color: var(--header-bg);
+            padding: 8px 12px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        textarea {
+            flex-grow: 1;
+            background-color: var(--editor-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 15px;
+            font-family: 'Fira Code', 'Courier New', Courier, monospace;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        textarea:last-of-type {
+            border-bottom: none;
+        }
+
+        iframe {
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            align-items: center;
-            justify-content: center;
-            padding-top: 2rem;
-            padding-bottom: 2rem;
+            border: none;
+            background-color: var(--preview-bg);
         }
-        .modal-content {
-            position: relative;
-            margin: auto;
-            padding: 2rem;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-content-lg {
-            max-width: 800px;
-        }
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1.5rem;
-            font-size: 1.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            color: #6b7280;
-            transition: color 0.2s;
-        }
-        .modal-close:hover { color: #1f2937; }
-        .gallery-item {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .gallery-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        /* For FAQ Accordion */
-        .faq-question { cursor: pointer; }
-        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .faq-item.active .faq-answer { max-height: 200px; /* Adjust as needed */ }
-        .faq-item.active .faq-icon { transform: rotate(180deg); }
     </style>
 </head>
-<body class="bg-slate-200">
+<body>
 
-    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
-
-        <header class="backdrop-blur-lg rounded-xl shadow-2xl p-6 mb-8 border border-slate-200/50">
-            <div class="flex justify-between items-center flex-wrap gap-4">
-                <div class="flex items-center space-x-4">
-                    <img src="https://via.placeholder.com/150x50.png?text=MEP+Logo" alt="MEP Logo" class="h-12 w-auto">
-                    <div>
-                        <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 to-sky-700 hidden md:block">MEP Community Management</h1>
-                        <p class="text-sm text-slate-600 font-light">Your Partner in HOA & Condo Association Management</p>
-                    </div>
-                </div>
-                <div id="user-info" class="hidden items-center space-x-4">
-                    <span id="welcome-message" class="font-medium text-slate-700 hidden md:block"></span>
-                    <button id="profile-settings-btn" class="text-slate-600 hover:text-sky-500 transition-colors"><i class="fas fa-user-cog text-2xl"></i></button>
-                    <button id="logout-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 shadow-md hover:shadow-lg">Logout</button>
-                </div>
+    <div class="container">
+        <div class="editor-pane">
+            <div class="code-editor">
+                <div class="editor-header">HTML</div>
+                <textarea id="html-code" placeholder=""></textarea>
             </div>
-        </header>
-
-        <nav class="backdrop-blur-lg rounded-xl shadow-lg mb-8 border border-slate-200/50">
-            <div class="flex justify-center border-b border-slate-200 flex-wrap">
-                <a href="#" class="nav-link active text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent transition-all duration-300" data-tab="home"><i class="fas fa-home mr-2"></i>Home</a>
-                <a href="#" class="nav-link text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent transition-all duration-300" data-tab="user-login"><i class="fas fa-user-lock mr-2"></i>Homeowner Portal</a>
-                <a href="#" class="nav-link text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent transition-all duration-300" data-tab="mgmt-login"><i class="fas fa-cogs mr-2"></i>Management Portal</a>
+            <div class="code-editor">
+                <div class="editor-header">CSS</div>
+                <textarea id="css-code" placeholder="/* Your CSS here */"></textarea>
             </div>
-        </nav>
-
-        <main id="main-content">
-
-            <div id="home" class="tab-content active backdrop-blur-lg p-6 sm:p-8 rounded-xl shadow-2xl border border-slate-200/50">
-                <div class="mb-6 border-b border-gray-200">
-                    <nav class="flex flex-wrap -mb-px" aria-label="Tabs">
-                        <a href="#" class="sub-nav-link active rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="welcome"><i class="fas fa-door-open mr-2"></i>Welcome</a>
-                        <a href="#" class="sub-nav-link rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="news"><i class="fas fa-newspaper mr-2"></i>Community News</a>
-                        <a href="#" class="sub-nav-link rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="gallery"><i class="fas fa-images mr-2"></i>Gallery</a>
-                        <a href="#" class="sub-nav-link rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="documents"><i class="fas fa-file-alt mr-2"></i>Documents & Forms</a>
-                        <a href="#" class="sub-nav-link rounded-t-lg px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors" data-subtab="contact"><i class="fas fa-envelope mr-2"></i>Contact & FAQ</a>
-                    </nav>
-                </div>
-
-                <div id="welcome" class="sub-tab-content active">
-                    <h2 class="text-4xl font-bold text-slate-800 mb-2">Welcome to Your Community Portal</h2>
-                    <p class="text-slate-600 mb-8 text-lg font-light">Pay your HOA/Condo fees, view documents, and submit maintenance requests through our secure homeowner portal.</p>
-                    <div class="relative rounded-lg overflow-hidden shadow-xl mb-8">
-                        <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80" class="w-full h-auto" alt="Beautiful modern community">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        <div class="absolute bottom-8 left-8 text-white p-4">
-                            <h3 class="text-4xl font-bold">Convenient & Secure</h3>
-                            <p class="mt-2 max-w-lg">Access your account anytime to make payments and stay up-to-date with community news.</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                        <div class="bg-white/70 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
-                            <i class="fas fa-dollar-sign text-sky-500 text-3xl mb-3"></i>
-                            <h4 class="font-bold text-lg text-slate-800">Online Payments</h4>
-                            <p class="text-slate-600 text-sm">Quickly and securely pay your association dues online.</p>
-                        </div>
-                        <div class="bg-white/70 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
-                            <i class="fas fa-tools text-sky-500 text-3xl mb-3"></i>
-                            <h4 class="font-bold text-lg text-slate-800">Maintenance Requests</h4>
-                            <p class="text-slate-600 text-sm">Submit and track requests for common area maintenance.</p>
-                        </div>
-                        <div class="bg-white/70 p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
-                            <i class="fas fa-bullhorn text-sky-500 text-3xl mb-3"></i>
-                            <h4 class="font-bold text-lg text-slate-800">Stay Informed</h4>
-                            <p class="text-slate-600 text-sm">Access important documents and community announcements.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="news" class="sub-tab-content">
-                    <h3 class="text-2xl font-bold text-gray-700 mb-6">Community News & Updates</h3>
-                    <div class="space-y-8">
-                        <div class="p-6 bg-white/80 rounded-lg shadow-lg border-l-4 border-sky-500">
-                            <h4 class="text-xl font-bold text-slate-800">Quarterly HOA Meeting Reminder</h4>
-                            <p class="text-sm text-slate-500 mb-2">Posted on July 15, 2025</p>
-                            <p class="text-slate-700">Join us for our quarterly HOA meeting this Thursday, July 18th, at 7 PM in the community clubhouse. We will be discussing the annual budget, upcoming landscaping projects, and holding board member elections. All homeowners are encouraged to attend.</p>
-                        </div>
-                        <div class="p-6 bg-white/80 rounded-lg shadow-lg border-l-4 border-sky-500">
-                            <h4 class="text-xl font-bold text-slate-800">Pool Area Maintenance Scheduled</h4>
-                            <p class="text-sm text-slate-500 mb-2">Posted on July 14, 2025</p>
-                            <p class="text-slate-700">Please be advised that the community pool and deck area will be closed for scheduled maintenance and pressure washing on Monday, July 21st, from 8 AM to 5 PM. We apologize for any inconvenience and appreciate your cooperation in keeping our amenities in top condition.</p>
-                        </div>
-                         <div class="p-6 bg-white/80 rounded-lg shadow-lg border-l-4 border-sky-500">
-                            <h4 class="text-xl font-bold text-slate-800">Community Yard Sale - Save the Date!</h4>
-                            <p class="text-sm text-slate-500 mb-2">Posted on July 10, 2025</p>
-                            <p class="text-slate-700">Get ready to declutter! The annual community-wide yard sale will be held on Saturday, August 2nd, from 8 AM to 2 PM. More details on participant registration will be available next week.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="gallery" class="sub-tab-content">
-                    <h3 class="text-2xl font-bold text-gray-700 mb-6">Community Photo Gallery</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <div class="gallery-item rounded-lg overflow-hidden shadow-lg"><img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=500&q=60" alt="Gallery Image 1" class="w-full h-full object-cover"></div>
-                        <div class="gallery-item rounded-lg overflow-hidden shadow-lg"><img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=500&q=60" alt="Gallery Image 2" class="w-full h-full object-cover"></div>
-                        <div class="gallery-item rounded-lg overflow-hidden shadow-lg"><img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=500&q=60" alt="Gallery Image 3" class="w-full h-full object-cover"></div>
-                        <div class="gallery-item rounded-lg overflow-hidden shadow-lg"><img src="https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=500&q=60" alt="Gallery Image 4" class="w-full h-full object-cover"></div>
-                        <div class="gallery-item rounded-lg overflow-hidden shadow-lg"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=60" alt="Gallery Image 5" class="w-full h-full object-cover"></div>
-                        <div class="gallery-item rounded-lg overflow-hidden shadow-lg"><img src="https://images.unsplash.com/photo-1605276374104-5de67d216b04?auto=format&fit=crop&w=500&q=60" alt="Gallery Image 6" class="w-full h-full object-cover"></div>
-                        <div class="gallery-item rounded-lg overflow-hidden shadow-lg"><img src="https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=500&q=60" alt="Gallery Image 7" class="w-full h-full object-cover"></div>
-                        <div class="gallery-item rounded-lg overflow-hidden shadow-lg"><img src="https://images.unsplash.com/photo-1613553424430-5b13506168a6?auto=format&fit=crop&w=500&q=60" alt="Gallery Image 8" class="w-full h-full object-cover"></div>
-                    </div>
-                </div>
-
-                <div id="documents" class="sub-tab-content">
-                    <h3 class="text-2xl font-bold text-gray-700 mb-6">Public Documents & Forms</h3>
-                    <p class="text-slate-600 mb-6">Below are public documents available for download. For access to private documents such as meeting minutes and financials, please log in to the Homeowner Portal.</p>
-                    <ul class="space-y-3">
-                        <li class="bg-white/80 p-4 rounded-lg shadow flex justify-between items-center">
-                            <div class="flex items-center">
-                                <i class="fas fa-file-pdf text-red-500 text-2xl mr-4"></i>
-                                <div>
-                                    <p class="font-semibold text-slate-800">New Resident Application Form</p>
-                                    <p class="text-sm text-slate-500">For prospective buyers or renters.</p>
-                                </div>
-                            </div>
-                            <a href="#" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">Download</a>
-                        </li>
-                        <li class="bg-white/80 p-4 rounded-lg shadow flex justify-between items-center">
-                            <div class="flex items-center">
-                                <i class="fas fa-file-alt text-blue-500 text-2xl mr-4"></i>
-                                <div>
-                                    <p class="font-semibold text-slate-800">Community Rules & Regulations Overview</p>
-                                    <p class="text-sm text-slate-500">A summary of key community guidelines.</p>
-                                </div>
-                            </div>
-                            <a href="#" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">Download</a>
-                        </li>
-                        <li class="bg-white/80 p-4 rounded-lg shadow flex justify-between items-center">
-                            <div class="flex items-center">
-                                <i class="fas fa-file-pdf text-red-500 text-2xl mr-4"></i>
-                                <div>
-                                    <p class="font-semibold text-slate-800">Architectural Modification Request Form</p>
-                                    <p class="text-sm text-slate-500">Required for any exterior property changes.</p>
-                                </div>
-                            </div>
-                            <a href="#" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm">Download</a>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div id="contact" class="sub-tab-content">
-                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                         <div>
-                            <h3 class="text-2xl font-bold text-gray-700 mb-6">Get In Touch</h3>
-                            <form class="space-y-4">
-                                <div>
-                                    <label for="contact-name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                                    <input type="text" id="contact-name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
-                                </div>
-                                <div>
-                                    <label for="contact-email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                                    <input type="email" id="contact-email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
-                                </div>
-                                <div>
-                                    <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
-                                    <textarea id="contact-message" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"></textarea>
-                                </div>
-                                <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Send Message</button>
-                            </form>
-                            <div class="bg-sky-50 p-6 rounded-lg border border-sky-200 mt-8">
-                                <h4 class="font-bold text-lg text-sky-900">Contact Information</h4>
-                                <p class="mt-2 text-sky-800"><i class="fas fa-map-marker-alt w-5"></i> 456 Community Circle, West Palm Beach, FL 33401</p>
-                                <p class="mt-2 text-sky-800"><i class="fas fa-phone w-5"></i> (561) 555-5678</p>
-                                <p class="mt-2 text-sky-800"><i class="fas fa-envelope w-5"></i> manager@MEP-community.com</p>
-                                <h4 class="font-bold text-lg text-sky-900 mt-6">Office Hours</h4>
-                                <p class="mt-2 text-sky-800">Mon - Fri: 9:00 AM - 5:00 PM</p>
-                                <p class="mt-2 text-sky-800">Saturday & Sunday: Closed</p>
-                            </div>
-                         </div>
-                         <div>
-                            <h3 class="text-2xl font-bold text-gray-700 mb-6">Frequently Asked Questions</h3>
-                            <div id="faq-container" class="space-y-3">
-                                <div class="faq-item bg-white/80 rounded-lg shadow-sm border border-gray-200">
-                                    <div class="faq-question p-4 flex justify-between items-center">
-                                        <h4 class="font-semibold text-gray-800">How do I pay my HOA fees?</h4>
-                                        <i class="fas fa-chevron-down faq-icon transition-transform"></i>
-                                    </div>
-                                    <div class="faq-answer px-4 pb-4 text-gray-600">
-                                        <p>You can pay your HOA fees online through the Homeowner Portal using a credit/debit card or an ACH bank transfer. You can also mail a check to our office address listed on this page.</p>
-                                    </div>
-                                </div>
-                                <div class="faq-item bg-white/80 rounded-lg shadow-sm border border-gray-200">
-                                    <div class="faq-question p-4 flex justify-between items-center">
-                                        <h4 class="font-semibold text-gray-800">What do my HOA fees cover?</h4>
-                                        <i class="fas fa-chevron-down faq-icon transition-transform"></i>
-                                    </div>
-                                    <div class="faq-answer px-4 pb-4 text-gray-600">
-                                        <p>Your fees cover the maintenance and upkeep of all common areas, including landscaping, the community pool, clubhouse, entrance gate, and private roads. They also fund insurance for common areas and administrative costs.</p>
-                                    </div>
-                                </div>
-                                <div class="faq-item bg-white/80 rounded-lg shadow-sm border border-gray-200">
-                                    <div class="faq-question p-4 flex justify-between items-center">
-                                        <h4 class="font-semibold text-gray-800">How do I submit a maintenance request?</h4>
-                                        <i class="fas fa-chevron-down faq-icon transition-transform"></i>
-                                    </div>
-                                    <div class="faq-answer px-4 pb-4 text-gray-600">
-                                        <p>Login to the Homeowner Portal and navigate to the "Maintenance" tab. You can submit a new request detailing the issue in the common areas. Please note, requests for issues inside your private unit are the homeowner's responsibility.</p>
-                                    </div>
-                                </div>
-                                <div class="faq-item bg-white/80 rounded-lg shadow-sm border border-gray-200">
-                                    <div class="faq-question p-4 flex justify-between items-center">
-                                        <h4 class="font-semibold text-gray-800">How can I report a rule violation?</h4>
-                                        <i class="fas fa-chevron-down faq-icon transition-transform"></i>
-                                    </div>
-                                    <div class="faq-answer px-4 pb-4 text-gray-600">
-                                        <p>You can report a violation anonymously by using the contact form on this page or by calling our office during business hours. Please provide as much detail as possible, including the date, time, and location of the observed violation.</p>
-                                    </div>
-                                </div>
-                            </div>
-                         </div>
-                     </div>
-                </div>
+            <div class="code-editor">
+                <div class="editor-header">JavaScript</div>
+                <textarea id="js-code" placeholder="// Your JavaScript here"></textarea>
             </div>
-
-            <div id="user-login" class="tab-content">
-                <div class="max-w-md mx-auto backdrop-blur-lg p-8 rounded-xl shadow-2xl border border-slate-200/50">
-                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6"><i class="fas fa-user-lock mr-2"></i>Homeowner Login</h2>
-                    <form id="user-login-form">
-                        <div class="mb-4">
-                            <label for="user-username" class="block text-gray-700 font-semibold mb-2">Username or Email</label>
-                            <input type="text" id="user-username" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="demo: Homeowner">
-                        </div>
-                        <div class="mb-6">
-                            <label for="user-password" class="block text-gray-700 font-semibold mb-2">Password</label>
-                            <input type="password" id="user-password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="demo: Pass">
-                        </div>
-                        <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg hover:shadow-xl">Login</button>
-                        <p id="user-login-error" class="text-red-500 text-sm mt-4 text-center"></p>
-                    </form>
-                </div>
-            </div>
-
-            <div id="mgmt-login" class="tab-content">
-                 <div class="max-w-md mx-auto backdrop-blur-lg p-8 rounded-xl shadow-2xl border border-slate-200/50">
-                    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6"><i class="fas fa-cogs mr-2"></i>Management Login</h2>
-                    <form id="mgmt-login-form">
-                        <div class="mb-4">
-                            <label for="mgmt-username" class="block text-gray-700 font-semibold mb-2">Username</label>
-                            <input type="text" id="mgmt-username" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="demo: Manager">
-                        </div>
-                        <div class="mb-6">
-                            <label for="mgmt-password" class="block text-gray-700 font-semibold mb-2">Password</label>
-                            <input type="password" id="mgmt-password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="demo: Pass">
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 shadow-lg hover:shadow-xl">Login</button>
-                        <p id="mgmt-login-error" class="text-red-500 text-sm mt-4 text-center"></p>
-                    </form>
-                </div>
-            </div>
-
-            <div id="user-dashboard" class="tab-content">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 space-y-8">
-                        
-                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
-                            <h3 class="text-xl font-bold text-gray-800 mb-4">My Account & Payments</h3>
-                            <div class="flex flex-wrap justify-between items-center bg-sky-100/70 p-4 rounded-lg border border-sky-200">
-                                <div>
-                                    <p class="text-sm text-sky-800">Next Payment Due: Aug 1, 2025</p>
-                                    <p class="text-3xl font-bold text-sky-900">$450.00</p>
-                                </div>
-                                <button id="pay-dues-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-transform hover:scale-105 mt-4 sm:mt-0"><i class="fas fa-dollar-sign mr-2"></i>Pay Dues</button>
-                            </div>
-                            <div class="mt-6">
-                                <h4 class="font-semibold text-gray-700">Payment History</h4>
-                                <ul class="mt-2 space-y-2">
-                                    <li class="flex justify-between items-center bg-white p-3 rounded shadow-sm">
-                                        <div><p>July 1, 2025 - HOA Fee Payment</p><p class="text-xs text-gray-500">Confirmation #789123</p></div>
-                                        <div class="text-right"><p class="font-mono text-green-700">-$450.00</p><span class="text-xs font-semibold text-green-700">Paid</span></div>
-                                    </li>
-                                     <li class="flex justify-between items-center bg-white p-3 rounded shadow-sm">
-                                        <div><p>June 1, 2025 - HOA Fee Payment</p><p class="text-xs text-gray-500">Confirmation #654987</p></div>
-                                        <div class="text-right"><p class="font-mono text-green-700">-$450.00</p><span class="text-xs font-semibold text-green-700">Paid</span></div>
-                                    </li>
-                                     <li class="flex justify-between items-center bg-white p-3 rounded shadow-sm">
-                                        <div><p>May 1, 2025 - HOA Fee Payment</p><p class="text-xs text-gray-500">Confirmation #543210</p></div>
-                                        <div class="text-right"><p class="font-mono text-green-700">-$450.00</p><span class="text-xs font-semibold text-green-700">Paid</span></div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
-                             <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-xl font-bold text-gray-800">My Maintenance Requests</h3>
-                                <button id="new-maint-request-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-transform hover:scale-105"><i class="fas fa-plus mr-2"></i>New Request</button>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-4">Track requests for common area issues.</p>
-                             <ul class="space-y-3">
-                                 <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
-                                     <div><p class="font-semibold">Sprinkler head broken near building entrance</p><p class="text-sm text-gray-500">Submitted: July 10, 2025</p></div>
-                                     <span class="text-sm font-bold text-green-600 bg-green-100 px-3 py-1 rounded-full">Completed</span>
-                                 </li>
-                                 <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
-                                     <div><p class="font-semibold">Lobby light flickering</p><p class="text-sm text-gray-500">Submitted: July 15, 2025</p></div>
-                                     <span class="text-sm font-bold text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">In Progress</span>
-                                 </li>
-                             </ul>
-                        </div>
-
-                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-xl font-bold text-gray-800">My Architectural Requests</h3>
-                                <button id="new-arc-request-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-transform hover:scale-105"><i class="fas fa-ruler-combined mr-2"></i>New Request</button>
-                            </div>
-                             <ul class="space-y-3">
-                                 <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
-                                     <div><p class="font-semibold">Request to install new mailbox</p><p class="text-sm text-gray-500">Submitted: March 12, 2025</p></div>
-                                     <span class="text-sm font-bold text-green-600 bg-green-100 px-3 py-1 rounded-full">Approved</span>
-                                 </li>
-                                 <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
-                                     <div><p class="font-semibold">Request to build a back patio extension</p><p class="text-sm text-gray-500">Submitted: July 14, 2025</p></div>
-                                     <span class="text-sm font-bold text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">Pending Review</span>
-                                 </li>
-                                  <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
-                                     <div><p class="font-semibold">Request to paint front door</p><p class="text-sm text-gray-500">Submitted: May 20, 2025</p></div>
-                                     <span class="text-sm font-bold text-red-600 bg-red-100 px-3 py-1 rounded-full">Denied</span>
-                                 </li>
-                             </ul>
-                        </div>
-                        
-                    </div>
-                    <div class="lg:col-span-1 space-y-8">
-                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
-                             <h3 class="text-xl font-bold text-gray-800 mb-4">My Info</h3>
-                             <p class="font-semibold text-lg">Alex Johnson</p>
-                             <p class="text-gray-600">Unit 410, 123 Main Street</p>
-                             <p class="text-gray-600">alex.j@email.com</p>
-                             <h4 class="font-bold text-gray-700 mt-6 mb-2">My Documents</h4>
-                             <a href="#" class="block text-sky-600 hover:underline mt-1"><i class="fas fa-file-pdf mr-2 text-red-500"></i>Covenants & Bylaws.pdf</a>
-                             <a href="#" class="block text-sky-600 hover:underline mt-1"><i class="fas fa-file-pdf mr-2 text-red-500"></i>Community Rules.pdf</a>
-                             <a href="#" class="block text-sky-600 hover:underline mt-1"><i class="fas fa-file-pdf mr-2 text-red-500"></i>Pool Rules 2025.pdf</a>
-                        </div>
-                         <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
-                            <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-calendar-check text-green-500 mr-2"></i>Amenity Reservations</h3>
-                            <div class="space-y-4">
-                                <div class="border-l-4 border-green-400 pl-4">
-                                    <p class="font-semibold">Clubhouse Booking</p>
-                                    <p class="text-sm text-gray-600">August 9, 2025 - 6:00 PM to 10:00 PM</p>
-                                </div>
-                            </div>
-                            <button id="book-amenity-btn" class="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all">Book an Amenity</button>
-                        </div>
-                        <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
-                             <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>Violation History</h3>
-                             <ul class="space-y-3">
-                                 <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
-                                     <div><p class="font-semibold">Trash Can Violation</p><p class="text-sm text-gray-500">Issued: July 9, 2025</p></div>
-                                     <span class="text-sm font-bold text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">Warning</span>
-                                 </li>
-                                  <li class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
-                                     <div><p class="font-semibold">Parking Violation</p><p class="text-sm text-gray-500">Issued: June 5, 2025</p></div>
-                                     <span class="text-sm font-bold text-green-600 bg-green-100 px-3 py-1 rounded-full">Resolved</span>
-                                 </li>
-                             </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="mgmt-dashboard" class="tab-content">
-                 <div class="backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-slate-200/50">
-                    <div class="border-b border-slate-300 mb-4">
-                        <nav class="flex flex-wrap -mb-px" aria-label="Management Tabs">
-                            <a href="#" class="mgmt-sub-nav-link active text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent" data-mgmtsubtab="overview"><i class="fas fa-tachometer-alt mr-2"></i>Overview</a>
-                            <a href="#" class="mgmt-sub-nav-link text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent" data-mgmtsubtab="residents"><i class="fas fa-users mr-2"></i>Residents</a>
-                            <a href="#" class="mgmt-sub-nav-link text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent" data-mgmtsubtab="financials"><i class="fas fa-chart-pie mr-2"></i>Financials</a>
-                            <a href="#" class="mgmt-sub-nav-link text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent" data-mgmtsubtab="work-orders"><i class="fas fa-tools mr-2"></i>Work Orders</a>
-                            <a href="#" class="mgmt-sub-nav-link text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent" data-mgmtsubtab="violations"><i class="fas fa-gavel mr-2"></i>Violations</a>
-                            <a href="#" class="mgmt-sub-nav-link text-slate-600 hover:text-sky-500 font-medium p-4 border-b-2 border-transparent" data-mgmtsubtab="communications"><i class="fas fa-comments mr-2"></i>Communications</a>
-                        </nav>
-                    </div>
-
-                    <div id="overview" class="mgmt-sub-content active">
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                            <div class="bg-white/80 p-4 rounded-xl shadow-lg text-center"><p class="text-3xl font-bold text-green-600">98%</p><p class="text-sm text-gray-600">Fees Collected</p></div>
-                            <div class="bg-white/80 p-4 rounded-xl shadow-lg text-center"><p class="text-3xl font-bold text-sky-600">$48.5K</p><p class="text-sm text-gray-600">Collected (MTD)</p></div>
-                            <div class="bg-white/80 p-4 rounded-xl shadow-lg text-center"><p class="text-3xl font-bold text-orange-600">4</p><p class="text-sm text-gray-600">Open Work Orders</p></div>
-                            <div class="bg-white/80 p-4 rounded-xl shadow-lg text-center"><p class="text-3xl font-bold text-red-600">3</p><p class="text-sm text-gray-600">Overdue Accounts</p></div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                            <div class="lg:col-span-3 bg-white/80 p-6 rounded-xl shadow-lg">
-                                <h3 class="text-xl font-bold text-gray-800 mb-4">At a Glance</h3>
-                                <div class="space-y-4">
-                                    <h4 class="font-semibold text-gray-700">Pending Maintenance Requests</h4>
-                                     <ul class="space-y-3">
-                                         <li class="bg-slate-100 p-3 rounded-lg flex justify-between items-center">
-                                             <div><p class="font-semibold">Lobby light flickering (Common Area)</p><p class="text-sm text-gray-500">Priority: <span class="text-yellow-600 font-bold">Medium</span></p></div>
-                                             <button class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded">View</button>
-                                         </li>
-                                         <li class="bg-slate-100 p-3 rounded-lg flex justify-between items-center">
-                                             <div><p class="font-semibold">Gate arm not opening (Entrance)</p><p class="text-sm text-gray-500">Priority: <span class="text-red-600 font-bold">High</span></p></div>
-                                             <button class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded">View</button>
-                                         </li>
-                                     </ul>
-                                     <h4 class="font-semibold text-gray-700 pt-4">Pending Architectural Requests</h4>
-                                      <ul class="space-y-3">
-                                         <li class="bg-slate-100 p-3 rounded-lg flex justify-between items-center">
-                                             <div><p class="font-semibold">A. Johnson (Unit 410) - Back patio extension</p><p class="text-sm text-gray-500">Submitted: July 14, 2025</p></div>
-                                             <button class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded">Review</button>
-                                         </li>
-                                          <li class="bg-slate-100 p-3 rounded-lg flex justify-between items-center">
-                                             <div><p class="font-semibold">M. Rodriguez (Unit 112) - Window replacement</p><p class="text-sm text-gray-500">Submitted: July 16, 2025</p></div>
-                                             <button class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded">Review</button>
-                                         </li>
-                                     </ul>
-                                </div>
-                            </div>
-                            <div class="lg:col-span-2 bg-white/80 p-6 rounded-xl shadow-lg">
-                                <h3 class="text-xl font-bold text-gray-800 mb-4">Recent Activity Feed</h3>
-                                <ul class="space-y-4">
-                                    <li class="flex items-start">
-                                        <i class="fas fa-dollar-sign text-green-500 mt-1 mr-3"></i>
-                                        <div><p class="text-sm">Payment of $450.00 received from T. Williams (Unit 302).</p><p class="text-xs text-gray-500">5 minutes ago</p></div>
-                                    </li>
-                                     <li class="flex items-start">
-                                        <i class="fas fa-plus-circle text-blue-500 mt-1 mr-3"></i>
-                                        <div><p class="text-sm">New work order created for "Broken fence panel near pool".</p><p class="text-xs text-gray-500">1 hour ago</p></div>
-                                    </li>
-                                     <li class="flex items-start">
-                                        <i class="fas fa-ruler-combined text-purple-500 mt-1 mr-3"></i>
-                                        <div><p class="text-sm">ARC Request for "Window replacement" submitted by M. Rodriguez (Unit 112).</p><p class="text-xs text-gray-500">2 hours ago</p></div>
-                                    </li>
-                                     <li class="flex items-start">
-                                        <i class="fas fa-bullhorn text-indigo-500 mt-1 mr-3"></i>
-                                        <div><p class="text-sm">You posted a new announcement: "Pool Area Maintenance Scheduled".</p><p class="text-xs text-gray-500">1 day ago</p></div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="residents" class="mgmt-sub-content">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-gray-800">Resident Management</h3>
-                             <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md"><i class="fas fa-user-plus mr-2"></i>Add Resident</button>
-                        </div>
-                        <div class="mb-4">
-                            <input type="text" placeholder="Search residents by name or unit..." class="w-full p-2 border border-gray-300 rounded-lg">
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full bg-white shadow-md rounded-lg">
-                                <thead class="bg-gray-100">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">Alex Johnson</td><td class="px-6 py-4">410</td><td class="px-6 py-4 font-mono">$0.00</td>
-                                        <td class="px-6 py-4"><span class="text-sm font-bold text-green-600">Good Standing</span></td>
-                                        <td class="px-6 py-4 whitespace-nowrap"><button class="view-resident-details text-sm bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded">Details</button></td>
-                                    </tr>
-                                    <tr class="bg-red-50">
-                                        <td class="px-6 py-4 whitespace-nowrap">Brenda Smith</td><td class="px-6 py-4">201</td><td class="px-6 py-4 font-mono text-red-600">-$450.00</td>
-                                        <td class="px-6 py-4"><span class="text-sm font-bold text-red-600">Overdue</span></td>
-                                        <td class="px-6 py-4 whitespace-nowrap"><button class="view-resident-details text-sm bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded">Details</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">Carl Davis</td><td class="px-6 py-4">305</td><td class="px-6 py-4 font-mono">$0.00</td>
-                                        <td class="px-6 py-4"><span class="text-sm font-bold text-yellow-600">Violation Active</span></td>
-                                        <td class="px-6 py-4 whitespace-nowrap"><button class="view-resident-details text-sm bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded">Details</button></td>
-                                    </tr>
-                                    <tr class="bg-red-50">
-                                        <td class="px-6 py-4 whitespace-nowrap">Diana Miller</td><td class="px-6 py-4">108</td><td class="px-6 py-4 font-mono text-red-600">-$925.00</td>
-                                        <td class="px-6 py-4"><span class="text-sm font-bold text-red-600">Lien Intent</span></td>
-                                        <td class="px-6 py-4 whitespace-nowrap"><button class="view-resident-details text-sm bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded">Details</button></td>
-                                    </tr>
-                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">Edward Wilson</td><td class="px-6 py-4">512</td><td class="px-6 py-4 font-mono">$0.00</td>
-                                        <td class="px-6 py-4"><span class="text-sm font-bold text-green-600">Good Standing</span></td>
-                                        <td class="px-6 py-4 whitespace-nowrap"><button class="view-resident-details text-sm bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded">Details</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <div id="financials" class="mgmt-sub-content">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Financial Reports</h3>
-                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                             <div class="bg-white/80 p-4 rounded-xl shadow-lg"><canvas id="incomeChart"></canvas></div>
-                             <div class="bg-white/80 p-4 rounded-xl shadow-lg"><canvas id="expenseChart"></canvas></div>
-                         </div>
-                         <div class="bg-white/80 p-6 rounded-xl shadow-lg">
-                             <h4 class="font-bold mb-4">Generate & Download Reports</h4>
-                             <div class="flex flex-wrap gap-4">
-                                 <button class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-file-invoice-dollar mr-2"></i>Income/Expense Statement</button>
-                                 <button class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-file-contract mr-2"></i>Balance Sheet</button>
-                                 <button class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-file-alt mr-2"></i>Accounts Receivable</button>
-                                 <button class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-chart-line mr-2"></i>Budget vs. Actual</button>
-                                 <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-exclamation-triangle mr-2"></i>Delinquency Report</button>
-                             </div>
-                         </div>
-                    </div>
-
-                    <div id="work-orders" class="mgmt-sub-content">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Work Order Management</h3>
-                        <p class="text-gray-600">Feature coming soon. Manage all maintenance requests and vendor assignments here.</p>
-                    </div>
-
-                    <div id="violations" class="mgmt-sub-content">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Violation Tracking</h3>
-                        <p class="text-gray-600">Feature coming soon. Track, issue, and resolve community rule violations.</p>
-                    </div>
-                    
-                    <div id="communications" class="mgmt-sub-content">
-                          <h3 class="text-xl font-bold text-gray-800 mb-6">Communications Center</h3>
-                          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                              <div class="bg-white/80 p-6 rounded-xl shadow-lg">
-                                 <h4 class="font-bold text-lg mb-4">Publish New Announcement</h4>
-                                 <form class="space-y-4">
-                                      <div>
-                                          <label for="announcement-title" class="block text-sm font-medium text-gray-700">Title</label>
-                                          <input type="text" id="announcement-title" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
-                                      </div>
-                                      <div>
-                                          <label for="announcement-content" class="block text-sm font-medium text-gray-700">Content</label>
-                                          <textarea id="announcement-content" rows="5" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"></textarea>
-                                      </div>
-                                      <div class="flex items-center">
-                                          <input id="urgent-checkbox" type="checkbox" class="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded">
-                                          <label for="urgent-checkbox" class="ml-2 block text-sm text-gray-900">Mark as urgent (sends email notification)</label>
-                                      </div>
-                                      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Post Announcement</button>
-                                  </form>
-                              </div>
-                               <div class="bg-white/80 p-6 rounded-xl shadow-lg">
-                                 <h4 class="font-bold text-lg mb-4">Recent Announcements</h4>
-                                 <ul class="space-y-3">
-                                     <li class="bg-slate-100 p-3 rounded-lg flex justify-between items-center">
-                                        <div>
-                                            <p class="font-semibold">Quarterly HOA Meeting Reminder</p>
-                                            <p class="text-sm text-gray-500">Posted: July 15, 2025</p>
-                                        </div>
-                                        <div class="space-x-2">
-                                            <button class="text-sm text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-                                            <button class="text-sm text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                     </li>
-                                     <li class="bg-slate-100 p-3 rounded-lg flex justify-between items-center">
-                                        <div>
-                                            <p class="font-semibold">Pool Area Maintenance Scheduled</p>
-                                            <p class="text-sm text-gray-500">Posted: July 14, 2025</p>
-                                        </div>
-                                         <div class="space-x-2">
-                                            <button class="text-sm text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
-                                            <button class="text-sm text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                     </li>
-                                 </ul>
-                              </div>
-                          </div>
-                    </div>
-                 </div>
-            </div>
-
-        </main>
-
-        <div id="payment-modal" class="modal">
-              <div class="modal-content backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200/50">
-                  <span class="modal-close" data-modal-close>×</span>
-                  <h2 class="text-2xl font-bold mb-4">Make a Secure Payment</h2>
-                  <form>
-                      <div class="mb-4">
-                          <label class="block text-gray-700 font-semibold mb-2">Payment Amount (HOA Dues)</label>
-                          <input type="text" class="w-full px-4 py-2 border rounded-lg bg-slate-200" value="$450.00" disabled>
-                      </div>
-                      <div class="mb-4">
-                          <label class="block text-gray-700 font-semibold mb-2">Card Number</label>
-                          <input type="text" class="w-full px-4 py-2 border rounded-lg" placeholder="•••• •••• •••• ••••">
-                      </div>
-                      <div class="grid grid-cols-2 gap-4 mb-6">
-                          <div>
-                               <label class="block text-gray-700 font-semibold mb-2">Expiry Date</label>
-                               <input type="text" class="w-full px-4 py-2 border rounded-lg" placeholder="MM / YY">
-                          </div>
-                          <div>
-                               <label class="block text-gray-700 font-semibold mb-2">CVC</label>
-                               <input type="text" class="w-full px-4 py-2 border rounded-lg" placeholder="•••">
-                          </div>
-                      </div>
-                      <a href="#" class="text-sky-600 hover:underline">Pay with Bank Account (ACH) instead</a>
-                      <button type="submit" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Submit Payment</button>
-                  </form>
-               </div>
         </div>
-
-        <div id="arc-request-modal" class="modal">
-              <div class="modal-content modal-content-lg backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200/50">
-                  <span class="modal-close" data-modal-close>×</span>
-                  <h2 class="text-2xl font-bold mb-4">Architectural Change Request</h2>
-                  <form class="space-y-4">
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                              <label for="arc-name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                              <input type="text" id="arc-name" value="Alex Johnson" disabled class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-200">
-                          </div>
-                          <div>
-                              <label for="arc-unit" class="block text-sm font-medium text-gray-700">Unit/Address</label>
-                              <input type="text" id="arc-unit" value="Unit 410" disabled class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-200">
-                          </div>
-                      </div>
-                      <div>
-                          <label for="arc-title" class="block text-sm font-medium text-gray-700">Brief Title of Project</label>
-                          <input type="text" id="arc-title" placeholder="e.g., 'Back Patio Extension'" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
-                      </div>
-                      <div>
-                          <label for="arc-desc" class="block text-sm font-medium text-gray-700">Detailed Description of Project</label>
-                          <textarea id="arc-desc" rows="4" placeholder="Include materials, colors, dimensions, and location on the property." class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"></textarea>
-                      </div>
-                      <div>
-                          <label class="block text-gray-700 font-semibold mb-2">Upload Supporting Documents</label>
-                          <p class="text-xs text-gray-500 mb-2">Please upload plans, drawings, material samples, or contractor estimates.</p>
-                          <input type="file" multiple class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"/>
-                      </div>
-                      <div class="pt-4">
-                          <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Submit Request for Review</button>
-                      </div>
-                  </form>
-               </div>
+        <div class="preview-pane">
+            <iframe id="preview-frame" title="Live Preview"></iframe>
         </div>
-        
-        <div id="maint-request-modal" class="modal">
-             <div class="modal-content backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200/50">
-                 <span class="modal-close" data-modal-close>×</span>
-                 <h2 class="text-2xl font-bold mb-4">New Maintenance Request</h2>
-                 <p class="text-sm text-gray-600 mb-4">Please describe an issue in a common area. This is not for issues inside your unit.</p>
-                 <form class="space-y-4">
-                     <div>
-                         <label for="maint-location" class="block text-sm font-medium text-gray-700">Location of Issue</label>
-                         <input type="text" id="maint-location" placeholder="e.g., 'Pool Area', 'Lobby Entrance'" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
-                     </div>
-                     <div>
-                         <label for="maint-desc" class="block text-sm font-medium text-gray-700">Description of Issue</label>
-                         <textarea id="maint-desc" rows="4" placeholder="Please be as detailed as possible." class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"></textarea>
-                     </div>
-                     <div>
-                         <label class="block text-gray-700 font-semibold mb-2">Upload Photo (Optional)</label>
-                         <input type="file" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
-                     </div>
-                     <div class="pt-4">
-                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Submit Request</button>
-                     </div>
-                 </form>
-              </div>
-        </div>
-
-        <div id="amenity-booking-modal" class="modal">
-             <div class="modal-content backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200/50">
-                 <span class="modal-close" data-modal-close>×</span>
-                 <h2 class="text-2xl font-bold mb-4">Book a Community Amenity</h2>
-                 <form class="space-y-4">
-                      <div>
-                          <label for="amenity-select" class="block text-sm font-medium text-gray-700">Amenity</label>
-                          <select id="amenity-select" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500">
-                              <option>Clubhouse</option>
-                              <option>Tennis Court 1</option>
-                              <option>Tennis Court 2</option>
-                          </select>
-                      </div>
-                      <div>
-                          <label for="amenity-date" class="block text-sm font-medium text-gray-700">Date</label>
-                          <input type="date" id="amenity-date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                      </div>
-                     <div>
-                          <label for="amenity-time" class="block text-sm font-medium text-gray-700">Time Slot</label>
-                          <select id="amenity-time" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                              <option>9:00 AM - 11:00 AM</option>
-                              <option>11:00 AM - 1:00 PM</option>
-                              <option>1:00 PM - 3:00 PM</option>
-                              <option>3:00 PM - 5:00 PM</option>
-                          </select>
-                      </div>
-                     <div class="pt-4">
-                         <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Request Booking</button>
-                     </div>
-                 </form>
-              </div>
-        </div>
-
-        <div id="profile-modal" class="modal">
-              <div class="modal-content backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200/50">
-                  <span class="modal-close" data-modal-close>×</span>
-                  <h2 class="text-2xl font-bold mb-4">Profile Settings</h2>
-                  <form class="space-y-4">
-                      <div>
-                          <label for="profile-name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                          <input type="text" id="profile-name" value="Alex Johnson" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                      </div>
-                      <div>
-                          <label for="profile-email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                          <input type="email" id="profile-email" value="alex.j@email.com" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                      </div>
-                      <div>
-                          <label for="profile-phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                          <input type="tel" id="profile-phone" value="555-123-4567" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                      </div>
-                       <div class="border-t pt-4">
-                          <label for="profile-password" class="block text-sm font-medium text-gray-700">New Password (optional)</label>
-                          <input type="password" id="profile-password" placeholder="Leave blank to keep current password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                      </div>
-                      <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Save Changes</button>
-                  </form>
-               </div>
-        </div>
-
-        <div id="resident-details-modal" class="modal">
-             <div class="modal-content modal-content-lg backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200/50">
-                 <span class="modal-close" data-modal-close>×</span>
-                 <h2 class="text-2xl font-bold mb-4">Resident Details: <span class="text-sky-600">Alex Johnson</span></h2>
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div class="space-y-4">
-                         <div class="bg-white p-4 rounded-lg shadow-sm">
-                             <h4 class="font-bold">Contact Info</h4>
-                             <p><strong>Unit:</strong> 410</p>
-                             <p><strong>Email:</strong> alex.j@email.com</p>
-                             <p><strong>Phone:</strong> 555-123-4567</p>
-                         </div>
-                          <div class="bg-white p-4 rounded-lg shadow-sm">
-                             <h4 class="font-bold">Ledger</h4>
-                             <p><strong>Current Balance:</strong> <span class="font-mono text-green-700">$0.00</span></p>
-                             <p><strong>Last Payment:</strong> July 1, 2025</p>
-                             <button class="text-sm mt-2 bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded">Post Payment/Credit</button>
-                         </div>
-                     </div>
-                     <div class="space-y-4">
-                          <div class="bg-white p-4 rounded-lg shadow-sm">
-                             <h4 class="font-bold">Violation History (2)</h4>
-                             <ul class="text-sm mt-2">
-                                 <li><span class="font-semibold text-yellow-600">Active:</span> Trash Can Violation - July 9, 2025</li>
-                                 <li><span class="font-semibold text-green-600">Resolved:</span> Parking Violation - June 5, 2025</li>
-                             </ul>
-                             <button class="text-sm mt-2 bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded">Issue Violation</button>
-                         </div>
-                         <div class="bg-white p-4 rounded-lg shadow-sm">
-                             <h4 class="font-bold">Communication Log</h4>
-                             <ul class="text-sm mt-2">
-                                 <li>July 9, 2025 - Email (Violation Notice)</li>
-                                 <li>June 1, 2025 - Email (Payment Reminder)</li>
-                             </ul>
-                             <button class="text-sm mt-2 bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded">Send Email</button>
-                         </div>
-                     </div>
-                 </div>
-              </div>
-        </div>
-
-        <footer class="text-center text-slate-100/80 mt-12 text-sm">
-            <p>© 2025 MEP Community Management. All rights reserved.</p>
-        </footer>
-
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // --- STATE MANAGEMENT ---
-        const state = {
-            loggedInUser: null, // 'user' or 'mgmt'
-            userName: null,
-            activeTab: 'home',
-            activeSubTab: 'welcome',
-            activeMgmtSubTab: 'overview'
-        };
+        // Get references to the textarea and iframe elements
+        const htmlCode = document.getElementById('html-code');
+        const cssCode = document.getElementById('css-code');
+        const jsCode = document.getElementById('js-code');
+        const previewFrame = document.getElementById('preview-frame');
 
-        // --- ELEMENT SELECTORS ---
-        const userInfo = document.getElementById('user-info');
-        const welcomeMessage = document.getElementById('welcome-message');
-        const logoutButton = document.getElementById('logout-button');
-        const navLinks = document.querySelectorAll('.nav-link');
-        const homeNavContainer = document.querySelector('#home .flex-wrap[aria-label="Tabs"]');
-        const mgmtNavContainer = document.querySelector('#mgmt-dashboard .flex-wrap[aria-label="Management Tabs"]');
-
-        // --- RENDER FUNCTIONS ---
-        function renderContent() {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.toggle('active', tab.id === state.activeTab));
-            navLinks.forEach(link => {
-                link.classList.toggle('active', link.dataset.tab === state.activeTab || (state.activeTab.includes('dashboard') && link.dataset.tab.includes(state.loggedInUser)));
-            });
-
-            if (state.activeTab === 'home') {
-                document.querySelectorAll('.sub-tab-content').forEach(subTab => subTab.classList.toggle('active', subTab.id === state.activeSubTab));
-                document.querySelectorAll('.sub-nav-link').forEach(link => link.classList.toggle('active', link.dataset.subtab === state.activeSubTab));
-            }
-            
-            if (state.activeTab === 'mgmt-dashboard') {
-                document.querySelectorAll('.mgmt-sub-content').forEach(subTab => subTab.classList.toggle('active', subTab.id === state.activeMgmtSubTab));
-                document.querySelectorAll('.mgmt-sub-nav-link').forEach(link => link.classList.toggle('active', link.dataset.mgmtsubtab === state.activeMgmtSubTab));
-                if (state.activeMgmtSubTab === 'financials') {
-                    renderMgmtCharts();
-                }
-            }
+        /**
+         * A simple debounce function to prevent the preview from updating on every keystroke,
+         * which improves performance.
+         */
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
         }
 
-        let incomeChartInstance, expenseChartInstance;
-        function renderMgmtCharts() {
-            const incomeCtx = document.getElementById('incomeChart')?.getContext('2d');
-            const expenseCtx = document.getElementById('expenseChart')?.getContext('2d');
-            
-            if (incomeChartInstance) incomeChartInstance.destroy();
-            if (expenseChartInstance) expenseChartInstance.destroy();
-
-            if (incomeCtx) {
-                incomeChartInstance = new Chart(incomeCtx, {
-                    type: 'bar', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'], datasets: [{ label: 'Income ($k)', data: [42, 45, 43, 48, 49, 49.5, 48.5], backgroundColor: 'rgba(2, 132, 199, 0.6)', borderColor: 'rgba(2, 132, 199, 1)', borderWidth: 1 }] },
-                    options: { responsive: true, plugins: { title: { display: true, text: 'Monthly Income YTD' } } }
-                });
-            }
-            if (expenseCtx) {
-                expenseChartInstance = new Chart(expenseCtx, {
-                    type: 'doughnut', data: { labels: ['Landscaping', 'Utilities', 'Admin', 'Repairs', 'Insurance'], datasets: [{ data: [35, 20, 15, 20, 10], backgroundColor: ['#10B981', '#F59E0B', '#6366F1', '#EF4444', '#8B5CF6'] }] },
-                    options: { responsive: true, plugins: { title: { display: true, text: 'Expense Categories (YTD)' } } }
-                });
-            }
+        /**
+         * Updates the iframe's content with the code from the textareas.
+         */
+        function updatePreview() {
+            const documentContent = `
+                <html>
+                    <head>
+                        <style>${cssCode.value}</style>
+                    </head>
+                    <body>
+                        ${htmlCode.value}
+                        <script>${jsCode.value}<\/script>
+                    </body>
+                </html>
+            `;
+            previewFrame.srcdoc = documentContent;
         }
         
-        function updateLoginUI() {
-            const profileBtn = document.getElementById('profile-settings-btn');
-            if (state.loggedInUser) {
-                userInfo.classList.remove('hidden');
-                userInfo.classList.add('flex');
-                welcomeMessage.textContent = `Welcome, ${state.userName}!`;
-                navLinks.forEach(link => {
-                    const tab = link.dataset.tab;
-                    link.style.display = 'inline-flex';
-                    if (state.loggedInUser === 'user') {
-                        if (tab === 'mgmt-login') link.style.display = 'none';
-                        if (tab === 'user-login') link.innerHTML = '<i class="fas fa-tachometer-alt mr-2"></i>My Dashboard';
-                        if (profileBtn) profileBtn.style.display = 'block';
-                    } else if (state.loggedInUser === 'mgmt') {
-                        if (tab === 'user-login') link.style.display = 'none';
-                        if (tab === 'mgmt-login') link.innerHTML = '<i class="fas fa-chart-line mr-2"></i>Dashboard';
-                        if (profileBtn) profileBtn.style.display = 'none';
-                    }
-                });
-            } else {
-                 userInfo.classList.add('hidden');
-                 navLinks.forEach(link => {
-                       link.style.display = 'inline-flex';
-                       if(link.dataset.tab === 'user-login') link.innerHTML = '<i class="fas fa-user-lock mr-2"></i>Homeowner Portal';
-                       if(link.dataset.tab === 'mgmt-login') link.innerHTML = '<i class="fas fa-cogs mr-2"></i>Management Portal';
-                 });
-            }
-        }
+        // Use debounce to update the preview 300ms after the user stops typing
+        const debouncedUpdate = debounce(updatePreview, 300);
 
-        // --- EVENT HANDLERS ---
-        function handleNavClick(e, navContainer, stateKey, dataAttribute) {
-            e.preventDefault();
-            const target = e.target.closest('a');
-            if(target && navContainer.contains(target)) {
-                state[stateKey] = target.dataset[dataAttribute];
-                renderContent();
-            }
-        }
-        
-        function handleLogin(e, userType) {
-            e.preventDefault();
-            const usernameInput = e.target.querySelector('input[type="text"]');
-            const passwordInput = e.target.querySelector('input[type="password"]');
-            const errorEl = e.target.querySelector('p[id$="-error"]');
-
-            const isUserLogin = userType === 'user' && usernameInput.value === 'Homeowner' && passwordInput.value === 'Pass';
-            const isMgmtLogin = userType === 'mgmt' && usernameInput.value === 'Manager' && passwordInput.value === 'Pass';
-
-            if (isUserLogin || isMgmtLogin) {
-                state.loggedInUser = userType;
-                state.userName = isUserLogin ? 'Alex' : 'Management';
-                state.activeTab = `${userType}-dashboard`;
-                errorEl.textContent = '';
-                updateLoginUI();
-                renderContent();
-            } else {
-                errorEl.textContent = 'Invalid username or password.';
-            }
-        }
-
-        function handleLogout() {
-            state.loggedInUser = null;
-            state.userName = null;
-            state.activeTab = 'home';
-            state.activeSubTab = 'welcome';
-            state.activeMgmtSubTab = 'overview';
-            updateLoginUI();
-            renderContent();
-        }
-
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if(modal) modal.style.display = 'flex';
-        }
-
-        function closeModal(modal) {
-            if(modal) modal.style.display = 'none';
-        }
-
-        function handleFaqClick(e) {
-            const item = e.target.closest('.faq-item');
-            if (item) {
-                item.classList.toggle('active');
-            }
-        }
-
-        // --- ATTACH EVENT LISTENERS ---
-        document.querySelector('nav').addEventListener('click', (e) => {
-             e.preventDefault();
-            const target = e.target.closest('.nav-link');
-            if (target) {
-                const tabId = target.dataset.tab;
-                if (state.loggedInUser === 'user' && tabId === 'user-login') {
-                    state.activeTab = 'user-dashboard';
-                } else if (state.loggedInUser === 'mgmt' && tabId === 'mgmt-login') {
-                    state.activeTab = 'mgmt-dashboard';
-                } else {
-                    state.activeTab = tabId;
-                }
-                renderContent();
-            }
-        });
-        
-        if (homeNavContainer) homeNavContainer.addEventListener('click', (e) => handleNavClick(e, homeNavContainer, 'activeSubTab', 'subtab'));
-        if (mgmtNavContainer) mgmtNavContainer.addEventListener('click', (e) => handleNavClick(e, mgmtNavContainer, 'activeMgmtSubTab', 'mgmtsubtab'));
-        
-        document.getElementById('user-login-form')?.addEventListener('submit', (e) => handleLogin(e, 'user'));
-        document.getElementById('mgmt-login-form')?.addEventListener('submit', (e) => handleLogin(e, 'mgmt'));
-        if(logoutButton) logoutButton.addEventListener('click', handleLogout);
-        
-        document.body.addEventListener('click', (e) => {
-            if (e.target.matches('.modal-close') || e.target.matches('.modal')) {
-                closeModal(e.target.closest('.modal'));
-            }
-            if (e.target.closest('#pay-dues-btn')) openModal('payment-modal');
-            if (e.target.closest('#new-arc-request-btn')) openModal('arc-request-modal');
-            if (e.target.closest('#new-maint-request-btn')) openModal('maint-request-modal');
-            if (e.target.closest('#book-amenity-btn')) openModal('amenity-booking-modal');
-            if (e.target.closest('#profile-settings-btn')) openModal('profile-modal');
-            if (e.target.closest('.view-resident-details')) openModal('resident-details-modal');
+        // Add event listeners to all textareas to trigger the update
+        [htmlCode, cssCode, jsCode].forEach(editor => {
+            editor.addEventListener('input', debouncedUpdate);
         });
 
-        document.getElementById('faq-container')?.addEventListener('click', handleFaqClick);
+        // Initial update to show the blank preview
+        updatePreview();
 
-
-        // --- INITIAL RENDER ---
-        updateLoginUI();
-        renderContent();
-    });
     </script>
+
 </body>
 </html>
