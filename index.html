@@ -3,393 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fugth AI Anvil - Demo Day Edition</title>
+    <title>Fugth AI Anvil - Application Builder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@400;500;600&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --c-dark-bg: #0a0a0a;
+            --c-dark-card: rgba(26, 26, 29, 0.7);
+            --c-dark-border: rgba(255, 255, 255, 0.1);
+            --c-pro-glow: rgba(139, 92, 246, 0.5);
+        }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; }
-        .step-card { background-color: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); transition: all 0.3s ease; }
-        .step-card:hover { border-color: rgba(79, 70, 229, 0.8); transform: translateY(-5px); }
-        .style-card { transition: all 0.3s ease; border: 2px solid transparent; }
-        .style-card.selected { transform: scale(1.05); box-shadow: 0 0 25px rgba(79, 70, 229, 0.5); }
-        .gizmo { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background-color: rgba(0,0,0,0.3); border-radius: 0.5rem; margin-bottom: 1rem; }
-        .gizmo input[type="color"] { -webkit-appearance: none; width: 40px; height: 40px; border: none; cursor: pointer; border-radius: 50%; padding: 0; background-color: transparent; }
-        .gizmo input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        .gizmo input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 2px solid white; }
-        .font-lora { font-family: 'Lora', serif; }
-        .font-comic-neue { font-family: 'Comic Neue', cursive; }
-        .feature-tab { cursor: pointer; padding: 0.5rem 1rem; border-bottom: 3px solid transparent; transition: all 0.3s ease; font-size: 0.875rem; }
-        .feature-tab.active { color: #818cf8; border-bottom-color: #818cf8; }
-        .feature-tab-content { display: none; }
-        .feature-tab-content.active { display: block; }
-        .add-tab-dropdown { display: none; position: absolute; background-color: #1f2937; border: 1px solid #4b5563; border-radius: 0.5rem; z-index: 50; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--c-dark-bg); color: #f9fafb; }
+        .step-card { background-color: var(--c-dark-card); border: 1px solid var(--c-dark-border); backdrop-filter: blur(12px); transition: all 0.3s ease; }
+        .step-card:hover { border-color: #818cf8; }
+        
+        /* --- Gizmo & Pro Badge Styles --- */
+        .gizmo-accordion-header { background-color: rgba(255,255,255,0.05); transition: background-color 0.2s ease; }
+        .gizmo-accordion-header:hover { background-color: rgba(255,255,255,0.1); }
+        .gizmo-accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+        .pro-badge { background-color: #8B5CF6; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 99px; line-height: 1; text-transform: uppercase; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #374151; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #6366f1; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* --- Canvas Preview (Application Shell) Styles --- */
+        #canvas-preview { --shell-bg: #111827; --shell-text: #f9fafb; --shell-border: #374151; --shell-header-bg: #1f2937; --shell-accent: #6366f1; --shell-accent-text: #ffffff; }
+        #canvas-preview.theme-light { --shell-bg: #f9fafb; --shell-text: #111827; --shell-border: #d1d5db; --shell-header-bg: #e5e7eb; }
+        #canvas-preview .app-shell { background-color: var(--shell-bg); color: var(--shell-text); border: 1px solid var(--shell-border); }
+        #canvas-preview .app-title-bar { background-color: var(--shell-header-bg); border-bottom: 1px solid var(--shell-border); }
+        #canvas-preview .app-tab { border-bottom: 3px solid transparent; color: var(--shell-text); opacity: 0.6; }
+        #canvas-preview .app-tab.active { border-bottom-color: var(--shell-accent); color: var(--shell-text); opacity: 1; }
+        #canvas-preview .app-tab-content { display: none; }
+        #canvas-preview .app-tab-content.active { display: block; }
+        #canvas-preview .app-button { background-color: var(--shell-accent); color: var(--shell-accent-text); }
+        
+        /* --- Finalize Section --- */
+        .tier-card { background-color: rgba(31, 41, 55, 0.5); border: 1px solid var(--c-dark-border); }
+        .tier-card.pro { border-color: #8B5CF6; box-shadow: 0 0 25px var(--c-pro-glow); }
+        .tier-card ul li { background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%234ade80"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>') no-repeat left center; padding-left: 1.75rem; }
+        .tier-card ul li.disabled { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%23f87171"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>'); }
+
     </style>
 </head>
 <body class="bg-gray-900 text-white">
 
-    <!-- Header -->
-    <header class="bg-black bg-opacity-50 backdrop-blur-lg sticky top-0 z-40">
-        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <header class="bg-black bg-opacity-50 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-800">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="flex items-center gap-3">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 6H19L17 14H7L5 6Z" fill="url(#grad-anvil-surface)"/>
-                    <path d="M4 14V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V14H4Z" fill="url(#grad-anvil-base)"/>
-                    <path d="M8 6L12 2L16 6" stroke="url(#grad-anvil-spark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <defs>
-                        <linearGradient id="grad-anvil-surface" x1="5" y1="10" x2="19" y2="10" gradientUnits="userSpaceOnUse"><stop stop-color="#a5b4fc"/><stop offset="1" stop-color="#818cf8"/></linearGradient>
-                        <linearGradient id="grad-anvil-base" x1="4" y1="17" x2="20" y2="17" gradientUnits="userSpaceOnUse"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#4f46e5"/></linearGradient>
-                        <linearGradient id="grad-anvil-spark" x1="8" y1="4" x2="16" y2="4" gradientUnits="userSpaceOnUse"><stop stop-color="#f87171"/><stop offset="1" stop-color="#fb923c"/></linearGradient>
-                    </defs>
-                </svg>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 6H19L17 14H7L5 6Z" fill="url(#p)"/><path d="M4 14V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V14H4Z" fill="url(#q)"/><path d="M8 6L12 2L16 6" stroke="url(#r)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="p" x1="5" y1="10" x2="19" y2="10" gradientUnits="userSpaceOnUse"><stop stop-color="#a5b4fc"/><stop offset="1" stop-color="#818cf8"/></linearGradient><linearGradient id="q" x1="4" y1="17" x2="20" y2="17" gradientUnits="userSpaceOnUse"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#4f46e5"/></linearGradient><linearGradient id="r" x1="8" y1="4" x2="16" y2="4" gradientUnits="userSpaceOnUse"><stop stop-color="#f87171"/><stop offset="1" stop-color="#fb923c"/></linearGradient></defs></svg>
                 <span class="text-2xl font-bold">Fugth AI Anvil</span>
             </a>
-            <div class="flex items-center space-x-6">
-                <a href="#customize-ui" class="hover:text-indigo-400">Features</a>
-                <a href="#generate" class="hover:text-indigo-400">Get Quote</a>
-                <a href="#" class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg font-semibold">Get Started</a>
-            </div>
+            <a href="#finalize" class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg font-semibold transition-colors">Get Started</a>
         </nav>
     </header>
 
-    <div class="container mx-auto px-4 py-16">
-        <main class="space-y-24">
-            <!-- Step 1: Define Personality -->
-            <section id="define-personality" class="step-card rounded-2xl p-8 md:p-12">
-                <h2 class="text-4xl font-bold mb-2">Step 1: Define Core Personality & Project</h2>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div>
-                        <label for="project-name" class="text-gray-400 mb-2 block">Project Name</label>
-                        <input type="text" id="project-name" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="My Awesome AI Project">
-                    </div>
-                    <div>
-                        <label for="ai-description" class="text-gray-400 mb-2 block">Core Personality</label>
-                        <textarea id="ai-description" class="w-full h-24 bg-gray-900 border border-gray-700 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="e.g., A witty FAQ bot for a gaming website..."></textarea>
-                    </div>
+    <main class="container mx-auto px-4 py-16 space-y-24">
+        <section id="define-personality" class="step-card rounded-2xl p-8 md:p-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6"><span class="text-indigo-400">Step 1:</span> Define Core Personality</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <label for="project-name" class="text-gray-400 mb-2 block font-medium">Project Name</label>
+                    <input type="text" id="project-name" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="My Productivity App">
                 </div>
-            </section>
+                <div>
+                    <label for="ai-description" class="text-gray-400 mb-2 block font-medium">Core AI Directive</label>
+                    <textarea id="ai-description" class="w-full h-24 bg-gray-900 border border-gray-700 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="e.g., An AI assistant to help users code faster..."></textarea>
+                </div>
+            </div>
+        </section>
 
-            <!-- Step 2: Choose Base Style -->
-            <section id="select-style" class="step-card rounded-2xl p-8 md:p-12">
-                <h2 class="text-4xl font-bold mb-2">Step 2: Select a Base Style</h2>
-                <p class="text-gray-400 mb-8">Pick a starting point for your chatbot's look and feel.</p>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="style-card bg-gray-800 rounded-lg p-6 text-center cursor-pointer" onclick="selectStyle('modern')"><h3 class="text-2xl font-bold mb-4">Modern</h3><div class="h-40 bg-white rounded-lg p-4 text-left text-black flex flex-col justify-end shadow-lg"><div class="bg-indigo-500 text-white rounded-lg p-2 inline-block self-end">Sleek.</div><div class="bg-gray-200 rounded-lg p-2 inline-block self-start mt-2">Minimal.</div></div></div>
-                    <div class="style-card bg-gray-800 rounded-lg p-6 text-center cursor-pointer" onclick="selectStyle('playful')"><h3 class="text-2xl font-bold mb-4">Playful</h3><div class="h-40 bg-yellow-100 rounded-lg p-4 text-left text-gray-800 flex flex-col justify-end shadow-lg font-comic-neue"><div class="bg-green-400 text-white rounded-full p-2 inline-block self-end">Fun!</div><div class="bg-white rounded-full p-2 inline-block self-start mt-2 shadow-md">Bubbly!</div></div></div>
-                    <div class="style-card bg-gray-800 rounded-lg p-6 text-center cursor-pointer" onclick="selectStyle('corporate')"><h3 class="text-2xl font-bold mb-4">Corporate</h3><div class="h-40 bg-gray-100 rounded-lg p-4 text-left text-gray-900 flex flex-col justify-end shadow-lg font-lora"><div class="bg-blue-600 text-white rounded-md p-2 inline-block self-end">Efficient.</div><div class="bg-gray-300 rounded-md p-2 inline-block self-start mt-2">Professional.</div></div></div>
-                </div>
-            </section>
-            
-            <!-- Step 3: AI Customization Canvas -->
-            <section id="customize-ui" class="step-card rounded-2xl p-8 md:p-12 hidden">
-                <h2 class="text-4xl font-bold mb-2">Step 3: AI Customization Canvas</h2>
-                <p class="text-gray-400 mb-8">Sculpt your AI's UI and preview its powerful in-app features, all in one place.</p>
-                <div class="grid lg:grid-cols-5 gap-8 items-start">
-                    <!-- Gizmos / Controls -->
-                    <div class="lg:col-span-2 space-y-4">
-                        <h3 class="text-2xl font-bold border-b border-gray-700 pb-2">Appearance</h3>
-                        <div class="gizmo"><input type="color" id="header-color" value="#4f46e5"><label for="header-color" class="text-lg font-semibold">Header</label></div>
-                        <div class="gizmo"><input type="color" id="bg-color" value="#ffffff"><label for="bg-color" class="text-lg font-semibold">Background</label></div>
-                        <div class="gizmo"><input type="color" id="ai-bubble-color" value="#e5e7eb"><label for="ai-bubble-color" class="text-lg font-semibold">AI Bubble</label></div>
-                        <div class="gizmo"><input type="color" id="ai-text-color" value="#000000"><label for="ai-text-color" class="text-lg font-semibold">AI Text</label></div>
-                        <div class="gizmo"><input type="color" id="user-bubble-color" value="#4f46e5"><label for="user-bubble-color" class="text-lg font-semibold">User Bubble</label></div>
-                        <div class="gizmo"><input type="color" id="user-text-color" value="#ffffff"><label for="user-text-color" class="text-lg font-semibold">User Text</label></div>
-                        <div class="gizmo"><input type="color" id="button-color" value="#4f46e5"><label for="button-color" class="text-lg font-semibold">Button/Send</label></div>
-                        <div class="gizmo flex-col items-start"><label for="font-select" class="text-lg font-semibold mb-2">Font Style</label><select id="font-select" class="w-full bg-gray-700 rounded p-2"><option value="Inter">Modern</option><option value="Lora">Classic</option><option value="Comic Neue">Playful</option></select></div>
-                        <div class="gizmo flex-col items-start"><label for="corner-radius" class="text-lg font-semibold">Corner Radius: <span id="radius-value">12</span>px</label><input type="range" id="corner-radius" min="0" max="24" value="12" class="w-full"></div>
-                        <div class="gizmo"><label for="compact-mode" class="text-lg font-semibold">Compact Mode</label><input type="checkbox" id="compact-mode" class="h-6 w-6"></div>
+        <section id="customize-ui" class="step-card rounded-2xl p-8 md:p-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6"><span class="text-indigo-400">Step 2:</span> Sculpt Your Application</h2>
+            <div class="grid lg:grid-cols-5 gap-8 items-start">
+                
+                <div id="gizmo-editor" class="lg:col-span-2 space-y-4">
+                    <div class="gizmo-accordion">
+                        <button class="gizmo-accordion-header w-full text-left p-4 rounded-lg flex justify-between items-center"><h3 class="text-xl font-bold">Application Shell</h3><svg class="w-6 h-6 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+                        <div class="gizmo-accordion-content p-4 space-y-3">
+                            <div class="gizmo-control"><label for="app-theme">Theme</label><select id="app-theme" class="bg-gray-700 rounded p-1"><option value="dark">Dark</option><option value="light">Light</option></select></div>
+                            <div class="gizmo-control"><label for="accent-color">Accent Color</label><input type="color" id="accent-color"></div>
+                        </div>
                     </div>
-                    <!-- Full Chatbot Preview -->
-                    <div class="lg:col-span-3">
-                         <div id="custom-preview" class="rounded-lg shadow-2xl transition-all duration-300 overflow-hidden border border-gray-700">
-                            <!-- Preview Header -->
-                            <div id="preview-header" class="p-3 flex items-center justify-between gap-4">
-                                <h4 id="preview-title" class="text-lg font-bold text-white truncate">My Custom AI</h4>
-                                <select id="model-selector" class="bg-white/20 text-white text-sm rounded px-2 py-1 focus:outline-none"></select>
+                    <div class="gizmo-accordion">
+                        <button class="gizmo-accordion-header w-full text-left p-4 rounded-lg flex justify-between items-center"><h3 class="text-xl font-bold">Chat Interface</h3><svg class="w-6 h-6 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+                        <div class="gizmo-accordion-content p-4 space-y-3">
+                            <div class="gizmo-control"><label for="ai-bubble-color">AI Bubble</label><input type="color" id="ai-bubble-color"></div>
+                            <div class="gizmo-control"><label for="user-bubble-color">User Bubble</label><input type="color" id="user-bubble-color"></div>
+                        </div>
+                    </div>
+                    <div class="gizmo-accordion">
+                        <button class="gizmo-accordion-header w-full text-left p-4 rounded-lg flex justify-between items-center">
+                            <div class="flex items-center gap-2"><h3 class="text-xl font-bold">Integrated Tools</h3><span class="pro-badge">Pro</span></div>
+                            <svg class="w-6 h-6 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="gizmo-accordion-content p-4 space-y-3">
+                            <div class="gizmo-control"><label for="tool-code-editor">Code Editor</label><label class="switch"><input type="checkbox" class="tool-toggle" id="tool-code-editor" data-tool="Code"><span class="slider"></span></label></div>
+                            <div class="gizmo-control"><label for="tool-knowledge-base">Knowledge Base</label><label class="switch"><input type="checkbox" class="tool-toggle" id="tool-knowledge-base" data-tool="Knowledge"><span class="slider"></span></label></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3">
+                     <div id="canvas-preview" class="transition-all duration-300">
+                        <div class="app-shell rounded-lg shadow-2xl overflow-hidden">
+                            <div class="app-title-bar h-10 flex items-center px-4">
+                                <div class="text-center flex-grow font-semibold" id="app-title-text">My Productivity App</div>
                             </div>
-                            <!-- Main Content Area -->
-                            <div id="preview-body" class="h-[550px] flex flex-col">
-                                <!-- Feature Tabs -->
-                                <div class="border-b border-gray-700 flex items-center space-x-1 px-2 relative" style="background-color: inherit;">
-                                    <h3 id="tab-chat" class="feature-tab active" onclick="switchPreviewTab('chat')">Chat</h3>
-                                    <h3 id="tab-skills" class="feature-tab" onclick="switchPreviewTab('skills')">Skills</h3>
-                                    <h3 id="tab-connect" class="feature-tab" onclick="switchPreviewTab('connect')">Connect</h3>
-                                    <h3 id="tab-settings" class="feature-tab" onclick="switchPreviewTab('settings')">Settings</h3>
-                                    <button onclick="toggleAddTabMenu()" class="ml-2 text-gray-400 hover:text-white">+</button>
-                                    <div id="add-tab-menu" class="add-tab-dropdown p-2">
-                                        <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 rounded">Calendar</a>
-                                        <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 rounded">Code Editor</a>
-                                        <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 rounded">To-Do List</a>
+                            <div class="app-body h-[600px] flex flex-col">
+                                <div class="app-tab-bar flex items-center space-x-2 px-4 border-b"></div>
+                                <div class="app-content-area flex-grow p-4 overflow-y-auto">
+                                    <div id="content-Chat" class="app-tab-content">
+                                        <div class="mb-4 flex justify-start"><div id="preview-ai-bubble" class="p-3 rounded-lg inline-block max-w-xs">Hello! How can I assist you today?</div></div>
+                                        <div class="mb-4 flex justify-end"><div id="preview-user-bubble" class="p-3 rounded-lg inline-block max-w-xs">Let's get started.</div></div>
                                     </div>
-                                </div>
-                                <!-- Tab Content -->
-                                <div class="flex-grow p-4 overflow-y-auto">
-                                    <div id="content-chat" class="feature-tab-content active">
-                                        <div class="mb-4 flex justify-start"><div id="preview-ai-bubble" class="p-3 rounded-lg inline-block max-w-xs">Hello! I am your custom AI.</div></div>
-                                        <div class="mb-4 flex justify-end"><div id="preview-user-bubble" class="p-3 rounded-lg inline-block max-w-xs">This is a test message!</div></div>
+                                    <div id="content-Settings" class="app-tab-content">
+                                        <h3 class="font-bold text-xl mb-4">Model Settings</h3>
+                                        <p class="text-sm opacity-70 mb-4">The <span class="font-bold text-violet-400">Pro Build</span> includes an optimized model. For the <span class="font-bold text-green-400">Free Shell</span>, download any GGUF model and load it into the app yourself.</p>
+                                        <button id="check-system-btn" class="app-button px-4 py-2 rounded-md text-sm font-semibold">Check System for Compatibility</button>
+                                        <div id="gguf-model-list" class="mt-4 space-y-2"></div>
                                     </div>
-                                    <div id="content-settings" class="feature-tab-content"><p class="mb-4">Check your PC hardware and manage available AI models.</p><div id="gguf-list" class="space-y-3"></div></div>
-                                    <div id="content-skills" class="feature-tab-content"><p class="mb-2"><strong>Core Directive:</strong> "<span id="core-personality-text">Not defined yet.</span>"</p><p class="text-gray-400 mb-4">You can add preferences, but you cannot change the core function.</p><input type="text" id="personality-update-input" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 mb-2" placeholder="Try to change my job to 'historian'..."><button class="bg-indigo-600 px-4 py-2 rounded-lg" onclick="testPersonalityGuardrail()">Test Guardrail</button><p id="guardrail-response" class="mt-2 text-yellow-400"></p></div>
-                                    <div id="content-connect" class="feature-tab-content"><p class="mb-4">Connect your AI to other tools to enhance its capabilities.</p><div class="grid md:grid-cols-2 gap-4"><button onclick="simulateConnection(this)" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600">Analyze Screen</button><button onclick="simulateConnection(this)" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600">Connect Socials</button><button onclick="simulateConnection(this)" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600">Access Project Hub</button><button onclick="simulateConnection(this)" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600">Enable Web Search</button></div></div>
+                                    <div id="content-Code" class="app-tab-content"><p class="opacity-50 text-center mt-8">Code Editor Tool (Pro Feature).</p></div>
+                                    <div id="content-Knowledge" class="app-tab-content"><p class="opacity-50 text-center mt-8">Knowledge Base Tool (Pro Feature).</p></div>
                                 </div>
-                                <!-- Chat Input -->
-                                <div id="chat-input-area" class="mt-auto flex p-2"><input type="text" id="preview-input" class="w-full bg-gray-200 border border-gray-300 rounded-l-lg p-3 focus:outline-none" placeholder="Type a message..."><button id="preview-send-btn" class="text-white px-6 rounded-r-lg font-bold">Send</button></div>
                             </div>
-                         </div>
-                    </div>
+                        </div>
+                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Step 4: System Configuration -->
-            <section id="check-specs" class="step-card rounded-2xl p-8 md:p-12">
-                <h2 class="text-4xl font-bold mb-2">Step 4: Configure Target System</h2>
-                <p class="text-gray-400 mb-8">Confirm the hardware for the PC that will run the chatbot.</p>
-                <div class="max-w-2xl mx-auto text-center"><button id="check-specs-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300">Check My PC Specs</button><div id="specs-result" class="mt-6 text-lg bg-gray-800 p-6 rounded-lg hidden"></div><div class="mt-6"><p class="text-gray-400">Or, enter specs for another machine:</p><div class="flex gap-4 mt-4"><input type="number" id="manual-cpu" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="CPU Cores"><input type="number" id="manual-ram" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="RAM (GB)"></div></div></div>
-            </section>
-
-            <!-- Step 5: Finalize & Quote -->
-            <section id="generate" class="text-center">
-                <h2 class="text-4xl font-bold mb-8">Step 5: Finalize & Quote</h2>
-                <button id="generate-btn" class="bg-green-600 hover:bg-green-700 text-white font-extrabold py-4 px-10 rounded-lg text-2xl transition duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed transform hover:scale-105" disabled>Anvil My AI</button>
-                <div id="generation-status" class="mt-6 text-lg hidden h-24"></div>
-            </section>
-        </main>
-    </div>
+        <section id="finalize" class="step-card rounded-2xl p-8 md:p-12">
+            <div class="text-center">
+                <h2 class="text-3xl md:text-4xl font-bold"><span class="text-indigo-400">Step 3:</span> Finalize & Forge Your AI</h2>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto mt-4 mb-10">Choose your build. Get a customizable UI shell for free, or upgrade to Pro for a fully integrated, optimized AI powerhouse.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="tier-card rounded-lg p-8 flex flex-col">
+                    <h3 class="text-2xl font-bold text-green-400">Standard Shell</h3>
+                    <p class="text-gray-400 mt-2 mb-6 flex-grow">A standalone application with your custom UI. Works with any GGUF model you provide.</p>
+                    <ul class="space-y-3 text-gray-300 mb-8">
+                        <li>Custom UI & Theme</li>
+                        <li>Personality File Included</li>
+                        <li class="disabled">Optimized AI Model</li>
+                        <li class="disabled">Integrated Pro Tools</li>
+                    </ul>
+                    <button id="download-free-btn" class="mt-auto w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">
+                        Forge Free Shell (.exe)
+                    </button>
+                </div>
+                <div class="tier-card pro rounded-lg p-8 flex flex-col">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-2xl font-bold text-violet-400">Pro Build</h3>
+                        <span class="pro-badge">Recommended</span>
+                    </div>
+                    <p class="text-gray-400 mt-2 mb-6 flex-grow">A complete, ready-to-run application with a fine-tuned model and all your selected tools built-in.</p>
+                     <ul class="space-y-3 text-gray-300 mb-8">
+                        <li>Everything in Standard</li>
+                        <li>Optimized AI Model</li>
+                        <li>Integrated Pro Tools</li>
+                        <li>Priority Support</li>
+                    </ul>
+                    <a id="pro-upgrade-link" href="#" target="_blank" class="mt-auto block w-full text-center bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105">
+                        Upgrade to Pro & Build
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script>
-        const state = { projectName: 'My Custom AI', aiDescription: '', selectedStyle: null, pcSpecs: { cpu: null, ram: null, vram: 8 }, customization: { colors: { header: '#4f46e5', background: '#ffffff', aiBubble: '#e5e7eb', aiText: '#000000', userBubble: '#4f46e5', userText: '#ffffff', button: '#4f46e5' }, font: 'Inter', cornerRadius: 12, compactMode: false, } };
-        const ui = {
-            projectNameEl: document.getElementById('project-name'),
-            aiDescriptionEl: document.getElementById('ai-description'),
-            customizeUiSection: document.getElementById('customize-ui'),
-            generateBtn: document.getElementById('generate-btn'),
-            checkSpecsBtn: document.getElementById('check-specs-btn'),
-            specsResultEl: document.getElementById('specs-result'),
-            manualCpuEl: document.getElementById('manual-cpu'),
-            manualRamEl: document.getElementById('manual-ram'),
-            generationStatusEl: document.getElementById('generation-status'),
-            // Gizmos
-            headerColorPicker: document.getElementById('header-color'),
-            bgColorPicker: document.getElementById('bg-color'),
-            aiBubbleColorPicker: document.getElementById('ai-bubble-color'),
-            aiTextColorPicker: document.getElementById('ai-text-color'),
-            userBubbleColorPicker: document.getElementById('user-bubble-color'),
-            userTextColorPicker: document.getElementById('user-text-color'),
-            buttonColorPicker: document.getElementById('button-color'),
-            fontSelect: document.getElementById('font-select'),
-            cornerRadiusSlider: document.getElementById('corner-radius'),
-            compactModeToggle: document.getElementById('compact-mode'),
-            // Preview Elements
-            preview: {
-                header: document.getElementById('preview-header'),
-                title: document.getElementById('preview-title'),
-                modelSelector: document.getElementById('model-selector'),
-                body: document.getElementById('preview-body'),
-                aiBubble: document.getElementById('preview-ai-bubble'),
-                userBubble: document.getElementById('preview-user-bubble'),
-                sendBtn: document.getElementById('preview-send-btn'),
-                input: document.getElementById('preview-input'),
-                radiusValue: document.getElementById('radius-value'),
-                chatInputArea: document.getElementById('chat-input-area'),
-            },
-            personality: {
-                coreText: document.getElementById('core-personality-text'),
-                updateInput: document.getElementById('personality-update-input'),
-                guardrailResponse: document.getElementById('guardrail-response')
-            },
-            addTabMenu: document.getElementById('add-tab-menu')
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- CONFIGURATION ---
+        const STRIPE_PRO_LINK = 'YOUR_STRIPE_LINK_HERE';
+
+        const state = {
+            projectName: 'My Productivity App',
+            aiDescription: '',
+            systemSpecs: { vram: null },
+            customization: {
+                shell: { theme: 'dark', accentColor: '#6366f1' },
+                chat: { aiBubble: '#374151', userBubble: '#6366f1' },
+                tools: { Code: false, Knowledge: false }
+            }
         };
 
-        function selectStyle(styleName) {
-            state.selectedStyle = styleName;
-            document.querySelectorAll('.style-card').forEach(el => el.classList.remove('selected'));
-            document.querySelector(`[onclick="selectStyle('${styleName}')"]`).classList.add('selected');
-            const defaults = {
-                modern: { header: '#4F46E5', bg: '#FFFFFF', aiBubble: '#E5E7EB', aiText: '#000000', userBubble: '#4F46E5', userText: '#FFFFFF', btn: '#4F46E5', font: 'Inter', radius: 12 },
-                playful: { header: '#FBBF24', bg: '#FEF3C7', aiBubble: '#FFFFFF', aiText: '#000000', userBubble: '#6EE7B7', userText: '#000000', btn: '#6EE7B7', font: 'Comic Neue', radius: 24 },
-                corporate: { header: '#3B82F6', bg: '#F3F4F6', aiBubble: '#D1D5DB', aiText: '#000000', userBubble: '#2563EB', userText: '#FFFFFF', btn: '#2563EB', font: 'Lora', radius: 4 }
-            };
-            const d = defaults[styleName];
-            ui.headerColorPicker.value = d.header;
-            ui.bgColorPicker.value = d.bg;
-            ui.aiBubbleColorPicker.value = d.aiBubble;
-            ui.aiTextColorPicker.value = d.aiText;
-            ui.userBubbleColorPicker.value = d.userBubble;
-            ui.userTextColorPicker.value = d.userText;
-            ui.buttonColorPicker.value = d.btn;
-            ui.fontSelect.value = d.font;
-            ui.cornerRadiusSlider.value = d.radius;
-            ui.customizeUiSection.classList.remove('hidden');
-            updateAllPreviews();
-            updateGenerateButtonState();
+        const ui = {
+            projectNameEl: document.getElementById('project-name'),
+            gizmoAccordions: document.querySelectorAll('.gizmo-accordion'),
+            appThemeSelect: document.getElementById('app-theme'),
+            accentColorPicker: document.getElementById('accent-color'),
+            aiBubbleColorPicker: document.getElementById('ai-bubble-color'),
+            userBubbleColorPicker: document.getElementById('user-bubble-color'),
+            toolToggles: document.querySelectorAll('.tool-toggle'),
+            canvasPreview: document.getElementById('canvas-preview'),
+            appTitleText: document.getElementById('app-title-text'),
+            appTabBar: document.querySelector('.app-tab-bar'),
+            appContentArea: document.querySelector('.app-content-area'),
+            aiBubble: document.getElementById('preview-ai-bubble'),
+            userBubble: document.getElementById('preview-user-bubble'),
+            checkSystemBtn: document.getElementById('check-system-btn'),
+            ggufModelList: document.getElementById('gguf-model-list'),
+            downloadFreeBtn: document.getElementById('download-free-btn'),
+            proUpgradeLink: document.getElementById('pro-upgrade-link'),
+        };
+
+        // --- CORE FUNCTIONS ---
+        function updateState(path, value) {
+            let keys = path.split('.');
+            let obj = state;
+            keys.slice(0, -1).forEach(key => obj = obj[key]);
+            obj[keys.at(-1)] = value;
+            renderAll();
         }
 
-        function updateAllPreviews() {
-            state.customization = {
-                colors: { header: ui.headerColorPicker.value, background: ui.bgColorPicker.value, aiBubble: ui.aiBubbleColorPicker.value, aiText: ui.aiTextColorPicker.value, userBubble: ui.userBubbleColorPicker.value, userText: ui.userTextColorPicker.value, button: ui.buttonColorPicker.value },
-                font: ui.fontSelect.value, cornerRadius: ui.cornerRadiusSlider.value, compactMode: ui.compactModeToggle.checked,
-            };
-            const { header, body, aiBubble, userBubble, sendBtn, input, radiusValue, title, modelSelector } = ui.preview;
-            const { colors, font, cornerRadius, compactMode } = state.customization;
-            
-            header.style.backgroundColor = colors.header;
-            const headerContrastColor = getContrastYIQ(colors.header);
-            title.style.color = headerContrastColor;
-            modelSelector.style.color = headerContrastColor;
-            modelSelector.style.borderColor = headerContrastColor;
-
-            body.style.backgroundColor = colors.background;
-            aiBubble.style.backgroundColor = colors.aiBubble;
-            userBubble.style.backgroundColor = colors.userBubble;
-            aiBubble.style.color = colors.aiText;
-            userBubble.style.color = colors.userText;
-            sendBtn.style.backgroundColor = colors.button;
-
-            document.querySelectorAll('.feature-tab-content').forEach(el => el.style.color = getContrastYIQ(colors.background));
-            
-            body.style.fontFamily = `'${font}', sans-serif`;
-            const radius = `${cornerRadius}px`;
-            radiusValue.textContent = cornerRadius;
-            aiBubble.style.borderRadius = radius;
-            userBubble.style.borderRadius = radius;
-            input.style.borderRadius = `${radius} 0 0 ${radius}`;
-            sendBtn.style.borderRadius = `0 ${radius} ${radius} 0`;
-            body.classList.toggle('text-sm', compactMode);
-            aiBubble.classList.toggle('p-2', compactMode);
-            userBubble.classList.toggle('p-2', compactMode);
-        }
-
-        function switchPreviewTab(tabName) {
-            document.querySelectorAll('.feature-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.feature-tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            document.getElementById(`content-${tabName}`).classList.add('active');
-            ui.preview.chatInputArea.style.display = tabName === 'chat' ? 'flex' : 'none';
-        }
-
-        function toggleAddTabMenu() {
-            ui.addTabMenu.style.display = ui.addTabMenu.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function renderGGUFModels() {
-            const models = [ { name: 'Tiny-Llama-1.1B-Q4', vram: 2 }, { name: 'Mistral-7B-Instruct-Q5', vram: 6 }, { name: 'Llama3-8B-Q6', vram: 8 }, { name: 'Mixtral-8x7B-Q4', vram: 16 }, { name: 'Goliath-120B-Q2', vram: 32 }, ];
-            const container = document.getElementById('gguf-list');
-            const selector = ui.preview.modelSelector;
-            const userVRAM = state.pcSpecs.vram;
-            
-            container.innerHTML = `<p class="text-sm text-gray-400 mb-2">Your system VRAM: ~${userVRAM}GB</p>`;
-            selector.innerHTML = '';
-
-            models.forEach(model => {
-                const canRun = userVRAM >= model.vram;
-                // Populate settings tab
-                container.innerHTML += `<div class="p-3 rounded-lg flex justify-between items-center ${canRun ? 'bg-gray-700' : 'bg-gray-800 text-gray-500'}"><span>${model.name} (Requires ${model.vram}GB VRAM)</span><button class="px-3 py-1 rounded ${canRun ? 'bg-green-600 hover:bg-green-500' : 'bg-gray-700 cursor-not-allowed'}">${canRun ? 'Download' : 'Incompatible'}</button></div>`;
-                // Populate header selector
-                if(canRun) {
-                    const option = document.createElement('option');
-                    option.value = model.name;
-                    option.textContent = model.name.split('-')[0]; // Short name
-                    selector.appendChild(option);
-                }
-            });
+        function renderAll() {
+            renderShell();
+            renderChat();
+            renderTabs();
+            renderSettingsTab();
         }
         
-        function simulateConnection(button) {
+        // --- RENDERERS ---
+        function renderShell() {
+            const { theme, accentColor } = state.customization.shell;
+            ui.canvasPreview.className = `theme-${theme}`;
+            ui.canvasPreview.style.setProperty('--shell-accent', accentColor);
+            ui.appTitleText.textContent = state.projectName;
+        }
+
+        function renderChat() {
+            const { aiBubble, userBubble } = state.customization.chat;
+            ui.aiBubble.style.backgroundColor = aiBubble;
+            ui.userBubble.style.backgroundColor = userBubble;
+            ui.aiBubble.style.color = getContrastYIQ(aiBubble);
+            ui.userBubble.style.color = getContrastYIQ(userBubble);
+        }
+
+        function renderTabs() {
+            const defaultTabs = ['Chat', 'Settings'];
+            const toolTabs = Object.keys(state.customization.tools).filter(key => state.customization.tools[key]);
+            const allTabs = [...defaultTabs, ...toolTabs];
+            
+            ui.appTabBar.innerHTML = allTabs.map((tabName, index) => 
+                `<h3 class="app-tab p-3 cursor-pointer ${index === 0 ? 'active' : ''}" data-tab="${tabName}">${tabName}</h3>`
+            ).join('');
+            switchTab(document.querySelector('.app-tab.active')?.dataset.tab || 'Chat');
+        }
+        
+        function renderSettingsTab() {
+            const models = [
+                { name: 'TinyLlama-1.1B', vram: 2 }, { name: 'Mistral-7B', vram: 6 },
+                { name: 'Llama3-8B', vram: 8 }, { name: 'Mixtral-8x7B', vram: 24 }
+            ];
+            const userVRAM = state.systemSpecs.vram;
+            ui.ggufModelList.innerHTML = models.map(model => {
+                let statusClass = 'bg-gray-600', statusText = 'Unknown';
+                if (userVRAM !== null) {
+                    if (userVRAM >= model.vram) {
+                        statusClass = 'bg-green-600'; statusText = 'Compatible';
+                    } else {
+                        statusClass = 'bg-red-600'; statusText = 'Incompatible';
+                    }
+                }
+                return `
+                    <div class="p-3 rounded-lg flex justify-between items-center" style="background-color: rgba(0,0,0,0.2);">
+                        <p class="font-semibold">${model.name} (~${model.vram}GB VRAM)</p>
+                        <span class="text-xs font-bold px-2 py-1 rounded-full ${statusClass}">${statusText}</span>
+                    </div>`;
+            }).join('');
+        }
+
+        // --- EVENT HANDLERS ---
+        function switchTab(tabName) {
+            document.querySelectorAll('.app-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+            document.querySelectorAll('.app-tab-content').forEach(c => c.classList.toggle('active', c.id === `content-${tabName}`));
+        }
+
+        function simulateSystemCheck() {
+            ui.checkSystemBtn.textContent = 'Checking...';
+            ui.checkSystemBtn.disabled = true;
+            setTimeout(() => {
+                updateState('systemSpecs.vram', Math.min(16, Math.floor((navigator.deviceMemory || 8) / 2)));
+                ui.checkSystemBtn.textContent = 'Re-check System';
+                ui.checkSystemBtn.disabled = false;
+            }, 1500);
+        }
+
+        function simulateFreeDownload(button) {
             const originalText = button.textContent;
-            button.textContent = 'Connecting...';
+            button.textContent = 'Forging Shell...';
             button.disabled = true;
             setTimeout(() => {
-                button.textContent = 'Connected!';
-                button.classList.add('bg-green-600');
-            }, 1500);
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.disabled = false;
-                button.classList.remove('bg-green-600');
-            }, 3500);
+                button.textContent = 'Downloading...';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }, 2500);
         }
+        
+        // --- EVENT LISTENERS ---
+        function setupEventListeners() {
+            ui.projectNameEl.addEventListener('input', e => updateState('projectName', e.target.value));
 
-        function testPersonalityGuardrail() {
-            const core = state.aiDescription.toLowerCase();
-            const update = ui.personality.updateInput.value.toLowerCase();
-            const responseEl = ui.personality.guardrailResponse;
-            if (!core) { responseEl.textContent = "Please define a core personality in Step 1 first."; return; }
-            if (core.includes('general')) { responseEl.textContent = "Personality updated! As a general model, I can learn new things."; return; }
-            if ((core.includes('medical') || core.includes('doctor')) && (update.includes('history') || update.includes('gaming'))) {
-                responseEl.textContent = "I'm sorry, my core function is medical assistance. I cannot specialize in history.";
-            } else { responseEl.textContent = "Personality updated!"; }
-        }
-
-        function checkPcSpecs() {
-            ui.specsResultEl.innerHTML = `<p class="text-yellow-400">Checking...</p>`;
-            ui.specsResultEl.classList.remove('hidden');
-            setTimeout(() => {
-                const cpuCores = navigator.hardwareConcurrency || 8;
-                const ram = navigator.deviceMemory || 16;
-                state.pcSpecs.cpu = cpuCores;
-                state.pcSpecs.ram = ram;
-                ui.specsResultEl.innerHTML = `<p><span class="font-bold text-indigo-400">CPU Cores:</span> ${cpuCores}</p><p><span class="font-bold text-indigo-400">Approx. RAM:</span> ${ram} GB</p><p class="text-sm text-gray-400 mt-2">We'll recommend the best GGUF model based on these specs.</p>`;
-                renderGGUFModels(); // Re-render models after checking specs
-                updateGenerateButtonState();
-            }, 500);
-        }
-
-        function updateGenerateButtonState() {
-            const descriptionFilled = state.aiDescription.length > 10;
-            const styleSelected = !!state.selectedStyle;
-            const specsProvided = (state.pcSpecs.cpu && state.pcSpecs.ram) || (ui.manualCpuEl.value && ui.manualRamEl.value);
-            ui.generateBtn.disabled = !(descriptionFilled && styleSelected && specsProvided);
-        }
-
-        function generateAI() {
-            ui.generationStatusEl.classList.remove('hidden');
-            ui.generationStatusEl.innerHTML = '<p class="text-yellow-400 text-xl">Forging your AI... preparing the digital anvil.</p>';
-            ui.generateBtn.disabled = true;
-            let quote = 9.99;
-            if (state.aiDescription.length > 100) quote += 5.00;
-            if (state.customization.font !== 'Inter') quote += 2.00;
-            if (state.customization.compactMode) quote += 2.50;
-            setTimeout(() => { ui.generationStatusEl.innerHTML = '<p class="text-blue-400 text-xl">Compiling personality matrix...</p>'; }, 1500);
-            setTimeout(() => { ui.generationStatusEl.innerHTML = '<p class="text-purple-400 text-xl">Applying custom UI styles...</p>'; }, 3000);
-            setTimeout(() => {
-                ui.generationStatusEl.innerHTML = `
-                    <p class="text-green-400 text-2xl font-bold">Your AI is Ready!</p>
-                    <p class="text-xl mt-2">Final Quote: <span class="font-bold text-white">$${quote.toFixed(2)}</span> (One-time)</p>
-                    <a href="#" download="fugth-ai.exe" class="inline-block bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 mt-4 shadow-lg transform hover:scale-105">Purchase & Download</a>`;
-                ui.generateBtn.disabled = false;
-            }, 4500);
-        }
-
-        function getContrastYIQ(hexcolor) {
-            hexcolor = hexcolor.replace("#", "");
-            var r = parseInt(hexcolor.substr(0, 2), 16), g = parseInt(hexcolor.substr(2, 2), 16), b = parseInt(hexcolor.substr(4, 2), 16);
-            return (((r * 299) + (g * 587) + (b * 114)) / 1000) >= 128 ? 'black' : 'white';
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderGGUFModels();
-            const gizmos = ['headerColorPicker', 'bgColorPicker', 'aiBubbleColorPicker', 'aiTextColorPicker', 'userBubbleColorPicker', 'userTextColorPicker', 'buttonColorPicker', 'fontSelect', 'cornerRadiusSlider', 'compactModeToggle'];
-            gizmos.forEach(key => ui[key].addEventListener('input', updateAllPreviews));
-            
-            ui.projectNameEl.addEventListener('input', (e) => {
-                state.projectName = e.target.value;
-                ui.preview.title.textContent = state.projectName || "My Custom AI";
+            ui.gizmoAccordions.forEach(acc => {
+                const header = acc.querySelector('.gizmo-accordion-header');
+                const content = acc.querySelector('.gizmo-accordion-content');
+                header.addEventListener('click', () => { content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + 'px'; });
             });
-            ui.aiDescriptionEl.addEventListener('input', (e) => {
-                state.aiDescription = e.target.value;
-                ui.personality.coreText.textContent = state.aiDescription || "Not defined yet.";
-                updateGenerateButtonState();
+
+            ui.appThemeSelect.addEventListener('input', e => updateState('customization.shell.theme', e.target.value));
+            ui.accentColorPicker.addEventListener('input', e => updateState('customization.shell.accentColor', e.target.value));
+            ui.aiBubbleColorPicker.addEventListener('input', e => updateState('customization.chat.aiBubble', e.target.value));
+            ui.userBubbleColorPicker.addEventListener('input', e => updateState('customization.chat.userBubble', e.target.value));
+            ui.toolToggles.forEach(toggle => {
+                toggle.addEventListener('change', e => updateState(`customization.tools.${e.target.dataset.tool}`, e.target.checked));
             });
-            ui.checkSpecsBtn.addEventListener('click', checkPcSpecs);
-            [ui.manualCpuEl, ui.manualRamEl].forEach(el => el.addEventListener('input', updateGenerateButtonState));
-            ui.generateBtn.addEventListener('click', generateAI);
-            // Close add tab menu if clicked outside
-            document.addEventListener('click', function(event) {
-                if (!ui.addTabMenu.contains(event.target) && !event.target.matches('[onclick="toggleAddTabMenu()"]')) {
-                    ui.addTabMenu.style.display = 'none';
-                }
-            });
-        });
+
+            ui.appTabBar.addEventListener('click', e => { if(e.target.matches('.app-tab')) switchTab(e.target.dataset.tab); });
+            ui.checkSystemBtn.addEventListener('click', simulateSystemCheck);
+            ui.downloadFreeBtn.addEventListener('click', e => simulateFreeDownload(e.target));
+            ui.proUpgradeLink.href = STRIPE_PRO_LINK;
+        }
+
+        function getContrastYIQ(hex) {
+            hex = hex.replace("#", "");
+            const r = parseInt(hex.substr(0, 2), 16), g = parseInt(hex.substr(2, 2), 16), b = parseInt(hex.substr(4, 2), 16);
+            return ((r * 299) + (g * 587) + (b * 114)) / 1000 >= 128 ? 'black' : 'white';
+        }
+
+        // --- INITIALIZATION ---
+        setupEventListeners();
+        renderAll();
+    });
     </script>
 </body>
 </html>
