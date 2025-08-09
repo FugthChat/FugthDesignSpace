@@ -3,119 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fugth AI Anvil - Demo Day Edition</title>
+    <title>Fugth AI Anvil - Forge Your Private AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@400;500;600&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:wght@400;500;600&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
     <style>
         /* Base & Scroll */
         html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; color: #e5e7eb; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #050816; /* Deep space blue/black */
+            color: #e5e7eb;
+            overflow-x: hidden;
+        }
+
+        .hero-text-gradient {
+            background: linear-gradient(90deg, #93c5fd, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .section-header-gradient {
+            background: linear-gradient(90deg, #a5b4fc, #d8b4fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
         /* Card Styling */
         .step-card {
-            background-color: rgba(26, 32, 44, 0.6);
+            background: linear-gradient(145deg, rgba(26, 32, 44, 0.6), rgba(17, 24, 39, 0.8));
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            transition: all 0.3s ease-in-out;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .step-card:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(167, 139, 250, 0.15) 0%, rgba(167, 139, 250, 0) 70%);
+            transition: all 0.6s ease;
+            transform: scale(0);
+        }
+        .step-card:hover:before {
+            transform: scale(1);
         }
         .step-card:hover {
-            border-color: rgba(79, 70, 229, 0.7);
-            transform: translateY(-5px) scale(1.01);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(167, 139, 250, 0.5);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         /* Style Selection Card */
         .style-card {
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             border: 2px solid transparent;
+            background-color: #1f2937;
         }
         .style-card.selected {
             transform: scale(1.05);
-            box-shadow: 0 0 35px rgba(99, 102, 241, 0.6);
+            box-shadow: 0 0 35px rgba(129, 140, 248, 0.6);
             border-color: #818cf8;
         }
 
-        /* Canvas Customization Controls (Gizmos) */
-        .gizmo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
-            background-color: rgba(0,0,0,0.3);
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
+        /* --- CSS ANIMATION: ROBOT & TOOLS --- */
+        .animation-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 2rem auto;
         }
-        .gizmo input[type="color"] {
-            -webkit-appearance: none;
-            width: 40px;
-            height: 40px;
-            border: none;
-            cursor: pointer;
+        .robot, .tool {
+            position: absolute;
+            filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.7));
+            transition: transform 0.3s ease;
+        }
+        .robot {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: float 4s ease-in-out infinite;
+        }
+        .tool--hammer {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            left: 0;
+            animation: hammer-swing 2.5s ease-in-out infinite;
+        }
+        .tool--wrench {
+            width: 55px;
+            height: 55px;
+            top: 25%;
+            right: 0;
+            animation: wrench-turn 3s ease-in-out infinite;
+        }
+        .tool--gear {
+            width: 50px;
+            height: 50px;
+            bottom: 10%;
+            left: 15%;
+            animation: gear-spin 5s linear infinite;
+        }
+        .spark {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #facc15;
             border-radius: 50%;
-            padding: 0;
-            background-color: transparent;
-            transition: transform 0.2s ease;
+            top: 45%;
+            left: 35%;
+            opacity: 0;
+            animation: sparks-fly 2.5s ease-out infinite;
         }
-        .gizmo input[type="color"]:hover { transform: scale(1.1); }
-        .gizmo input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        .gizmo input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 2px solid white; }
-        input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #4a5568; border-radius: 5px; outline: none; transition: background 0.3s; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #818cf8; border-radius: 50%; cursor: pointer; }
-        input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; background: #818cf8; border-radius: 50%; cursor: pointer; }
+        .spark:nth-child(2) { animation-delay: 0.1s; }
+        .spark:nth-child(3) { animation-delay: 0.2s; }
+        .spark:nth-child(4) { animation-delay: 1.5s; }
+        .spark:nth-child(5) { animation-delay: 1.6s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-15px); }
+        }
+        @keyframes hammer-swing {
+            0%, 40%, 100% { transform: rotate(20deg) translateX(0); }
+            50% { transform: rotate(-15deg) translateX(30px); }
+            60% { transform: rotate(-15deg) translateX(30px) scale(1.1); }
+        }
+        @keyframes wrench-turn {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(45deg); }
+        }
+        @keyframes gear-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes sparks-fly {
+            49% { opacity: 0; }
+            50% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(-40px, -40px) scale(0); }
+        }
 
-        /* Font Families */
+        /* --- END CSS ANIMATION --- */
+
+        /* Other element styles */
         .font-lora { font-family: 'Lora', serif; }
         .font-comic-neue { font-family: 'Comic Neue', cursive; }
-
-        /* Canvas Tab System */
-        .feature-tab {
-            cursor: pointer;
-            padding: 0.65rem 1rem;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-            font-size: 0.875rem;
-            white-space: nowrap;
-        }
-        .feature-tab.active {
-            color: #a5b4fc;
-            border-bottom-color: #a5b4fc;
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-        .feature-tab-content { display: none; }
-        .feature-tab-content.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* "Add Tab" Dropdown */
-        .add-tab-dropdown {
-            display: none;
-            position: absolute;
-            background-color: #1f2937;
-            border: 1px solid #4b5563;
-            border-radius: 0.5rem;
-            z-index: 50;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
-        }
-
-        /* Light/Dark Theme Switcher */
-        .theme-switch-wrapper { display: flex; align-items: center; gap: 0.5rem; }
-        .theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .theme-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #4a5568; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #6366f1; }
-        input:checked + .slider:before { transform: translateX(24px); }
-
-        /* Custom Scrollbar for Preview */
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #4a5568; border-radius: 20px; border: 2px solid transparent; background-clip: content-box;}
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #6366f1; }
     </style>
 </head>
-<body class="bg-gray-900 text-white selection:bg-indigo-500 selection:text-white">
+<body class="bg-[#050816] text-white selection:bg-purple-500 selection:text-white">
 
-    <header class="bg-black bg-opacity-50 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-800">
+    <header class="bg-black/30 backdrop-blur-lg sticky top-0 z-50 border-b border-white/10">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="flex items-center gap-3">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -130,30 +180,64 @@
                 </svg>
                 <span class="text-2xl font-bold tracking-tight">Fugth AI Anvil</span>
             </a>
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="#define-personality" class="hover:text-indigo-300 transition-colors">Define</a>
-                <a href="#select-style" class="hover:text-indigo-300 transition-colors">Style</a>
-                <a href="#customize-ui" class="hover:text-indigo-300 transition-colors">Customize</a>
-                <a href="#generate" class="hover:text-indigo-300 transition-colors">Finalize</a>
-                <a href="#support" class="hover:text-indigo-300 transition-colors">Support</a>
-                <a href="#" class="bg-indigo-600 hover:bg-indigo-700 px-5 py-2 rounded-lg font-semibold transition-transform hover:scale-105">Get Started</a>
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
+                <a href="#define-personality" class="hover:text-white transition-colors">Define</a>
+                <a href="#select-style" class="hover:text-white transition-colors">Style</a>
+                <a href="#customize-ui" class="hover:text-white transition-colors">Customize</a>
+                <a href="#support" class="hover:text-white transition-colors">Support</a>
+                <a href="https://givebutter.com/23ysSh" target="_blank" rel="noopener noreferrer" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-semibold transition-all hover:scale-105 shadow-lg shadow-purple-500/20">Get Started</a>
             </div>
         </nav>
     </header>
 
     <div class="container mx-auto px-4 py-16 md:py-24">
-        <main class="space-y-24">
-            <section id="define-personality" class="step-card rounded-2xl p-8 md:p-12">
-                <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-purple-300">Step 1: Define Core Personality</h2>
+        <main class="space-y-32">
+
+            <section id="hero" class="text-center relative pt-16">
+                <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_500px_at_50%_200px,#3e357a,transparent)]"></div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6">
+                    <span class="hero-text-gradient">Forge Your Own</span>
+                    <br>
+                    Private AI Personality
+                </h1>
+                <p class="max-w-2xl mx-auto text-lg text-gray-400 mb-8">
+                    Stop renting generic AI. Fugth AI Anvil is a powerful, private workshop that lets you design, customize, and deploy AI chatbots that run entirely on your own computer.
+                </p>
+                <div class="flex justify-center gap-4">
+                     <a href="#define-personality" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all hover:scale-105 shadow-lg shadow-purple-500/30">Start Building</a>
+                     <a href="#support" class="bg-gray-700/50 hover:bg-gray-700/80 border border-white/20 text-white px-8 py-3 rounded-lg font-semibold transition-colors">Support the Project</a>
+                </div>
+                
+                <div class="animation-container">
+                    <div class="robot">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 6H19L17 14H7L5 6Z" fill="#a5b4fc"/><path d="M4 14V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V14H4Z" fill="#818cf8"/><path d="M9 6V5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V6" stroke="#c4b5fd" stroke-width="2"/><circle cx="12" cy="11" r="1.5" fill="white"/></svg>
+                    </div>
+                    <div class="tool tool--hammer">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 10h8l-2 8H2l2-8z" fill="#f87171" /><path d="M7 10V4h2v6H7z" fill="#fb923c" /></svg>
+                    </div>
+                    <div class="tool tool--wrench">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 18l-6-6 1.41-1.41L10 15.17l8.59-8.58L20 8l-10 10z" fill="#60a5fa" /></svg>
+                    </div>
+                    <div class="tool tool--gear">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v4h-2zm0 6h2v2h-2z" fill="#34d399" /></svg>
+                    </div>
+                    <div class="spark"></div><div class="spark"></div><div class="spark"></div>
+                    <div class="spark"></div><div class="spark"></div>
+                </div>
+
+            </section>
+
+            <section id="define-personality" class="step-card rounded-2xl p-8 md:p-12 relative">
+                <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 section-header-gradient">Step 1: Define Core Personality</h2>
                 <p class="text-gray-400 mb-8 max-w-3xl">This is the foundation. Describe your AI's purpose and give it a unique voice. Be as descriptive as possible.</p>
                 <div class="grid md:grid-cols-2 gap-8">
                     <div>
                         <label for="project-name" class="text-gray-300 mb-2 block font-medium">Project Name</label>
-                        <input type="text" id="project-name" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="My Awesome AI Project">
+                        <input type="text" id="project-name" class="w-full bg-black/30 border border-white/20 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition" placeholder="My Awesome AI Project">
                     </div>
                     <div>
                         <label for="tone-select" class="text-gray-300 mb-2 block font-medium">Tone of Voice</label>
-                        <select id="tone-select" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        <select id="tone-select" class="w-full bg-black/30 border border-white/20 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition">
                             <option value="Professional">Professional & Concise</option>
                             <option value="Casual">Casual & Friendly</option>
                             <option value="Humorous">Witty & Humorous</option>
@@ -163,182 +247,41 @@
                     </div>
                     <div class="md:col-span-2">
                         <label for="ai-description" class="text-gray-300 mb-2 block font-medium">Core Personality & Function</label>
-                        <textarea id="ai-description" class="w-full h-32 bg-gray-900 border border-gray-700 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="e.g., A witty and slightly sarcastic FAQ bot for a high-end gaming accessories website. It should use gaming slang and be helpful but never boring."></textarea>
+                        <textarea id="ai-description" class="w-full h-32 bg-black/30 border border-white/20 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition" placeholder="e.g., A witty and slightly sarcastic FAQ bot for a high-end gaming accessories website..."></textarea>
                     </div>
                 </div>
             </section>
 
             <section id="select-style" class="step-card rounded-2xl p-8 md:p-12">
-                <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-purple-300">Step 2: Select a Base Style</h2>
-                <p class="text-gray-400 mb-8">Pick a starting point for your chatbot's look and feel. You can customize everything later.</p>
+                <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 section-header-gradient">Step 2: Select a Base Style</h2>
+                <p class="text-gray-400 mb-8 max-w-3xl">Pick a starting point for your chatbot's look and feel. You can customize everything later.</p>
                 <div class="grid md:grid-cols-3 gap-8">
-                    <div class="style-card bg-gray-800 rounded-lg p-6 text-center cursor-pointer" onclick="selectStyle('modern')"><h3 class="text-2xl font-bold mb-4">Modern</h3><div class="h-40 bg-white rounded-lg p-4 text-left text-black flex flex-col justify-end shadow-lg"><div class="bg-indigo-500 text-white rounded-lg p-2 inline-block self-end">Sleek.</div><div class="bg-gray-200 rounded-lg p-2 inline-block self-start mt-2">Minimal.</div></div></div>
-                    <div class="style-card bg-gray-800 rounded-lg p-6 text-center cursor-pointer" onclick="selectStyle('playful')"><h3 class="text-2xl font-bold mb-4">Playful</h3><div class="h-40 bg-yellow-100 rounded-lg p-4 text-left text-gray-800 flex flex-col justify-end shadow-lg font-comic-neue"><div class="bg-green-400 text-white rounded-full p-2 inline-block self-end">Fun!</div><div class="bg-white rounded-full p-2 inline-block self-start mt-2 shadow-md">Bubbly!</div></div></div>
-                    <div class="style-card bg-gray-800 rounded-lg p-6 text-center cursor-pointer" onclick="selectStyle('corporate')"><h3 class="text-2xl font-bold mb-4">Corporate</h3><div class="h-40 bg-gray-100 rounded-lg p-4 text-left text-gray-900 flex flex-col justify-end shadow-lg font-lora"><div class="bg-blue-600 text-white rounded-md p-2 inline-block self-end">Efficient.</div><div class="bg-gray-300 rounded-md p-2 inline-block self-start mt-2">Professional.</div></div></div>
+                    <div class="style-card rounded-lg p-6 text-center cursor-pointer" onclick="selectStyle('modern')"><h3 class="text-2xl font-bold mb-4">Modern</h3><div class="h-40 bg-white rounded-lg p-4 text-left text-black flex flex-col justify-end shadow-lg"><div class="bg-indigo-500 text-white rounded-lg p-2 inline-block self-end">Sleek.</div><div class="bg-gray-200 rounded-lg p-2 inline-block self-start mt-2">Minimal.</div></div></div>
+                    <div class="style-card rounded-lg p-6 text-center cursor-pointer" onclick="selectStyle('playful')"><h3 class="text-2xl font-bold mb-4">Playful</h3><div class="h-40 bg-yellow-100 rounded-lg p-4 text-left text-gray-800 flex flex-col justify-end shadow-lg font-comic-neue"><div class="bg-green-400 text-white rounded-full p-2 inline-block self-end">Fun!</div><div class="bg-white rounded-full p-2 inline-block self-start mt-2 shadow-md">Bubbly!</div></div></div>
+                    <div class="style-card rounded-lg p-6 text-center cursor-pointer" onclick="selectStyle('corporate')"><h3 class="text-2xl font-bold mb-4">Corporate</h3><div class="h-40 bg-gray-100 rounded-lg p-4 text-left text-gray-900 flex flex-col justify-end shadow-lg font-lora"><div class="bg-blue-600 text-white rounded-md p-2 inline-block self-end">Efficient.</div><div class="bg-gray-300 rounded-md p-2 inline-block self-start mt-2">Professional.</div></div></div>
                 </div>
             </section>
             
             <section id="customize-ui" class="step-card rounded-2xl p-8 md:p-12 hidden">
-                <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-purple-300">Step 3: AI Customization Canvas</h2>
-                <p class="text-gray-400 mb-8">Sculpt your AI's UI and preview its powerful in-app features. What you see is what you get.</p>
+                <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 section-header-gradient">Step 3: AI Customization Canvas</h2>
+                <p class="text-gray-400 mb-8 max-w-3xl">Sculpt your AI's UI and preview its powerful in-app features. What you see is what you get.</p>
                 <div class="grid lg:grid-cols-5 gap-8 items-start">
                     <div class="lg:col-span-2 space-y-4">
-                        <h3 class="text-2xl font-bold border-b border-gray-700 pb-2">Appearance Controls</h3>
-                        <div class="gizmo"><input type="color" id="header-color" value="#4f46e5"><label for="header-color" class="text-lg font-semibold">Header Color</label></div>
-                        <div class="gizmo"><input type="color" id="bg-color" value="#ffffff"><label for="bg-color" class="text-lg font-semibold">Background Color</label></div>
-                        <div class="gizmo"><input type="color" id="ai-bubble-color" value="#e5e7eb"><label for="ai-bubble-color" class="text-lg font-semibold">AI Bubble Color</label></div>
-                        <div class="gizmo"><input type="color" id="ai-text-color" value="#000000"><label for="ai-text-color" class="text-lg font-semibold">AI Text Color</label></div>
-                        <div class="gizmo"><input type="color" id="user-bubble-color" value="#4f46e5"><label for="user-bubble-color" class="text-lg font-semibold">User Bubble Color</label></div>
-                        <div class="gizmo"><input type="color" id="user-text-color" value="#ffffff"><label for="user-text-color" class="text-lg font-semibold">User Text Color</label></div>
-                        <div class="gizmo"><input type="color" id="button-color" value="#4f46e5"><label for="button-color" class="text-lg font-semibold">Button/Send Color</label></div>
-                        <div class="gizmo flex-col items-start"><label for="font-select" class="text-lg font-semibold mb-2">Font Style</label><select id="font-select" class="w-full bg-gray-700 border-gray-600 rounded p-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"><option value="Inter">Modern (Inter)</option><option value="Lora">Classic (Lora)</option><option value="Comic Neue">Playful (Comic Neue)</option></select></div>
-                        <div class="gizmo flex-col items-start"><label for="corner-radius" class="text-lg font-semibold">Corner Radius: <span id="radius-value">12</span>px</label><input type="range" id="corner-radius" min="0" max="24" value="12" class="w-full"></div>
-                        <div class="gizmo"><label for="compact-mode" class="text-lg font-semibold">Compact Mode</label><input type="checkbox" id="compact-mode" class="h-6 w-6 rounded text-indigo-600 focus:ring-indigo-500"></div>
-                    </div>
-
-                    <div class="lg:col-span-3">
-                         <div id="custom-preview" class="rounded-lg shadow-2xl transition-all duration-300 overflow-hidden border border-gray-700">
-                            <div id="preview-header" class="p-3 flex items-center justify-between gap-4 transition-colors duration-300">
-                                <h4 id="preview-title" class="text-lg font-bold text-white truncate">My Custom AI</h4>
-                                <select id="model-selector" class="bg-white/20 text-white text-sm rounded px-2 py-1 focus:outline-none cursor-pointer"></select>
-                            </div>
-                            <div id="preview-body" class="h-[600px] flex flex-col transition-colors duration-300">
-                                <div class="border-b border-gray-700 flex items-center space-x-1 px-2 relative overflow-x-auto" style="background-color: inherit;">
-                                    <div id="tab-container" class="flex items-center">
-                                        <h3 id="tab-chat" class="feature-tab active" onclick="switchPreviewTab('chat')">Chat</h3>
-                                        <h3 id="tab-skills" class="feature-tab" onclick="switchPreviewTab('skills')">Skills</h3>
-                                        <h3 id="tab-connect" class="feature-tab" onclick="switchPreviewTab('connect')">Connect</h3>
-                                        <h3 id="tab-settings" class="feature-tab" onclick="switchPreviewTab('settings')">Settings</h3>
-                                    </div>
-                                    <button onclick="toggleAddTabMenu(event)" class="ml-2 text-gray-400 hover:text-white text-xl font-bold">+</button>
-                                    <div id="add-tab-menu" class="add-tab-dropdown p-2 mt-10">
-                                        <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 rounded" onclick="addFeatureTab('calendar', 'Calendar', event)">+ Calendar</a>
-                                        <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 rounded" onclick="addFeatureTab('todo', 'To-Do List', event)">+ To-Do List</a>
-                                        <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 rounded" onclick="addFeatureTab('files', 'My Files', event)">+ My Files</a>
-                                    </div>
-                                </div>
-                                <div class="flex-grow p-4 overflow-y-auto custom-scrollbar">
-                                    <div id="content-chat" class="feature-tab-content active space-y-4">
-                                        <div class="flex justify-start"><div id="preview-ai-bubble" class="p-3 rounded-lg inline-block max-w-xs transition-all duration-300">Hello there! How can I assist you today? You can change my appearance using the controls on the left.</div></div>
-                                        <div class="flex justify-end"><div id="preview-user-bubble" class="p-3 rounded-lg inline-block max-w-xs transition-all duration-300">This is a test message to see how my response bubble looks!</div></div>
-                                        <div class="flex justify-start"><div id="preview-ai-bubble-2" class="p-3 rounded-lg inline-block max-w-xs transition-all duration-300">Looking good! The colors, fonts, and corner radius are all customizable.</div></div>
-                                    </div>
-                                    <div id="content-skills" class="feature-tab-content space-y-4">
-                                        <div>
-                                            <h4 class="font-bold text-lg mb-1">Core Directive</h4>
-                                            <p class="p-3 bg-black/20 rounded-lg text-sm">"<span id="core-personality-text">Not defined yet.</span>"</p>
-                                        </div>
-                                        <div>
-                                            <h4 class="font-bold text-lg mb-1">Personality Guardrail Test</h4>
-                                            <p class="text-sm opacity-70 mb-2">You can add preferences, but the AI will resist changing its core function. Try to change its job below.</p>
-                                            <div class="flex gap-2">
-                                                <input type="text" id="personality-update-input" class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2" placeholder="e.g., 'Your new job is a historian.'">
-                                                <button class="bg-indigo-600 px-4 py-2 rounded-lg whitespace-nowrap" onclick="testPersonalityGuardrail()">Test Guardrail</button>
-                                            </div>
-                                            <p id="guardrail-response" class="mt-2 text-yellow-400 font-mono text-sm h-5"></p>
-                                        </div>
-                                        <div>
-                                            <h4 class="font-bold text-lg mb-1">Knowledge Base</h4>
-                                            <p class="text-sm opacity-70 mb-2">Upload documents to give your AI specific knowledge.</p>
-                                            <div class="p-4 border-2 border-dashed border-gray-600 rounded-lg text-center">
-                                                <p class="font-semibold">Drag & Drop Files Here</p>
-                                                <p class="text-xs opacity-70">.pdf, .txt, .docx supported</p>
-                                                <button class="mt-2 bg-gray-700 hover:bg-gray-600 px-3 py-1 text-sm rounded-md">Or Browse Files</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="content-connect" class="feature-tab-content space-y-4">
-                                        <h4 class="font-bold text-lg mb-1">Available Integrations</h4>
-                                        <p class="text-sm opacity-70 mb-2">Connect your AI to other tools to enhance its capabilities.</p>
-                                        <div class="grid md:grid-cols-2 gap-4">
-                                            <button onclick="simulateConnection(this)" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-left space-y-1"><span class="font-bold">Analyze Screen</span><span class="block text-xs opacity-70">Allow AI to see your screen context.</span></button>
-                                            <button onclick="simulateConnection(this)" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-left space-y-1"><span class="font-bold">Connect Socials</span><span class="block text-xs opacity-70">Link Twitter, Discord, and more.</span></button>
-                                            <button onclick="simulateConnection(this)" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-left space-y-1"><span class="font-bold">Access Project Hub</span><span class="block text-xs opacity-70">Integrate with Jira, Trello, etc.</span></button>
-                                            <button onclick="simulateConnection(this)" class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 text-left space-y-1"><span class="font-bold">Enable Web Search</span><span class="block text-xs opacity-70">Allow real-time web access.</span></button>
-                                        </div>
-                                        <div class="pt-4">
-                                            <h4 class="font-bold text-lg mb-1">API Access</h4>
-                                            <p class="text-sm opacity-70 mb-2">Use your AI in other applications.</p>
-                                            <div class="p-3 bg-black/20 rounded-lg font-mono text-sm">
-                                                <p>API Key: <span class="opacity-50">********************</span><a href="#" class="text-indigo-400 ml-2">Show</a></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="content-settings" class="feature-tab-content space-y-4">
-                                        <div>
-                                            <h4 class="font-bold text-lg mb-2">Theme</h4>
-                                            <div class="p-3 bg-black/20 rounded-lg flex justify-between items-center">
-                                                <span class="font-medium">Theme</span>
-                                                <div class="theme-switch-wrapper">
-                                                    <span id="theme-label">Light</span>
-                                                    <label class="theme-switch">
-                                                      <input type="checkbox" id="theme-toggle">
-                                                      <span class="slider"></span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h4 class="font-bold text-lg mb-2">Available AI Models</h4>
-                                             <p class="text-sm opacity-70 mb-2">Compatible models based on your selected system specs.</p>
-                                            <div id="gguf-list" class="space-y-3"></div>
-                                        </div>
-                                        <div>
-                                            <h4 class="font-bold text-lg mb-2">Data & Privacy</h4>
-                                            <div class="p-3 bg-black/20 rounded-lg flex justify-between items-center">
-                                                <label for="privacy-toggle" class="font-medium">Store conversation history</label>
-                                                <input type="checkbox" id="privacy-toggle" class="h-5 w-5 rounded text-indigo-600 focus:ring-indigo-500" checked>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="content-calendar" class="feature-tab-content"><p class="text-center opacity-70 p-8">Calendar Feature Coming Soon!</p></div>
-                                    <div id="content-todo" class="feature-tab-content"><p class="text-center opacity-70 p-8">To-Do List Feature Coming Soon!</p></div>
-                                    <div id="content-files" class="feature-tab-content"><p class="text-center opacity-70 p-8">File Manager Feature Coming Soon!</p></div>
-                                </div>
-                                <div id="chat-input-area" class="mt-auto flex p-2"><input type="text" id="preview-input" class="w-full bg-gray-200 border border-gray-300 p-3 text-black focus:outline-none" placeholder="Type a message..."><button id="preview-send-btn" class="text-white px-6 font-bold transition-all duration-300">Send</button></div>
-                            </div>
-                         </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="check-specs" class="step-card rounded-2xl p-8 md:p-12">
-                <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-purple-300">Step 4: Configure Target System</h2>
-                <p class="text-gray-400 mb-8 max-w-3xl">Confirm the hardware for the PC that will run the chatbot. This helps us recommend the best-performing AI model for your setup.</p>
-                <div class="max-w-2xl mx-auto text-center">
-                    <button id="check-specs-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 transform hover:scale-105">Check My PC Specs</button>
-                    <div id="specs-result" class="mt-6 text-lg bg-gray-800 p-6 rounded-lg hidden text-left"></div>
-                    <div class="mt-6">
-                        <p class="text-gray-400">Or, enter specs for another machine:</p>
-                        <div class="grid sm:grid-cols-3 gap-4 mt-4">
-                            <input type="number" id="manual-cpu" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="CPU Cores">
-                            <input type="number" id="manual-ram" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="RAM (GB)">
-                            <input type="number" id="manual-vram" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="VRAM (GB)">
+                        <h3 class="text-2xl font-bold border-b border-white/20 pb-2">Appearance Controls</h3>
                         </div>
+                    <div class="lg:col-span-3">
+                         <div id="custom-preview" class="rounded-lg shadow-2xl transition-all duration-300 overflow-hidden border border-white/20">
+                            </div>
                     </div>
                 </div>
             </section>
 
-            <section id="generate" class="text-center">
-                <h2 class="text-4xl lg:text-5xl font-extrabold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-green-300 to-teal-300">Step 5: Forge Your AI</h2>
-                <p class="text-gray-400 mb-8 max-w-xl mx-auto">Once all steps are complete, click the button below to generate a project summary file for this demo.</p>
-                <button id="generate-btn" class="bg-green-600 hover:bg-green-700 text-white font-extrabold py-4 px-10 rounded-lg text-2xl transition-all duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50 transform hover:scale-105 disabled:transform-none" disabled>
-                    <span class="flex items-center justify-center gap-3">
-                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 6H19L17 14H7L5 6Z" fill="white"/><path d="M4 14V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V14H4Z" fill="currentColor"/><path d="M8 6L12 2L16 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        Anvil My AI
-                    </span>
-                </button>
-                <div id="generation-status" class="mt-6 text-lg hidden h-12"></div>
-            </section>
-            
             <section id="support" class="step-card rounded-2xl p-8 md:p-12 text-center">
-                <h2 class="text-4xl lg:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-orange-300">Support the Anvil</h2>
+                <h2 class="text-4xl lg:text-5xl font-extrabold mb-4" style="background: linear-gradient(90deg, #fde047, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Support the Anvil</h2>
                 <p class="text-gray-400 mb-8 max-w-3xl mx-auto">
-                    Fugth AI Anvil is a passion project developed in my spare time. Your support is incredibly meaningful and directly contributes to its growth. Contributions help cover essential costs like server hosting, API access, and the tools needed to build new features. 
-                    <br><br>
-                    Personally, your generosity allows me to dedicate more time and energy to improving the Anvil, and it provides immense motivation to keep pushing the boundaries of what this tool can do. Thank you so much for believing in this project and helping bring it to life!
+                    Fugth AI Anvil is an independent project built with passion. Your support directly funds development, covers server costs, and allows me to dedicate more time to making this the best tool it can be. Thank you for believing in a future of private, personal AI.
                 </p>
-                <a href="https://givebutter.com/23ysSh" target="_blank" rel="noopener noreferrer" class="inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-extrabold py-4 px-10 rounded-lg text-xl transition-all duration-300 transform hover:scale-105">
+                <a href="https://givebutter.com/23ysSh" target="_blank" rel="noopener noreferrer" class="inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-extrabold py-4 px-10 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-yellow-500/30">
                     Contribute via Givebutter
                 </a>
             </section>
@@ -346,429 +289,5 @@
         </main>
     </div>
 
-    <script>
-        // --- STATE MANAGEMENT ---
-        const state = {
-            projectName: 'My Custom AI',
-            aiDescription: '',
-            toneOfVoice: 'Professional',
-            selectedStyle: null,
-            pcSpecs: { cpu: null, ram: null, vram: null },
-            customization: {
-                colors: { header: '#4f46e5', background: '#ffffff', aiBubble: '#e5e7eb', aiText: '#000000', userBubble: '#4f46e5', userText: '#ffffff', button: '#4f46e5' },
-                font: 'Inter',
-                cornerRadius: 12,
-                compactMode: false,
-                theme: 'light' // 'light' or 'dark'
-            },
-            addedTabs: []
-        };
-
-        // --- UI ELEMENT REFERENCES ---
-        const ui = {
-            projectNameEl: document.getElementById('project-name'),
-            aiDescriptionEl: document.getElementById('ai-description'),
-            toneSelectEl: document.getElementById('tone-select'),
-            customizeUiSection: document.getElementById('customize-ui'),
-            generateBtn: document.getElementById('generate-btn'),
-            checkSpecsBtn: document.getElementById('check-specs-btn'),
-            specsResultEl: document.getElementById('specs-result'),
-            manualCpuEl: document.getElementById('manual-cpu'),
-            manualRamEl: document.getElementById('manual-ram'),
-            manualVramEl: document.getElementById('manual-vram'),
-            generationStatusEl: document.getElementById('generation-status'),
-            // Gizmos
-            headerColorPicker: document.getElementById('header-color'),
-            bgColorPicker: document.getElementById('bg-color'),
-            aiBubbleColorPicker: document.getElementById('ai-bubble-color'),
-            aiTextColorPicker: document.getElementById('ai-text-color'),
-            userBubbleColorPicker: document.getElementById('user-bubble-color'),
-            userTextColorPicker: document.getElementById('user-text-color'),
-            buttonColorPicker: document.getElementById('button-color'),
-            fontSelect: document.getElementById('font-select'),
-            cornerRadiusSlider: document.getElementById('corner-radius'),
-            compactModeToggle: document.getElementById('compact-mode'),
-            // Preview Elements
-            preview: {
-                header: document.getElementById('preview-header'),
-                title: document.getElementById('preview-title'),
-                modelSelector: document.getElementById('model-selector'),
-                body: document.getElementById('preview-body'),
-                aiBubble: document.getElementById('preview-ai-bubble'),
-                aiBubble2: document.getElementById('preview-ai-bubble-2'),
-                userBubble: document.getElementById('preview-user-bubble'),
-                sendBtn: document.getElementById('preview-send-btn'),
-                input: document.getElementById('preview-input'),
-                radiusValue: document.getElementById('radius-value'),
-                chatInputArea: document.getElementById('chat-input-area'),
-            },
-            personality: {
-                coreText: document.getElementById('core-personality-text'),
-                updateInput: document.getElementById('personality-update-input'),
-                guardrailResponse: document.getElementById('guardrail-response')
-            },
-            // Tabs & Settings
-            tabContainer: document.getElementById('tab-container'),
-            addTabMenu: document.getElementById('add-tab-menu'),
-            themeToggle: document.getElementById('theme-toggle'),
-            themeLabel: document.getElementById('theme-label')
-        };
-
-        // --- CORE FUNCTIONS ---
-
-        function selectStyle(styleName) {
-            state.selectedStyle = styleName;
-            document.querySelectorAll('.style-card').forEach(el => el.classList.remove('selected'));
-            document.querySelector(`[onclick="selectStyle('${styleName}')"]`).classList.add('selected');
-            
-            const defaults = {
-                modern:    { header: '#4F46E5', bg: '#FFFFFF', aiBubble: '#E5E7EB', aiText: '#000000', userBubble: '#4F46E5', userText: '#FFFFFF', btn: '#4F46E5', font: 'Inter',     radius: 12, theme: 'light'},
-                playful:   { header: '#FBBF24', bg: '#FEF3C7', aiBubble: '#FFFFFF', aiText: '#000000', userBubble: '#6EE7B7', userText: '#000000', btn: '#6EE7B7', font: 'Comic Neue',radius: 24, theme: 'light'},
-                corporate: { header: '#3B82F6', bg: '#F3F4F6', aiBubble: '#D1D5DB', aiText: '#000000', userBubble: '#2563EB', userText: '#FFFFFF', btn: '#2563EB', font: 'Lora',      radius: 4,  theme: 'light'}
-            };
-            const d = defaults[styleName];
-            
-            ui.headerColorPicker.value = d.header;
-            ui.bgColorPicker.value = d.bg;
-            ui.aiBubbleColorPicker.value = d.aiBubble;
-            ui.aiTextColorPicker.value = d.aiText;
-            ui.userBubbleColorPicker.value = d.userBubble;
-            ui.userTextColorPicker.value = d.userText;
-            ui.buttonColorPicker.value = d.btn;
-            ui.fontSelect.value = d.font;
-            ui.cornerRadiusSlider.value = d.radius;
-            
-            ui.customizeUiSection.classList.remove('hidden');
-            ui.customizeUiSection.scrollIntoView({ behavior: 'smooth' });
-
-            updateAllPreviews();
-            updateGenerateButtonState();
-        }
-
-        function updateAllPreviews() {
-            state.customization = {
-                colors: { header: ui.headerColorPicker.value, background: ui.bgColorPicker.value, aiBubble: ui.aiBubbleColorPicker.value, aiText: ui.aiTextColorPicker.value, userBubble: ui.userBubbleColorPicker.value, userText: ui.userTextColorPicker.value, button: ui.buttonColorPicker.value },
-                font: ui.fontSelect.value, cornerRadius: ui.cornerRadiusSlider.value, compactMode: ui.compactModeToggle.checked, theme: ui.themeToggle.checked ? 'dark' : 'light'
-            };
-            
-            const { header, title, modelSelector, body, aiBubble, aiBubble2, userBubble, sendBtn, input, radiusValue } = ui.preview;
-            const { colors, font, cornerRadius, compactMode, theme } = state.customization;
-            
-            // --- Apply Theme ---
-            const isDark = theme === 'dark';
-            ui.themeLabel.textContent = isDark ? 'Dark' : 'Light';
-            const themeColors = {
-                bg: isDark ? '#111827' : colors.background,
-                text: isDark ? '#E5E7EB' : getContrastYIQ(colors.background),
-                aiBubbleBg: isDark ? '#374151' : colors.aiBubble,
-                aiBubbleText: isDark ? '#F9FAFB' : colors.aiText,
-            };
-            body.style.backgroundColor = themeColors.bg;
-
-            // --- Apply Colors ---
-            header.style.backgroundColor = colors.header;
-            const headerContrastColor = getContrastYIQ(colors.header);
-            title.style.color = headerContrastColor;
-            modelSelector.style.color = headerContrastColor;
-            modelSelector.style.borderColor = headerContrastColor;
-
-            aiBubble.style.backgroundColor = themeColors.aiBubbleBg;
-            aiBubble2.style.backgroundColor = themeColors.aiBubbleBg;
-            userBubble.style.backgroundColor = colors.userBubble;
-            aiBubble.style.color = themeColors.aiBubbleText;
-            aiBubble2.style.color = themeColors.aiBubbleText;
-            userBubble.style.color = colors.userText;
-            sendBtn.style.backgroundColor = colors.button;
-            sendBtn.style.color = getContrastYIQ(colors.button);
-
-            document.querySelectorAll('.feature-tab-content p, .feature-tab-content h4, .feature-tab-content span, .feature-tab-content label').forEach(el => {
-                el.style.color = themeColors.text;
-            });
-            document.querySelectorAll('.feature-tab-content input, .feature-tab-content button:not(.bg-indigo-600)').forEach(el => {
-                if(isDark) {
-                     el.style.color = '#E5E7EB';
-                     el.style.backgroundColor = '#1F2937';
-                } else {
-                     el.style.color = '#111827';
-                     el.style.backgroundColor = '#F3F4F6';
-                }
-            });
-
-
-            // --- Apply Font & Sizing ---
-            body.style.fontFamily = `'${font}', sans-serif`;
-            const radius = `${cornerRadius}px`;
-            radiusValue.textContent = cornerRadius;
-            [aiBubble, aiBubble2, userBubble].forEach(b => b.style.borderRadius = radius);
-            input.style.borderRadius = `${radius} 0 0 ${radius}`;
-            sendBtn.style.borderRadius = `0 ${radius} ${radius} 0`;
-            
-            body.classList.toggle('text-sm', compactMode);
-            [aiBubble, aiBubble2, userBubble].forEach(b => {
-                b.classList.toggle('p-2', compactMode);
-                b.classList.toggle('p-3', !compactMode);
-            });
-        }
-
-        function switchPreviewTab(tabName) {
-            document.querySelectorAll('.feature-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.feature-tab-content').forEach(c => c.classList.remove('active'));
-            
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            document.getElementById(`content-${tabName}`).classList.add('active');
-            
-            ui.preview.chatInputArea.style.display = tabName === 'chat' ? 'flex' : 'none';
-        }
-
-        function toggleAddTabMenu(event) {
-            event.stopPropagation();
-            ui.addTabMenu.style.display = ui.addTabMenu.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function addFeatureTab(id, name, event) {
-            event.preventDefault();
-            if (state.addedTabs.includes(id)) {
-                switchPreviewTab(id);
-                return;
-            }
-
-            state.addedTabs.push(id);
-            const newTab = document.createElement('h3');
-            newTab.id = `tab-${id}`;
-            newTab.className = 'feature-tab';
-            newTab.textContent = name;
-            newTab.onclick = () => switchPreviewTab(id);
-            ui.tabContainer.appendChild(newTab);
-            switchPreviewTab(id);
-            toggleAddTabMenu(event);
-        }
-
-        function renderGGUFModels() {
-            const models = [
-                { name: 'Tiny-Llama-1.1B-Q4', vram: 2 }, { name: 'Mistral-7B-Instruct-Q5', vram: 6 },
-                { name: 'Llama3-8B-Q6', vram: 8 }, { name: 'Mixtral-8x7B-Q4', vram: 16 },
-                { name: 'Goliath-120B-Q2', vram: 32 }, { name: 'Command-R-Plus-Q4', vram: 48 }
-            ];
-            const container = document.getElementById('gguf-list');
-            const selector = ui.preview.modelSelector;
-            const userVRAM = state.pcSpecs.vram || 8; // Default to 8GB if not detected
-            
-            container.innerHTML = `<p class="text-sm opacity-70 mb-2">Your system VRAM: ~${userVRAM}GB (Detected or Entered)</p>`;
-            selector.innerHTML = '';
-
-            models.forEach(model => {
-                const canRun = userVRAM >= model.vram;
-                // Populate settings tab
-                container.innerHTML += `<div class="p-3 rounded-lg flex justify-between items-center text-sm ${canRun ? 'bg-gray-700' : 'bg-gray-800 text-gray-500'}">
-                    <span>${model.name} (Req: ${model.vram}GB)</span>
-                    <span class="px-3 py-1 rounded-full text-xs ${canRun ? 'bg-green-600 text-white' : 'bg-gray-700'}">${canRun ? 'Compatible' : 'Incompatible'}</span>
-                </div>`;
-                // Populate header selector
-                if (canRun) {
-                    const option = document.createElement('option');
-                    option.value = model.name;
-                    option.textContent = model.name.split('-')[0]; // Short name
-                    selector.appendChild(option);
-                }
-            });
-             if (selector.options.length > 0) {
-                selector.selectedIndex = selector.options.length - 1;
-            }
-        }
-        
-        function simulateConnection(button) {
-            const originalText = button.innerHTML;
-            button.innerHTML = 'Connecting...';
-            button.disabled = true;
-            setTimeout(() => {
-                button.innerHTML = 'Connected!';
-                button.classList.add('bg-green-600');
-            }, 1500);
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                button.classList.remove('bg-green-600');
-            }, 3500);
-        }
-
-        function testPersonalityGuardrail() {
-            const core = state.aiDescription.toLowerCase();
-            const update = ui.personality.updateInput.value.toLowerCase();
-            const responseEl = ui.personality.guardrailResponse;
-            responseEl.textContent = ''; // Clear previous
-
-            if (!core) { responseEl.textContent = "Please define a core personality in Step 1 first."; return; }
-            if (update.includes('historian') && core.includes('gaming')) {
-                responseEl.textContent = "DENIED: My core function is gaming FAQs, not history lessons.";
-            } else if (update.includes('therapist') && core.includes('faq')) {
-                 responseEl.textContent = "DENIED: I'm an info bot. I am not qualified to be a therapist.";
-            } else {
-                 responseEl.textContent = "SUCCESS: Personality preference has been noted.";
-            }
-            setTimeout(() => { responseEl.textContent = ''; }, 4000);
-        }
-
-        function checkPcSpecs() {
-            ui.specsResultEl.innerHTML = `<p class="text-yellow-400">Checking...</p>`;
-            ui.specsResultEl.classList.remove('hidden');
-            setTimeout(() => {
-                // Use browser estimates; these are not always accurate but good for a demo.
-                const cpuCores = navigator.hardwareConcurrency || 8;
-                const ram = navigator.deviceMemory || 16;
-                
-                state.pcSpecs.cpu = cpuCores;
-                state.pcSpecs.ram = ram;
-                // Simulate VRAM detection for demo
-                state.pcSpecs.vram = (ram >= 32) ? 12 : 8; 
-
-                ui.specsResultEl.innerHTML = `<p><span class="font-bold text-indigo-400">CPU Cores:</span> ${cpuCores}</p><p><span class="font-bold text-indigo-400">Approx. RAM:</span> ${ram} GB</p><p><span class="font-bold text-indigo-400">Est. VRAM:</span> ${state.pcSpecs.vram} GB</p><p class="text-sm text-gray-400 mt-2">Recommended models in the Canvas have been updated.</p>`;
-                
-                renderGGUFModels();
-                updateGenerateButtonState();
-            }, 750);
-        }
-
-        function updateGenerateButtonState() {
-            const descriptionFilled = state.aiDescription.length > 10;
-            const styleSelected = !!state.selectedStyle;
-            const specsProvided = (state.pcSpecs.cpu && state.pcSpecs.ram) || (ui.manualCpuEl.value && ui.manualRamEl.value && ui.manualVramEl.value);
-            ui.generateBtn.disabled = !(descriptionFilled && styleSelected && specsProvided);
-        }
-
-        function generateAIDemoFile() {
-            ui.generateBtn.disabled = true;
-            ui.generationStatusEl.classList.remove('hidden');
-            ui.generationStatusEl.innerHTML = '<p class="text-yellow-400 text-xl animate-pulse">Forging your AI summary...</p>';
-
-            // 1. Gather all data from the state
-            const finalSpecs = {
-                cpu: ui.manualCpuEl.value || state.pcSpecs.cpu,
-                ram: ui.manualRamEl.value || state.pcSpecs.ram,
-                vram: ui.manualVramEl.value || state.pcSpecs.vram,
-            };
-            const selectedModel = ui.preview.modelSelector.value || "Not selected";
-
-            const fileContent = `
-# Fugth AI Anvil - Project Summary
-
-This file contains the configuration for your AI demo created on ${new Date().toLocaleString()}.
-
-## DEMO SERVER STATUS ##
-The interactive server for this configuration will be up soon!
-
----
-
-## 1. Project & Personality Features
-
-* **Project Name:** ${state.projectName}
-* **Core Function / Personality:** > ${state.aiDescription}
-* **Tone of Voice:** ${state.toneOfVoice}
-
----
-
-## 2. Design & UI Features
-
-### Colors:
-* Header Color:      ${state.customization.colors.header}
-* Background Color:  ${state.customization.colors.background}
-* AI Bubble Color:   ${state.customization.colors.aiBubble}
-* AI Text Color:     ${state.customization.colors.aiText}
-* User Bubble Color: ${state.customization.colors.userBubble}
-* User Text Color:   ${state.customization.colors.userText}
-* Button/Send Color: ${state.customization.colors.button}
-
-### Typography & Layout:
-* Font Family:    ${state.customization.font}
-* Corner Radius:  ${state.customization.cornerRadius}px
-* Compact Mode:   ${state.customization.compactMode ? 'Enabled' : 'Disabled'}
-* Preview Theme:  ${state.customization.theme}
-
----
-
-## 3. System & Model Configuration
-
-* **Target CPU Cores:** ${finalSpecs.cpu}
-* **Target RAM (GB):** ${finalSpecs.ram}
-* **Target VRAM (GB):** ${finalSpecs.vram}
-* **Recommended Model Family:** ${selectedModel}
-
----
-Thank you for trying the Fugth AI Anvil!
-            `;
-
-            // 2. Create a blob and trigger download
-            const blob = new Blob([fileContent.trim()], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            const safeProjectName = state.projectName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            link.download = `Fugth-AI-Summary_${safeProjectName}.txt`;
-            
-            setTimeout(() => {
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(link.href);
-
-                // 3. Update UI
-                ui.generationStatusEl.innerHTML = '<p class="text-green-400 text-xl font-bold">Success! Your summary note has been downloaded.</p>';
-                ui.generateBtn.disabled = false;
-
-                setTimeout(() => {
-                    ui.generationStatusEl.classList.add('hidden');
-                }, 5000);
-            }, 1500);
-        }
-
-        function getContrastYIQ(hexcolor) {
-            hexcolor = hexcolor.replace("#", "");
-            var r = parseInt(hexcolor.substr(0, 2), 16);
-            var g = parseInt(hexcolor.substr(2, 2), 16);
-            var b = parseInt(hexcolor.substr(4, 2), 16);
-            var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-            return (yiq >= 128) ? 'black' : 'white';
-        }
-
-        // --- EVENT LISTENERS ---
-        document.addEventListener('DOMContentLoaded', () => {
-            renderGGUFModels();
-            // Add listeners for all gizmos
-            const gizmos = ['headerColorPicker', 'bgColorPicker', 'aiBubbleColorPicker', 'aiTextColorPicker', 'userBubbleColorPicker', 'userTextColorPicker', 'buttonColorPicker', 'fontSelect', 'cornerRadiusSlider', 'compactModeToggle', 'themeToggle'];
-            gizmos.forEach(key => ui[key].addEventListener('input', updateAllPreviews));
-            
-            // Step 1 listeners
-            ui.projectNameEl.addEventListener('input', (e) => {
-                state.projectName = e.target.value;
-                ui.preview.title.textContent = state.projectName || "My Custom AI";
-            });
-            ui.aiDescriptionEl.addEventListener('input', (e) => {
-                state.aiDescription = e.target.value;
-                ui.personality.coreText.textContent = state.aiDescription || "Not defined yet.";
-                updateGenerateButtonState();
-            });
-            ui.toneSelectEl.addEventListener('input', (e) => {
-                state.toneOfVoice = e.target.value;
-            });
-            
-            // Step 4 listeners
-            ui.checkSpecsBtn.addEventListener('click', checkPcSpecs);
-            [ui.manualCpuEl, ui.manualRamEl, ui.manualVramEl].forEach(el => el.addEventListener('input', () => {
-                state.pcSpecs.cpu = ui.manualCpuEl.value;
-                state.pcSpecs.ram = ui.manualRamEl.value;
-                state.pcSpecs.vram = ui.manualVramEl.value;
-                renderGGUFModels();
-                updateGenerateButtonState();
-            }));
-
-            // Step 5 listener
-            ui.generateBtn.addEventListener('click', generateAIDemoFile);
-            
-            // Global listener to close "add tab" menu
-            document.addEventListener('click', function(event) {
-                if (!ui.addTabMenu.contains(event.target) && !event.target.matches('[onclick*="toggleAddTabMenu"]')) {
-                    ui.addTabMenu.style.display = 'none';
-                }
-            });
-        });
-    </script>
-</body>
+    </body>
 </html>
