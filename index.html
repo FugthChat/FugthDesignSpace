@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fugth AI Anvil - Build Your Custom AI</title>
+    <title>Fugth AI Anvil - Forge Your Custom AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:wght@400;500;600&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* Base & Scroll */
         html { scroll-behavior: smooth; }
@@ -18,8 +18,20 @@
             overflow-x: hidden;
         }
 
-        /* --- FULL PAGE BACKGROUND ANIMATION --- */
-        #background-animation-container {
+        /* Gradient Text Styles */
+        .hero-text-gradient {
+            background: linear-gradient(90deg, #93c5fd, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .section-header-gradient {
+            background: linear-gradient(90deg, #a5b4fc, #d8b4fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Fullscreen Background Animation --- */
+        #background-animation {
             position: fixed;
             top: 0;
             left: 0;
@@ -28,305 +40,411 @@
             z-index: -1;
             overflow: hidden;
         }
-        .bg-tool {
+        .animated-tool {
             position: absolute;
-            filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.5));
+            filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
             opacity: 0.3;
+            animation: float 8s ease-in-out infinite;
         }
-        .bg-tool svg { fill: #a78bfa; }
-
-        /* Define multiple paths for the tools to float around */
-        @keyframes float-path-1 { 0% {top: 10vh; left: -10vw;} 100% {top: 90vh; left: 110vw; transform: rotate(360deg);} }
-        @keyframes float-path-2 { 0% {top: -10vh; left: 70vw;} 100% {top: 110vh; left: 10vw; transform: rotate(-360deg);} }
-        @keyframes float-path-3 { 0% {top: 50vh; left: 110vw;} 100% {top: 20vh; left: -10vw; transform: rotate(180deg);} }
-        @keyframes float-path-4 { 0% {top: 110vh; left: 40vw;} 100% {top: -10vh; left: 80vw; transform: rotate(-180deg);} }
-
-        .tool-1 { width: 80px; animation: float-path-1 25s linear infinite; }
-        .tool-2 { width: 60px; animation: float-path-2 30s linear infinite; animation-delay: 5s; }
-        .tool-3 { width: 90px; animation: float-path-3 20s linear infinite; animation-delay: 10s; }
-        .tool-4 { width: 70px; animation: float-path-4 35s linear infinite; animation-delay: 15s; }
-
-        /* --- END BACKGROUND ANIMATION --- */
-
-        .hero-text-gradient {
-            background: linear-gradient(90deg, #93c5fd, #a78bfa, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .section-header-gradient {
-            background: linear-gradient(90deg, #a5b4fc, #d8b4fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
         }
 
-        /* Card Styling */
+        /* --- Content & Card Styling --- */
+        #content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
         .content-card {
-            background: rgba(17, 24, 39, 0.8);
+            background: rgba(17, 24, 39, 0.8); /* Dark Blue-Gray */
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
         .content-card:hover {
             border-color: rgba(167, 139, 250, 0.5);
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        /* Interactive Feature Toggle */
-        .feature-toggle { transition: all 0.3s ease; border: 1px solid #374151; }
-        .feature-toggle.selected {
-            border-color: #818cf8;
-            background-color: rgba(99, 102, 241, 0.1);
-            transform: scale(1.03);
+        /* Pricing Section */
+        .feature-card {
+            border: 2px solid #374151;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
-        .feature-toggle input { display: none; }
+        .feature-card.selected {
+            border-color: #8b5cf6;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+        .feature-card input[type="checkbox"] { display: none; }
 
-        /* Pro Plan Toggle */
-        .plan-toggle-bg { background-color: #1f2937; }
-        .plan-toggle-handle { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #plan-selector:checked ~ .plan-toggle-bg .plan-toggle-handle { transform: translateX(100%); }
+        .pro-plan-toggle {
+            display: flex;
+            background-color: #1f2937;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            border: 1px solid #4b5563;
+        }
+        .pro-plan-toggle button {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            background-color: transparent;
+            color: #d1d5db;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .pro-plan-toggle button.active {
+            background-color: #8b5cf6;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Canvas Customization Controls (Gizmos) */
+        .gizmo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem;
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .gizmo input[type="color"] {
+            -webkit-appearance: none;
+            width: 32px;
+            height: 32px;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            padding: 0;
+        }
+        .gizmo input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        .gizmo input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 2px solid white; }
 
     </style>
 </head>
-<body class="bg-[#050816] text-white selection:bg-purple-500 selection:text-white">
+<body>
 
-    <div id="background-animation-container">
-        <div class="bg-tool tool-1">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 6H19L17 14H7L5 6Z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
+    <div id="background-animation">
         </div>
-        <div class="bg-tool tool-2">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 10h8l-2 8H2l2-8z M7 10V4h2v6H7z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
-        </div>
-        <div class="bg-tool tool-3">
-             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 18l-6-6 1.41-1.41L10 15.17l8.59-8.58L20 8l-10 10z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
-        </div>
-        <div class="bg-tool tool-4">
-             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v4h-2zm0 6h2v2h-2z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
-        </div>
-    </div>
 
-    <header class="bg-black/30 backdrop-blur-lg sticky top-0 z-50 border-b border-white/10">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="flex items-center gap-3">
-                <span class="text-2xl font-bold tracking-tight">Fugth AI Anvil</span>
-            </a>
-            <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
-                <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
-                <a href="#pro" class="hover:text-white transition-colors">Anvil Pro</a>
-                <a href="#canvas" class="hover:text-white transition-colors">Live Canvas</a>
-                <a href="https://givebutter.com/23ysSh" target="_blank" rel="noopener noreferrer" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-semibold transition-all hover:scale-105 shadow-lg shadow-purple-500/20">Support Us</a>
-            </div>
-        </nav>
-    </header>
-
-    <div class="container mx-auto px-4 py-16 md:py-24 relative z-10">
-        <main class="space-y-24 md:space-y-32">
-
-            <section id="hero" class="text-center pt-12 md:pt-16">
-                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6">
-                    <span class="hero-text-gradient">Forge Your Own</span>
-                    <br>
-                    Private AI Personality
-                </h1>
-                <p class="max-w-2xl mx-auto text-lg text-gray-400 mb-8">
-                    Stop renting generic AI. Fugth AI Anvil is a powerful, private workshop that lets you design, customize, and deploy AI chatbots that run entirely on your own computer.
-                </p>
-                <div class="flex justify-center gap-4">
-                     <a href="#pricing" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all hover:scale-105 shadow-lg shadow-purple-500/30">View Pricing</a>
+    <div id="content-wrapper">
+        <header class="bg-black/30 backdrop-blur-lg sticky top-0 z-50 border-b border-white/10">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <a href="#" class="flex items-center gap-3">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 6H19L17 14H7L5 6Z" fill="#a5b4fc"/><path d="M4 14V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V14H4Z" fill="#818cf8"/><path d="M8 6L12 2L16 6" stroke="#c4b5fd" stroke-width="2"/></svg>
+                    <span class="text-2xl font-bold tracking-tight">Fugth AI Anvil</span>
+                </a>
+                <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
+                    <a href="#customize" class="hover:text-white transition-colors">Customize</a>
+                    <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
+                    <a href="https://givebutter.com/23ysSh" target="_blank" rel="noopener noreferrer" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-semibold transition-all hover:scale-105 shadow-lg shadow-purple-500/20">Support Project</a>
                 </div>
-            </section>
+            </nav>
+        </header>
 
-            <section id="pricing" class="space-y-12">
-                <div class="text-center">
-                    <h2 class="text-4xl lg:text-5xl font-extrabold section-header-gradient">Build Your Perfect AI</h2>
-                    <p class="max-w-2xl mx-auto text-lg text-gray-400 mt-4">Start with our base AI and add the core features you need. Pay once, own it forever.</p>
-                </div>
-
-                <div class="grid md:grid-cols-3 gap-8 items-start">
-                    <div class="md:col-span-2 space-y-4">
-                        <h3 class="text-2xl font-bold">1. Select Core Features</h3>
-                        <div class="grid sm:grid-cols-2 gap-4">
-                            <label class="feature-toggle p-6 rounded-lg cursor-pointer block" data-price="50">
-                                <input type="checkbox" class="feature-checkbox">
-                                <h4 class="font-bold text-lg">Code Editor</h4>
-                                <p class="text-sm text-gray-400 mt-1">An integrated editor for your AI to write and execute code snippets.</p>
-                                <span class="text-xl font-bold text-purple-400 mt-4 block">+$50</span>
-                            </label>
-                            <label class="feature-toggle p-6 rounded-lg cursor-pointer block" data-price="40">
-                                <input type="checkbox" class="feature-checkbox">
-                                <h4 class="font-bold text-lg">Web Browser</h4>
-                                <p class="text-sm text-gray-400 mt-1">Allow your AI to browse the live web to find real-time information.</p>
-                                <span class="text-xl font-bold text-purple-400 mt-4 block">+$40</span>
-                            </label>
-                            <label class="feature-toggle p-6 rounded-lg cursor-pointer block" data-price="25">
-                                <input type="checkbox" class="feature-checkbox">
-                                <h4 class="font-bold text-lg">Bet Prediction</h4>
-                                <p class="text-sm text-gray-400 mt-1">Equip your AI with statistical models for predictive analysis.</p>
-                                <span class="text-xl font-bold text-purple-400 mt-4 block">+$25</span>
-                            </label>
-                            <label class="feature-toggle p-6 rounded-lg cursor-pointer block" data-price="15">
-                                <input type="checkbox" class="feature-checkbox">
-                                <h4 class="font-bold text-lg">Web Workspace</h4>
-                                <p class="text-sm text-gray-400 mt-1">A collaborative space for your AI to organize links and notes.</p>
-                                <span class="text-xl font-bold text-purple-400 mt-4 block">+$15</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="content-card p-8 rounded-lg sticky top-28">
-                        <h3 class="text-2xl font-bold border-b border-white/10 pb-4">Your Anvil</h3>
-                        <div class="space-y-4 py-4 text-lg">
-                            <div class="flex justify-between">
-                                <span>Base AI</span>
-                                <span>$99.00</span>
-                            </div>
-                            <div id="features-cost-summary" class="text-sm space-y-2 text-gray-400 border-b border-white/10 pb-4">
-                                </div>
-                            <div class="flex justify-between font-extrabold text-2xl pt-2">
-                                <span>Total</span>
-                                <span id="total-cost">$99.00</span>
-                            </div>
-                        </div>
-                        <button class="w-full bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all hover:scale-105">Purchase Now</button>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="pro" class="content-card rounded-2xl p-8 md:p-12 text-center max-w-4xl mx-auto">
-                 <h2 class="text-4xl lg:text-5xl font-extrabold mb-4" style="background: linear-gradient(90deg, #fde047, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Upgrade to Anvil Pro</h2>
-                <p class="text-gray-400 mb-8 max-w-2xl mx-auto">
-                    Unlock the ultimate experience with priority support, exclusive features, and massive discounts on yearly plans.
-                </p>
-
-                <div class="flex justify-center items-center gap-4 mb-8">
-                    <span>Monthly</span>
-                    <label for="plan-selector" class="cursor-pointer">
-                        <input type="checkbox" id="plan-selector" class="hidden">
-                        <div class="plan-toggle-bg w-14 h-8 rounded-full flex items-center p-1">
-                            <div class="plan-toggle-handle w-6 h-6 rounded-full bg-white shadow-lg"></div>
-                        </div>
-                    </label>
-                    <span class="flex items-center gap-2">Yearly <span class="text-xs bg-green-500 text-white font-bold px-2 py-0.5 rounded-full">Save 25%</span></span>
-                </div>
+        <div class="container mx-auto px-4 py-16 md:py-24">
+            <main class="space-y-32">
                 
-                <div class="text-5xl font-bold mb-2">
-                    <span id="pro-price">$9.99</span><span class="text-lg text-gray-400 font-medium" id="pro-period">/month</span>
-                </div>
-                <p class="text-gray-400 mb-8" id="pro-billing-desc">Billed monthly.</p>
-
-                <button class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-extrabold py-4 px-10 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-yellow-500/30">
-                    Go Pro
-                </button>
-            </section>
-
-
-            <section id="canvas" class="content-card rounded-2xl p-8 md:p-12">
-                <div class="text-center mb-12">
-                    <h2 class="text-4xl lg:text-5xl font-extrabold section-header-gradient">Live Customization Canvas</h2>
-                    <p class="max-w-2xl mx-auto text-lg text-gray-400 mt-4">This is the heart of the Anvil. Customize every visual detail of your AI and see the changes happen live. What you see is what you get.</p>
-                </div>
-                <div class="grid lg:grid-cols-5 gap-8 items-start">
-                    <div class="lg:col-span-2 space-y-4">
-                        <h3 class="text-2xl font-bold border-b border-white/20 pb-2">Appearance Controls</h3>
-                        <div class="gizmo"><input type="color" id="header-color" value="#4f46e5"><label for="header-color" class="text-lg font-semibold">Header Color</label></div>
-                        <div class="gizmo"><input type="color" id="bg-color" value="#ffffff"><label for="bg-color" class="text-lg font-semibold">Background Color</label></div>
-                        </div>
-                    <div class="lg:col-span-3">
-                         <div id="custom-preview" class="rounded-lg shadow-2xl transition-all duration-300 overflow-hidden border border-white/20">
-                             <div id="preview-header" class="p-3 flex items-center justify-between gap-4 transition-colors duration-300">...</div>
-                             <div id="preview-body" class="h-[600px] flex flex-col transition-colors duration-300">...</div>
-                         </div>
+                <section id="hero" class="text-center pt-16">
+                    <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6">
+                        <span class="hero-text-gradient">Forge Your Private AI</span>
+                    </h1>
+                    <p class="max-w-2xl mx-auto text-lg text-gray-400 mb-8">
+                        Stop renting generic AI. Fugth AI Anvil is a powerful, private workshop that lets you design, customize, and deploy AI chatbots that run entirely on your own computer.
+                    </p>
+                    <div class="flex justify-center gap-4">
+                         <a href="#customize" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all hover:scale-105 shadow-lg shadow-purple-500/30">Start Building Your AI</a>
                     </div>
-                </div>
-            </section>
+                </section>
 
-        </main>
+                <section id="customize" class="content-card rounded-2xl p-8 md:p-12">
+                    <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 section-header-gradient">Live AI Customization Canvas</h2>
+                    <p class="text-gray-400 mb-8 max-w-3xl">What you see is what you get. Use the controls on the left to design your AI, and watch it update in real-time on the right.</p>
+                    <div class="grid lg:grid-cols-5 gap-8 items-start">
+                        <div class="lg:col-span-2 space-y-4">
+                            <h3 class="text-xl font-bold border-b border-white/20 pb-2">Appearance Controls</h3>
+                            <div class="gizmo"><input type="color" id="header-color" value="#4f46e5"><label for="header-color" class="font-semibold">Header</label></div>
+                            <div class="gizmo"><input type="color" id="bg-color" value="#ffffff"><label for="bg-color" class="font-semibold">Background</label></div>
+                            <div class="gizmo"><input type="color" id="ai-bubble-color" value="#e5e7eb"><label for="ai-bubble-color" class="font-semibold">AI Bubble</label></div>
+                            <div class="gizmo"><input type="color" id="user-bubble-color" value="#4f46e5"><label for="user-bubble-color" class="font-semibold">User Bubble</label></div>
+                            
+                            <h3 class="text-xl font-bold border-b border-white/20 pb-2 pt-4">Project Details</h3>
+                            <div>
+                                <label for="project-name" class="text-gray-300 mb-2 block font-medium text-sm">Project Name</label>
+                                <input type="text" id="project-name" class="w-full bg-black/30 border border-white/20 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" placeholder="My Custom AI">
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-3">
+                             <div id="custom-preview" class="rounded-lg shadow-2xl transition-all duration-300 overflow-hidden border border-white/20">
+                                <div id="preview-header" class="p-3 flex items-center justify-between gap-4 transition-colors duration-300" style="background-color: #4f46e5;">
+                                    <h4 id="preview-title" class="text-lg font-bold text-white truncate">My Custom AI</h4>
+                                    <div class="w-4 h-4 rounded-full bg-green-400"></div>
+                                </div>
+                                <div id="preview-body" class="h-[450px] flex flex-col transition-colors duration-300" style="background-color: #ffffff;">
+                                    <div class="flex-grow p-4 overflow-y-auto space-y-4">
+                                        <div class="flex justify-start"><div id="preview-ai-bubble" class="p-3 rounded-lg inline-block max-w-xs transition-all duration-300" style="background-color: #e5e7eb; color: #000000;">Hello! I'm your custom AI. Change my colors on the left!</div></div>
+                                        <div class="flex justify-end"><div id="preview-user-bubble" class="p-3 rounded-lg inline-block max-w-xs transition-all duration-300" style="background-color: #4f46e5; color: #ffffff;">This is how a user message looks.</div></div>
+                                    </div>
+                                    <div class="mt-auto flex p-2 bg-white"><input type="text" class="w-full bg-gray-200 border border-gray-300 rounded-l-lg p-3 text-black focus:outline-none" placeholder="Type a message..."><button id="preview-send-btn" class="text-white px-6 rounded-r-lg font-bold transition-all duration-300" style="background-color: #4f46e5;">Send</button></div>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="pricing" class="content-card rounded-2xl p-8 md:p-12">
+                    <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 section-header-gradient">Forge Your Anvil</h2>
+                    <p class="text-gray-400 mb-8 max-w-3xl">Start with the base UI and add the powerful core features you need. Then, subscribe to Anvil Pro for ongoing support and premium updates.</p>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8 items-start">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-4">1. One-Time Forging Cost</h3>
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-lg bg-gray-900/50 border-2 border-purple-500 flex justify-between items-center">
+                                    <p class="font-bold text-lg">Base AI Interface</p>
+                                    <p class="font-bold text-lg">$99.00</p>
+                                </div>
+
+                                <p class="text-gray-400 pt-2">Add Core Features:</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="feature-card p-4 rounded-lg" data-price="50">
+                                        <input type="checkbox" id="feat-code">
+                                        <label for="feat-code" class="cursor-pointer">
+                                            <h4 class="font-bold">Code Editor</h4>
+                                            <p class="text-sm text-gray-400">An integrated code block for developers.</p>
+                                            <p class="font-bold text-purple-400 mt-2">+$50</p>
+                                        </label>
+                                    </div>
+                                    <div class="feature-card p-4 rounded-lg" data-price="40">
+                                        <input type="checkbox" id="feat-browser">
+                                        <label for="feat-browser" class="cursor-pointer">
+                                            <h4 class="font-bold">Web Browser</h4>
+                                            <p class="text-sm text-gray-400">Allow your AI to browse the web.</p>
+                                            <p class="font-bold text-purple-400 mt-2">+$40</p>
+                                        </label>
+                                    </div>
+                                    <div class="feature-card p-4 rounded-lg" data-price="25">
+                                        <input type="checkbox" id="feat-bets">
+                                        <label for="feat-bets" class="cursor-pointer">
+                                            <h4 class="font-bold">Bet Prediction</h4>
+                                            <p class="text-sm text-gray-400">Sports & events odds analysis.</p>
+                                            <p class="font-bold text-purple-400 mt-2">+$25</p>
+                                        </label>
+                                    </div>
+                                    <div class="feature-card p-4 rounded-lg" data-price="15">
+                                        <input type="checkbox" id="feat-workspace">
+                                        <label for="feat-workspace" class="cursor-pointer">
+                                            <h4 class="font-bold">Web Workspace</h4>
+                                            <p class="text-sm text-gray-400">A connected digital workspace.</p>
+                                            <p class="font-bold text-purple-400 mt-2">+$15</p>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sticky top-24">
+                            <h3 class="text-2xl font-bold mb-4">2. Anvil Pro Subscription</h3>
+                            <div class="p-4 rounded-lg bg-gray-900/50 space-y-4">
+                                <p class="text-gray-300">Get dedicated support, priority updates, and access to all future premium features.</p>
+                                <div class="pro-plan-toggle">
+                                    <button id="plan-monthly" class="active">Monthly</button>
+                                    <button id="plan-6months">6 Months</button>
+                                    <button id="plan-yearly">1 Year</button>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-gray-400" id="pro-plan-discount-text">Billed monthly</p>
+                                    <p class="text-4xl font-bold" id="pro-plan-price">$9.99<span class="text-base font-normal text-gray-400">/mo</span></p>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 p-6 rounded-lg bg-purple-900/30 border border-purple-500 text-center">
+                                <p class="text-purple-300 font-semibold">One-Time Forging Cost</p>
+                                <p class="text-5xl font-bold text-white mb-4" id="total-onetime-cost">$99.00</p>
+                                <p class="text-purple-300 font-semibold">Anvil Pro Subscription</p>
+                                <p class="text-3xl font-bold text-white" id="total-pro-cost">$9.99 / month</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
     </div>
 
     <script>
-        // --- STATE & UI REFS (Keep the original ones) ---
-        const state = { /* ...original state... */ };
-        const ui = { /* ...original ui refs... */ };
-
-        // --- NEW UI REFS FOR PRICING ---
-        const cost = {
-            base: 99.00,
-            features: 0,
-            total: 99.00
-        };
-        const featureCheckboxes = document.querySelectorAll('.feature-checkbox');
-        const totalCostEl = document.getElementById('total-cost');
-        const featuresCostSummaryEl = document.getElementById('features-cost-summary');
-        const proPlanSelector = document.getElementById('plan-selector');
-        const proPriceEl = document.getElementById('pro-price');
-        const proPeriodEl = document.getElementById('pro-period');
-        const proBillingDescEl = document.getElementById('pro-billing-desc');
-
-        // --- PRICING CALCULATOR LOGIC ---
-        function updateCost() {
-            cost.features = 0;
-            featuresCostSummaryEl.innerHTML = '';
-            
-            featureCheckboxes.forEach(checkbox => {
-                const parentLabel = checkbox.closest('.feature-toggle');
-                if (checkbox.checked) {
-                    const price = parseFloat(parentLabel.dataset.price);
-                    const name = parentLabel.querySelector('h4').textContent;
-                    cost.features += price;
-                    parentLabel.classList.add('selected');
-
-                    // Add to summary
-                    const featureSummary = document.createElement('div');
-                    featureSummary.className = 'flex justify-between';
-                    featureSummary.innerHTML = `<span>${name}</span><span>+$${price.toFixed(2)}</span>`;
-                    featuresCostSummaryEl.appendChild(featureSummary);
-
-                } else {
-                    parentLabel.classList.remove('selected');
-                }
-            });
-
-            cost.total = cost.base + cost.features;
-            totalCostEl.textContent = `$${cost.total.toFixed(2)}`;
-        }
-
-        // --- ANVIL PRO PRICING LOGIC ---
-        function updateProPricing() {
-            if (proPlanSelector.checked) { // Yearly
-                const yearlyPrice = (9.99 * 12) * 0.75; // 25% discount
-                proPriceEl.textContent = `$${yearlyPrice.toFixed(2)}`;
-                proPeriodEl.textContent = '/year';
-                proBillingDescEl.textContent = `Billed once. That's only ~$7.49/month!`;
-            } else { // Monthly
-                proPriceEl.textContent = `$9.99`;
-                proPeriodEl.textContent = '/month';
-                proBillingDescEl.textContent = 'Billed monthly. Cancel anytime.';
-            }
-        }
-
-        // --- ORIGINAL SCRIPT LOGIC (Paste your entire previous <script> content here) ---
-        // For example:
-        function selectStyle(styleName) { /* ...your original function... */ }
-        function updateAllPreviews() { /* ...your original function... */ }
-        // ...and so on for ALL your previous functions.
-
-        // --- EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
-            // New Listeners
-            featureCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateCost);
+            // --- STATE MANAGEMENT ---
+            const state = {
+                projectName: 'My Custom AI',
+                oneTimeCost: 99.0,
+                selectedFeatures: new Set(),
+                proPlan: {
+                    basePrice: 9.99,
+                    period: 'monthly', // 'monthly', '6months', 'yearly'
+                    discount: 0
+                }
+            };
+
+            // --- UI ELEMENT REFERENCES ---
+            const ui = {
+                // Background Animation
+                backgroundAnimation: document.getElementById('background-animation'),
+                // Live Customization
+                projectNameEl: document.getElementById('project-name'),
+                headerColorPicker: document.getElementById('header-color'),
+                bgColorPicker: document.getElementById('bg-color'),
+                aiBubbleColorPicker: document.getElementById('ai-bubble-color'),
+                userBubbleColorPicker: document.getElementById('user-bubble-color'),
+                preview: {
+                    header: document.getElementById('preview-header'),
+                    title: document.getElementById('preview-title'),
+                    body: document.getElementById('preview-body'),
+                    aiBubble: document.getElementById('preview-ai-bubble'),
+                    userBubble: document.getElementById('preview-user-bubble'),
+                    sendBtn: document.getElementById('preview-send-btn'),
+                },
+                // Pricing
+                featureCards: document.querySelectorAll('.feature-card'),
+                totalOneTimeCostEl: document.getElementById('total-onetime-cost'),
+                proPlanToggles: {
+                    monthly: document.getElementById('plan-monthly'),
+                    sixMonths: document.getElementById('plan-6months'),
+                    yearly: document.getElementById('plan-yearly'),
+                },
+                proPlanPriceEl: document.getElementById('pro-plan-price'),
+                proPlanDiscountTextEl: document.getElementById('pro-plan-discount-text'),
+                totalProCostEl: document.getElementById('total-pro-cost'),
+            };
+
+            // --- FUNCTIONS ---
+
+            // 1. Background Animation
+            function initBackgroundAnimation() {
+                const toolSVGs = [
+                    '<svg viewBox="0 0 24 24" fill="#a5b4fc"><path d="M5 6H19L17 14H7L5 6Z"/><path d="M4 14V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V14H4Z"/></svg>',
+                    '<svg viewBox="0 0 24 24" fill="#f87171"><path d="M4 10h8l-2 8H2l2-8z"/><path d="M7 10V4h2v6H7z"/></svg>',
+                    '<svg viewBox="0 0 24 24" fill="#60a5fa"><path d="M10 18l-6-6 1.41-1.41L10 15.17l8.59-8.58L20 8l-10 10z"/></svg>',
+                    '<svg viewBox="0 0 24 24" fill="#34d399"><path d="M12 2c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v4h-2zm0 6h2v2h-2z"/></svg>'
+                ];
+                const toolCount = 20;
+                for (let i = 0; i < toolCount; i++) {
+                    const tool = document.createElement('div');
+                    tool.className = 'animated-tool';
+                    tool.innerHTML = toolSVGs[Math.floor(Math.random() * toolSVGs.length)];
+                    tool.style.left = `${Math.random() * 100}vw`;
+                    tool.style.top = `${Math.random() * 100}vh`;
+                    const size = Math.random() * 40 + 20;
+                    tool.style.width = `${size}px`;
+                    tool.style.height = `${size}px`;
+                    tool.style.animationDelay = `${Math.random() * 8}s`;
+                    tool.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                    ui.backgroundAnimation.appendChild(tool);
+                }
+            }
+            
+            // 2. Live UI Customization
+            function updateLivePreview() {
+                ui.preview.header.style.backgroundColor = ui.headerColorPicker.value;
+                ui.preview.body.style.backgroundColor = ui.bgColorPicker.value;
+                ui.preview.aiBubble.style.backgroundColor = ui.aiBubbleColorPicker.value;
+                ui.preview.userBubble.style.backgroundColor = ui.userBubbleColorPicker.value;
+                ui.preview.sendBtn.style.backgroundColor = ui.headerColorPicker.value; // Link send button to header color
+                ui.preview.title.textContent = ui.projectNameEl.value || "My Custom AI";
+                
+                // Text contrast
+                ui.preview.title.style.color = getContrastYIQ(ui.headerColorPicker.value);
+                ui.preview.aiBubble.style.color = getContrastYIQ(ui.aiBubbleColorPicker.value);
+                ui.preview.userBubble.style.color = getContrastYIQ(ui.userBubbleColorPicker.value);
+            }
+
+            function getContrastYIQ(hexcolor) {
+                hexcolor = hexcolor.replace("#", "");
+                var r = parseInt(hexcolor.substr(0, 2), 16), g = parseInt(hexcolor.substr(2, 2), 16), b = parseInt(hexcolor.substr(4, 2), 16);
+                return (((r * 299) + (g * 587) + (b * 114)) / 1000) >= 128 ? 'black' : 'white';
+            }
+
+            // 3. Pricing Calculation
+            function updatePricing() {
+                // One-time cost
+                let currentOneTimeCost = 99.0;
+                state.selectedFeatures.forEach(price => {
+                    currentOneTimeCost += price;
+                });
+                state.oneTimeCost = currentOneTimeCost;
+                ui.totalOneTimeCostEl.textContent = `$${state.oneTimeCost.toFixed(2)}`;
+
+                // Pro subscription cost
+                let monthlyPrice = state.proPlan.basePrice;
+                let periodText = '/mo';
+                let discountText = 'Billed monthly';
+                let totalText = `$${(monthlyPrice).toFixed(2)} / month`;
+
+                if(state.proPlan.period === '6months') {
+                    monthlyPrice *= (1 - 0.20); // 20% discount
+                    periodText = '/mo';
+                    discountText = '20% Off - Billed as $'+(monthlyPrice * 6).toFixed(2)+' every 6 months';
+                    totalText = `$${(monthlyPrice * 6).toFixed(2)} / 6 months`;
+                } else if(state.proPlan.period === 'yearly') {
+                    monthlyPrice *= (1 - 0.30); // 30% discount
+                    periodText = '/mo';
+                    discountText = '30% Off - Billed as $'+(monthlyPrice * 12).toFixed(2)+' annually';
+                    totalText = `$${(monthlyPrice * 12).toFixed(2)} / year`;
+                }
+
+                ui.proPlanPriceEl.innerHTML = `$${monthlyPrice.toFixed(2)}<span class="text-base font-normal text-gray-400">${periodText}</span>`;
+                ui.proPlanDiscountTextEl.textContent = discountText;
+                ui.totalProCostEl.textContent = totalText;
+            }
+
+            // --- EVENT LISTENERS ---
+            
+            // Initialize
+            initBackgroundAnimation();
+
+            // Live Customization Listeners
+            [ui.headerColorPicker, ui.bgColorPicker, ui.aiBubbleColorPicker, ui.userBubbleColorPicker, ui.projectNameEl].forEach(el => {
+                el.addEventListener('input', updateLivePreview);
             });
-            proPlanSelector.addEventListener('change', updateProPricing);
 
-            // Initial calls
-            updateCost();
-            updateProPricing();
+            // Pricing Listeners
+            ui.featureCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('selected');
+                    const price = parseFloat(card.dataset.price);
+                    const checkbox = card.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
 
-            // --- Your Original DOMContentLoaded Listeners ---
-            // renderGGUFModels();
-            // const gizmos = [...]
-            // gizmos.forEach(...)
-            // ... and so on for all your original listeners.
+                    if(checkbox.checked) {
+                        state.selectedFeatures.add(price);
+                    } else {
+                        state.selectedFeatures.delete(price);
+                    }
+                    updatePricing();
+                });
+            });
+
+            Object.values(ui.proPlanToggles).forEach(button => {
+                button.addEventListener('click', () => {
+                    Object.values(ui.proPlanToggles).forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    if (button.id === 'plan-monthly') state.proPlan.period = 'monthly';
+                    if (button.id === 'plan-6months') state.proPlan.period = '6months';
+                    if (button.id === 'plan-yearly') state.proPlan.period = 'yearly';
+                    updatePricing();
+                });
+            });
+
         });
     </script>
 </body>
