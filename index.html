@@ -3,448 +3,451 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fugth AI Anvil - Forge Your Custom AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Fugth AI Anvil - Forge Your Reality</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
     <style>
-        /* Base & Scroll */
+        /* ---------------------------------- */
+        /* ----- 🔮 HOLOGRAPHIC THEME 🔮 ----- */
+        /* ---------------------------------- */
+        :root {
+            --color-background: #01010F;
+            --color-surface: #161B22;
+            --color-text-primary: #F0F4F8;
+            --color-text-secondary: #A9B2CC;
+            
+            --gradient-1: #8E2DE2;
+            --gradient-2: #4A00E0;
+            --gradient-3: #00BFFF;
+            --gradient-4: #24FE41;
+            
+            --glass-bg: rgba(22, 26, 43, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: rgba(0, 0, 0, 0.35);
+        }
+
+        /* ------------------------- */
+        /* ----- GLOBAL STYLES ----- */
+        /* ------------------------- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #050816; /* Deep space blue/black */
-            color: #e5e7eb;
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.7;
             overflow-x: hidden;
         }
 
-        /* Gradient Text Styles */
-        .hero-text-gradient {
-            background: linear-gradient(90deg, #93c5fd, #a78bfa, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .section-header-gradient {
-            background: linear-gradient(90deg, #a5b4fc, #d8b4fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        /* Custom Scrollbar */
+        body::-webkit-scrollbar { width: 10px; }
+        body::-webkit-scrollbar-track { background: var(--color-background); }
+        body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--gradient-1), var(--gradient-3)); border-radius: 10px; }
 
-        /* --- Fullscreen Background Animation --- */
-        #background-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            overflow: hidden;
-        }
-        .animated-tool {
-            position: absolute;
-            filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
-            opacity: 0.3;
-            animation: float 8s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(10deg); }
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        section { padding: 120px 0; position: relative; z-index: 2; }
+        
+        h1, h2, h3 { font-weight: 700; line-height: 1.2; }
+        h1 { font-size: 4.2rem; text-shadow: 0 0 25px rgba(255,255,255,0.25); }
+        h2 { font-size: 3rem; margin-bottom: 2rem; text-align: center; }
+        h3 { font-size: 1.7rem; margin-bottom: 1rem; }
+        .text-gradient { background: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        p { color: var(--color-text-secondary); margin-bottom: 1rem; }
+        .section-subtitle { text-align: center; max-width: 700px; margin: -1.5rem auto 3.5rem auto; color: var(--color-text-secondary); }
 
-        /* --- Content & Card Styling --- */
-        #content-wrapper {
-            position: relative;
-            z-index: 1;
-        }
-        .content-card {
-            background: rgba(17, 24, 39, 0.8); /* Dark Blue-Gray */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        .content-card:hover {
-            border-color: rgba(167, 139, 250, 0.5);
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
+        .btn { display: inline-block; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; position: relative; overflow: hidden; z-index: 1; }
+        .btn-primary { background: linear-gradient(90deg, var(--gradient-1), var(--gradient-2)); color: #fff; }
+        .btn-primary:before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); transition: all 0.4s ease; z-index: -1; }
+        .btn-primary:hover:before { left: 0; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        
+        /* ---------------------------------- */
+        /* ---- ✨ ANIMATED BACKGROUND ✨ ---- */
+        /* ---------------------------------- */
+        .aurora-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background: linear-gradient(240deg, var(--gradient-1), var(--gradient-2), var(--gradient-3), var(--gradient-4)); background-size: 400% 400%; animation: aurora-flow 20s ease infinite; filter: blur(120px) opacity(0.8); }
+        @keyframes aurora-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        /* Pricing Section */
-        .feature-card {
-            border: 2px solid #374151;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .feature-card.selected {
-            border-color: #8b5cf6;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
-        }
-        .feature-card input[type="checkbox"] { display: none; }
+        /* ------------------------- */
+        /* -------- HEADER --------- */
+        /* ------------------------- */
+        header { position: fixed; width: 100%; top: 0; left: 0; z-index: 1000; padding: 20px 0; transition: all 0.3s ease; }
+        header.scrolled { background: rgba(1, 1, 15, 0.5); backdrop-filter: blur(15px); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: 800; text-decoration: none; color: var(--color-text-primary); }
+        .logo i { background-image: linear-gradient(45deg, var(--gradient-1), var(--gradient-3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-links { list-style: none; display: flex; }
+        .nav-links li { margin-left: 35px; }
+        .nav-links a { text-decoration: none; color: var(--color-text-secondary); font-weight: 600; transition: color 0.3s ease; position: relative; }
+        .nav-links a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 50%; background-image: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); transition: all 0.3s ease; }
+        .nav-links a:hover { color: var(--color-text-primary); }
+        .nav-links a:hover::after { width: 100%; left: 0; }
+        
+        /* ------------------------- */
+        /* ------ HERO SECTION ----- */
+        /* ------------------------- */
+        #hero { min-height: 100vh; display: flex; align-items: center; text-align: center; }
+        .hero-content { max-width: 850px; margin: 0 auto; }
+        .hero-content p { font-size: 1.25rem; margin-bottom: 2.5rem; }
+        .hero-avatar { width: 200px; height: 200px; margin: 0 auto 3rem; border-radius: 50%; background: linear-gradient(45deg, var(--gradient-1), var(--gradient-3)); display: flex; align-items: center; justify-content: center; font-size: 6rem; animation: float 6s ease-in-out infinite; position: relative; border: 4px solid rgba(255,255,255,0.1); }
+        .hero-avatar::before, .hero-avatar::after { content: ''; position: absolute; border-radius: 50%; z-index: -1; animation: pulse 3s ease-in-out infinite; }
+        .hero-avatar::before { inset: -15px; border: 2px solid var(--gradient-3); }
+        .hero-avatar::after { inset: -25px; border: 1px solid var(--gradient-1); animation-delay: 0.5s; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-25px); } 100% { transform: translateY(0px); } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 0.3; } 100% { transform: scale(1); opacity: 0.8; } }
 
-        .pro-plan-toggle {
-            display: flex;
-            background-color: #1f2937;
-            border-radius: 0.5rem;
-            padding: 0.25rem;
-            border: 1px solid #4b5563;
-        }
-        .pro-plan-toggle button {
-            flex: 1;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            border: none;
-            background-color: transparent;
-            color: #d1d5db;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .pro-plan-toggle button.active {
-            background-color: #8b5cf6;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+        /* ---------------------------------- */
+        /* ---- 🧊 GLASSMORPHISM UI 🧊 ---- */
+        /* ---------------------------------- */
+        .glass-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: 0 8px 32px 0 var(--glass-shadow); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 2.5rem; transition: transform 0.4s ease, box-shadow 0.4s ease; border-image-slice: 1; }
+        .glass-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 15px 40px var(--glass-shadow); border-image-source: linear-gradient(to left, var(--gradient-1), var(--gradient-3)); }
 
-        /* Canvas Customization Controls (Gizmos) */
-        .gizmo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.5rem;
-            background-color: rgba(0,0,0,0.3);
-            border-radius: 0.5rem;
-            margin-bottom: 0.75rem;
+        /* ------------------------- */
+        /* -- INTERACTIVE MARKETPLACE -- */
+        /* ------------------------- */
+        #marketplace { background: rgba(0,0,0,0.25); }
+        .market-filters { display: flex; justify-content: center; gap: 1rem; margin-bottom: 3rem; }
+        .market-filters button { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--color-text-secondary); font-weight: 600; padding: 10px 20px; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; }
+        .market-filters button:hover { color: var(--color-text-primary); background: rgba(255, 255, 255, 0.1); }
+        .market-filters button.active { color: var(--color-background); background: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); border-color: var(--gradient-4); }
+
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+        .market-card { padding: 0; overflow: hidden; }
+        .market-card.hidden { transform: scale(0.8); opacity: 0; pointer-events: none; }
+        .market-card .card-image { height: 220px; background-color: #01010F; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+        .market-card .card-content { padding: 1.5rem; }
+        .market-card .card-title { font-size: 1.2rem; font-weight: 600; }
+        .market-card .card-creator { font-size: 0.9rem; color: var(--color-text-secondary); margin-bottom: 1rem; }
+        .market-card .card-price { font-size: 1.3rem; font-weight: 700; background: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* ------------------------- */
+        /* ----- THE FORGE & NEXUS --- */
+        /* ------------------------- */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .icon-card { text-align: center; }
+        .icon-card .icon { width: 80px; height: 80px; margin: 0 auto 1.5rem; border-radius: 50%; background: linear-gradient(45deg, var(--gradient-1), var(--gradient-2)); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+        
+        /* ------------------------- */
+        /* --- CREATOR SPOTLIGHT --- */
+        /* ------------------------- */
+        #spotlight { overflow: hidden; }
+        .carousel-container { position: relative; width: 100vw; left: 50%; transform: translateX(-50%); padding: 2rem 0; }
+        .spotlight-track { display: flex; width: calc(2 * 350px * 8); animation: scroll 60s linear infinite; }
+        .spotlight-track:hover { animation-play-state: paused; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-350px * 8)); } }
+        .creator-card { flex-shrink: 0; width: 320px; margin: 0 15px; }
+        .creator-card .creator-header { display: flex; align-items: center; margin-bottom: 1rem; }
+        .creator-card img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--gradient-3); margin-right: 1rem; }
+
+        /* ------------------------- */
+        /* -------- ROADMAP -------- */
+        /* ------------------------- */
+        .timeline { position: relative; max-width: 800px; margin: 0 auto; }
+        .timeline::after { content: ''; position: absolute; width: 4px; background: var(--glass-border); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
+        .timeline-item { padding: 10px 40px; position: relative; width: 50%; }
+        .timeline-item.left { left: 0; }
+        .timeline-item.right { left: 50%; }
+        .timeline-item::after { content: ''; position: absolute; width: 20px; height: 20px; right: -10px; background-color: var(--color-background); border: 4px solid var(--gradient-3); top: 25px; border-radius: 50%; z-index: 1; transition: transform 0.3s ease; }
+        .timeline-item:hover::after { transform: scale(1.2); }
+        .timeline-item.right::after { left: -10px; }
+
+        /* ------------------------- */
+        /* ---------- FAQ ---------- */
+        /* ------------------------- */
+        .faq-container { max-width: 800px; margin: 0 auto; }
+        .faq-item { border-bottom: 1px solid var(--glass-border); }
+        .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; cursor: pointer; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+        .faq-item.active .faq-answer { max-height: 200px; }
+        .faq-toggle { font-size: 1.5rem; transition: transform 0.3s ease; }
+        .faq-item.active .faq-toggle { transform: rotate(45deg); }
+
+        /* ------------------------- */
+        /* -------- FOOTER --------- */
+        /* ------------------------- */
+        footer { padding: 50px 0; text-align: center; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.1); }
+        
+        /* ---------------------------------- */
+        /* --- ✨ SCROLL ANIMATIONS ✨ --- */
+        /* ---------------------------------- */
+        [data-animate] { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+        .stagger-children > * { transition-delay: calc(var(--stagger-index, 0) * 120ms); }
+
+        /* ------------------------- */
+        /* ----- RESPONSIVENESS ---- */
+        /* ------------------------- */
+        @media (max-width: 992px) {
+            h1 { font-size: 3.2rem; }
+            h2 { font-size: 2.4rem; }
+            .grid-3 { grid-template-columns: 1fr; }
         }
-        .gizmo input[type="color"] {
-            -webkit-appearance: none;
-            width: 32px;
-            height: 32px;
-            border: none;
-            cursor: pointer;
-            border-radius: 50%;
-            padding: 0;
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .timeline::after { left: 10px; }
+            .timeline-item { width: 100%; padding-left: 50px; padding-right: 20px; }
+            .timeline-item.right { left: 0%; }
+            .timeline-item::after { left: 1px; }
         }
-        .gizmo input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        .gizmo input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 2px solid white; }
 
     </style>
 </head>
 <body>
+    <div class="aurora-background"></div>
 
-    <div id="background-animation">
-        </div>
-
-    <div id="content-wrapper">
-        <header class="bg-black/30 backdrop-blur-lg sticky top-0 z-50 border-b border-white/10">
-            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-                <a href="#" class="flex items-center gap-3">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 6H19L17 14H7L5 6Z" fill="#a5b4fc"/><path d="M4 14V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V14H4Z" fill="#818cf8"/><path d="M8 6L12 2L16 6" stroke="#c4b5fd" stroke-width="2"/></svg>
-                    <span class="text-2xl font-bold tracking-tight">Fugth AI Anvil</span>
-                </a>
-                <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
-                    <a href="#customize" class="hover:text-white transition-colors">Customize</a>
-                    <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
-                    <a href="https://givebutter.com/23ysSh" target="_blank" rel="noopener noreferrer" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-semibold transition-all hover:scale-105 shadow-lg shadow-purple-500/20">Support Project</a>
-                </div>
+    <header id="main-header">
+        <div class="container">
+            <nav>
+                <a href="#" class="logo"><i class="fa-solid fa-cubes-stacked"></i> Fugth AI Anvil</a>
+                <ul class="nav-links">
+                    <li><a href="#forge">The Forge</a></li>
+                    <li><a href="#marketplace">Marketplace</a></li>
+                    <li><a href="#spotlight">Community</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+                <a href="#hero" class="btn btn-primary">Download Anvil</a>
             </nav>
-        </header>
-
-        <div class="container mx-auto px-4 py-16 md:py-24">
-            <main class="space-y-32">
-                
-                <section id="hero" class="text-center pt-16">
-                    <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6">
-                        <span class="hero-text-gradient">Forge Your Private AI</span>
-                    </h1>
-                    <p class="max-w-2xl mx-auto text-lg text-gray-400 mb-8">
-                        Stop renting generic AI. Fugth AI Anvil is a powerful, private workshop that lets you design, customize, and deploy AI chatbots that run entirely on your own computer.
-                    </p>
-                    <div class="flex justify-center gap-4">
-                         <a href="#customize" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all hover:scale-105 shadow-lg shadow-purple-500/30">Start Building Your AI</a>
-                    </div>
-                </section>
-
-                <section id="customize" class="content-card rounded-2xl p-8 md:p-12">
-                    <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 section-header-gradient">Live AI Customization Canvas</h2>
-                    <p class="text-gray-400 mb-8 max-w-3xl">What you see is what you get. Use the controls on the left to design your AI, and watch it update in real-time on the right.</p>
-                    <div class="grid lg:grid-cols-5 gap-8 items-start">
-                        <div class="lg:col-span-2 space-y-4">
-                            <h3 class="text-xl font-bold border-b border-white/20 pb-2">Appearance Controls</h3>
-                            <div class="gizmo"><input type="color" id="header-color" value="#4f46e5"><label for="header-color" class="font-semibold">Header</label></div>
-                            <div class="gizmo"><input type="color" id="bg-color" value="#ffffff"><label for="bg-color" class="font-semibold">Background</label></div>
-                            <div class="gizmo"><input type="color" id="ai-bubble-color" value="#e5e7eb"><label for="ai-bubble-color" class="font-semibold">AI Bubble</label></div>
-                            <div class="gizmo"><input type="color" id="user-bubble-color" value="#4f46e5"><label for="user-bubble-color" class="font-semibold">User Bubble</label></div>
-                            
-                            <h3 class="text-xl font-bold border-b border-white/20 pb-2 pt-4">Project Details</h3>
-                            <div>
-                                <label for="project-name" class="text-gray-300 mb-2 block font-medium text-sm">Project Name</label>
-                                <input type="text" id="project-name" class="w-full bg-black/30 border border-white/20 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition" placeholder="My Custom AI">
-                            </div>
-                        </div>
-
-                        <div class="lg:col-span-3">
-                             <div id="custom-preview" class="rounded-lg shadow-2xl transition-all duration-300 overflow-hidden border border-white/20">
-                                <div id="preview-header" class="p-3 flex items-center justify-between gap-4 transition-colors duration-300" style="background-color: #4f46e5;">
-                                    <h4 id="preview-title" class="text-lg font-bold text-white truncate">My Custom AI</h4>
-                                    <div class="w-4 h-4 rounded-full bg-green-400"></div>
-                                </div>
-                                <div id="preview-body" class="h-[450px] flex flex-col transition-colors duration-300" style="background-color: #ffffff;">
-                                    <div class="flex-grow p-4 overflow-y-auto space-y-4">
-                                        <div class="flex justify-start"><div id="preview-ai-bubble" class="p-3 rounded-lg inline-block max-w-xs transition-all duration-300" style="background-color: #e5e7eb; color: #000000;">Hello! I'm your custom AI. Change my colors on the left!</div></div>
-                                        <div class="flex justify-end"><div id="preview-user-bubble" class="p-3 rounded-lg inline-block max-w-xs transition-all duration-300" style="background-color: #4f46e5; color: #ffffff;">This is how a user message looks.</div></div>
-                                    </div>
-                                    <div class="mt-auto flex p-2 bg-white"><input type="text" class="w-full bg-gray-200 border border-gray-300 rounded-l-lg p-3 text-black focus:outline-none" placeholder="Type a message..."><button id="preview-send-btn" class="text-white px-6 rounded-r-lg font-bold transition-all duration-300" style="background-color: #4f46e5;">Send</button></div>
-                                </div>
-                             </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="pricing" class="content-card rounded-2xl p-8 md:p-12">
-                    <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 section-header-gradient">Forge Your Anvil</h2>
-                    <p class="text-gray-400 mb-8 max-w-3xl">Start with the base UI and add the powerful core features you need. Then, subscribe to Anvil Pro for ongoing support and premium updates.</p>
-                    
-                    <div class="grid lg:grid-cols-2 gap-8 items-start">
-                        <div>
-                            <h3 class="text-2xl font-bold mb-4">1. One-Time Forging Cost</h3>
-                            <div class="space-y-4">
-                                <div class="p-4 rounded-lg bg-gray-900/50 border-2 border-purple-500 flex justify-between items-center">
-                                    <p class="font-bold text-lg">Base AI Interface</p>
-                                    <p class="font-bold text-lg">$99.00</p>
-                                </div>
-
-                                <p class="text-gray-400 pt-2">Add Core Features:</p>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="feature-card p-4 rounded-lg" data-price="50">
-                                        <input type="checkbox" id="feat-code">
-                                        <label for="feat-code" class="cursor-pointer">
-                                            <h4 class="font-bold">Code Editor</h4>
-                                            <p class="text-sm text-gray-400">An integrated code block for developers.</p>
-                                            <p class="font-bold text-purple-400 mt-2">+$50</p>
-                                        </label>
-                                    </div>
-                                    <div class="feature-card p-4 rounded-lg" data-price="40">
-                                        <input type="checkbox" id="feat-browser">
-                                        <label for="feat-browser" class="cursor-pointer">
-                                            <h4 class="font-bold">Web Browser</h4>
-                                            <p class="text-sm text-gray-400">Allow your AI to browse the web.</p>
-                                            <p class="font-bold text-purple-400 mt-2">+$40</p>
-                                        </label>
-                                    </div>
-                                    <div class="feature-card p-4 rounded-lg" data-price="25">
-                                        <input type="checkbox" id="feat-bets">
-                                        <label for="feat-bets" class="cursor-pointer">
-                                            <h4 class="font-bold">Bet Prediction</h4>
-                                            <p class="text-sm text-gray-400">Sports & events odds analysis.</p>
-                                            <p class="font-bold text-purple-400 mt-2">+$25</p>
-                                        </label>
-                                    </div>
-                                    <div class="feature-card p-4 rounded-lg" data-price="15">
-                                        <input type="checkbox" id="feat-workspace">
-                                        <label for="feat-workspace" class="cursor-pointer">
-                                            <h4 class="font-bold">Web Workspace</h4>
-                                            <p class="text-sm text-gray-400">A connected digital workspace.</p>
-                                            <p class="font-bold text-purple-400 mt-2">+$15</p>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="sticky top-24">
-                            <h3 class="text-2xl font-bold mb-4">2. Anvil Pro Subscription</h3>
-                            <div class="p-4 rounded-lg bg-gray-900/50 space-y-4">
-                                <p class="text-gray-300">Get dedicated support, priority updates, and access to all future premium features.</p>
-                                <div class="pro-plan-toggle">
-                                    <button id="plan-monthly" class="active">Monthly</button>
-                                    <button id="plan-6months">6 Months</button>
-                                    <button id="plan-yearly">1 Year</button>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-400" id="pro-plan-discount-text">Billed monthly</p>
-                                    <p class="text-4xl font-bold" id="pro-plan-price">$9.99<span class="text-base font-normal text-gray-400">/mo</span></p>
-                                </div>
-                            </div>
-
-                            <div class="mt-8 p-6 rounded-lg bg-purple-900/30 border border-purple-500 text-center">
-                                <p class="text-purple-300 font-semibold">One-Time Forging Cost</p>
-                                <p class="text-5xl font-bold text-white mb-4" id="total-onetime-cost">$99.00</p>
-                                <p class="text-purple-300 font-semibold">Anvil Pro Subscription</p>
-                                <p class="text-3xl font-bold text-white" id="total-pro-cost">$9.99 / month</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </main>
         </div>
-    </div>
+    </header>
+
+    <section id="hero">
+        <div class="hero-content" data-animate>
+            <div class="hero-avatar"><i class="fa-solid fa-brain"></i></div>
+            <h1>Forge Your Digital Soul.</h1>
+            <p>Go beyond assistants. Create a true AI companion. Fugth AI Anvil is the ultimate creative suite for designing, customizing, and bringing to life an intelligent entity that lives on your desktop.</p>
+            <a href="#" class="btn btn-primary">Purchase For $99.99</a>
+        </div>
+    </section>
+
+    <section id="forge">
+        <div class="container">
+            <h2 data-animate>Inside <span class="text-gradient">The Anvil Forge</span></h2>
+            <p class="section-subtitle" data-animate>The heart of creation. Our integrated, user-friendly editor gives you god-like control over every aspect of your companion.</p>
+            <div class="grid-3 stagger-children">
+                <div class="glass-card icon-card" data-animate style="--stagger-index: 1;">
+                    <div class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <h3>Visual Editor</h3>
+                    <p>No code required. Drag, drop, and customize models, textures, and particle effects with a real-time 3D preview.</p>
+                </div>
+                <div class="glass-card icon-card" data-animate style="--stagger-index: 2;">
+                    <div class="icon"><i class="fa-solid fa-sitemap"></i></div>
+                    <h3>Personality Matrix</h3>
+                    <p>Visually script your AI's behavior. Use our node-based logic editor to define its quirks, memories, and conversational flows.</p>
+                </div>
+                <div class="glass-card icon-card" data-animate style="--stagger-index: 3;">
+                    <div class="icon"><i class="fa-solid fa-upload"></i></div>
+                    <h3>One-Click Publishing</h3>
+                    <p>Ready to share your creation? Publish your avatars and personalities directly to the Community Marketplace from within the Forge.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="marketplace">
+        <div class="container">
+            <h2 data-animate>The <span class="text-gradient">Marketplace</span></h2>
+            <p class="section-subtitle" data-animate>The central hub for all Anvil creations. Discover thousands of unique assets from our official studio and talented community creators.</p>
+
+            <div class="market-filters" data-animate>
+                <button class="active" data-filter="all">All</button>
+                <button data-filter="skin">Skins</button>
+                <button data-filter="accessory">Accessories</button>
+                <button data-filter="personality">Personalities</button>
+            </div>
+
+            <div class="market-grid stagger-children">
+                <div class="market-card glass-card" data-category="skin" data-animate style="--stagger-index: 1;">
+                    <div class="card-image"><i class="fa-solid fa-dragon"></i></div>
+                    <div class="card-content"><h4 class="card-title">Inferno Guardian</h4><p class="card-creator">by FugthDesign</p><div class="card-price">$19.99</div></div>
+                </div>
+                <div class="market-card glass-card" data-category="accessory" data-animate style="--stagger-index: 2;">
+                    <div class="card-image"><i class="fa-solid fa-hat-wizard"></i></div>
+                    <div class="card-content"><h4 class="card-title">Archmage Hat</h4><p class="card-creator">by AuraWeaver</p><div class="card-price">$7.99</div></div>
+                </div>
+                <div class="market-card glass-card" data-category="personality" data-animate style="--stagger-index: 3;">
+                    <div class="card-image"><i class="fa-solid fa-user-secret"></i></div>
+                    <div class="card-content"><h4 class="card-title">Noir Detective</h4><p class="card-creator">by SynthwaveScribe</p><div class="card-price">$9.99</div></div>
+                </div>
+                <div class="market-card glass-card" data-category="skin" data-animate style="--stagger-index: 4;">
+                    <div class="card-image"><i class="fa-solid fa-robot"></i></div>
+                    <div class="card-content"><h4 class="card-title">G-Type Juggernaut</h4><p class="card-creator">by MechMaestro</p><div class="card-price">$24.99</div></div>
+                </div>
+                <div class="market-card glass-card" data-category="accessory" data-animate style="--stagger-index: 5;">
+                    <div class="card-image"><i class="fa-solid fa-link"></i></div>
+                    <div class="card-content"><h4 class="card-title">Spectral Chains</h4><p class="card-creator">by GhostFX</p><div class="card-price">$4.99</div></div>
+                </div>
+                <div class="market-card glass-card" data-category="skin" data-animate style="--stagger-index: 6;">
+                    <div class="card-image"><i class="fa-solid fa-ghost"></i></div>
+                    <div class="card-content"><h4 class="card-title">Forest Spirit</h4><p class="card-creator">by FugthDesign</p><div class="card-price">$14.99</div></div>
+                </div>
+                <div class="market-card glass-card" data-category="personality" data-animate style="--stagger-index: 7;">
+                    <div class="card-image"><i class="fa-solid fa-gamepad"></i></div>
+                    <div class="card-content"><h4 class="card-title">Gamer Sidekick</h4><p class="card-creator">by FugthDesign</p><div class="card-price">$9.99</div></div>
+                </div>
+                 <div class="market-card glass-card" data-category="accessory" data-animate style="--stagger-index: 8;">
+                    <div class="card-image"><i class="fa-solid fa-glasses"></i></div>
+                    <div class="card-content"><h4 class="card-title">Holo-Visor</h4><p class="card-creator">by PixelProphet</p><div class="card-price">$5.99</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="spotlight">
+        <div class="container">
+            <h2 data-animate>Creator <span class="text-gradient">Spotlight</span></h2>
+            <p class="section-subtitle" data-animate>Our platform is powered by the passion of our community. Discover some of the amazing creations forged in the Anvil.</p>
+        </div>
+        <div class="carousel-container" data-animate>
+            <div class="spotlight-track">
+                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=a" alt="Creator Avatar"><div class="creator-info"><h4>PixelProphet</h4><p>Voxel Artist</p></div></div><p>"The Forge's voxel tools are incredible. I've been able to bring my pixel characters to life..."</p></div>
+                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=b" alt="Creator Avatar"><div class="creator-info"><h4>SynthwaveScribe</h4><p>Personality Scripter</p></div></div><p>"The Personality Matrix is a game-changer. I've created a companion that's a sarcastic, neo-noir detective."</p></div>
+                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=c" alt="Creator Avatar"><div class="creator-info"><h4>AuraWeaver</h4><p>Particle Effects Artist</p></div></div><p>"I specialize in magical auras and effects. Anvil lets me sell these as accessories that work on any avatar."</p></div>
+                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=d" alt="Creator Avatar"><div class="creator-info"><h4>MechMaestro</h4><p>3D Modeler</p></div></div><p>"The import pipeline is seamless. I model my mechs in Blender and they look even better in the Anvil engine."</p></div>
+                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=e" alt="Creator Avatar"><div class="creator-info"><h4>ChibiChan</h4><p>Anime Avatar Creator</p></div></div><p>"My dream was to create and sell cute anime-style avatars. Anvil made it a reality. The community is so supportive!"</p></div>
+                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=f" alt="Creator Avatar"><div class="creator-info"><h4>BioMorph</h4><p>Organic Modeler</p></div></div><p>"I create alien flora and fauna. With Anvil, my creatures can now be people's desktop companions."</p></div>
+                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=g" alt="Creator Avatar"><div class="creator-info"><h4>LogicLord</h4><p>Utility AI Developer</p></div></div><p>"The API is surprisingly robust. I've made a personality that helps me code by interfacing with my IDE."</p></div>
+                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=h" alt="Creator Avatar"><div class="creator-info"><h4>GhostFX</h4><p>Haunted Accessories</p></div></div><p>"My shop sells spectral chains and ghostly followers. The accessory system is perfect for these smaller items."</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="roadmap">
+        <div class="container">
+            <h2 data-animate>The <span class="text-gradient">Future Forged</span></h2>
+            <p class="section-subtitle" data-animate>Our journey is just beginning. We are committed to continuously expanding the Anvil universe with groundbreaking features.</p>
+            <div class="timeline" data-animate>
+                <div class="timeline-item left"><div class="content glass-card"><h4>Q4 2025: Mobile Companion App</h4><p>Take your AI with you. Interact and chat with your companion from anywhere.</p></div></div>
+                <div class="timeline-item right"><div class="content glass-card"><h4>Q1 2026: VR/AR Integration</h4><p>Bring your companion into your space with Virtual and Augmented Reality support.</p></div></div>
+                <div class="timeline-item left"><div class="content glass-card"><h4>Q2 2026: Collaborative Forging</h4><p>Team up with other creators in real-time to build complex avatars and personalities together.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq">
+        <div class="container">
+            <h2 data-animate>Frequently Asked <span class="text-gradient">Questions</span></h2>
+            <div class="faq-container" data-animate>
+                <div class="faq-item"><div class="faq-question"><h4>Is the $99.99 a one-time purchase?</h4><div class="faq-toggle">+</div></div><div class="faq-answer"><p>Yes! The core Anvil software and marketplace access are yours forever with a single purchase. The Guild Pass subscription is an optional add-on for those who want exclusive monthly content and premium features.</p></div></div>
+                <div class="faq-item"><div class="faq-question"><h4>Does the AI run locally on my computer?</h4><div class="faq-toggle">+</div></div><div class="faq-answer"><p>Absolutely. The default AI models run 100% locally on your machine, ensuring your conversations and data remain private. The optional Guild Pass may offer access to more powerful cloud-based models, but local-first is our core principle.</p></div></div>
+                <div class="faq-item"><div class="faq-question"><h4>What are the system requirements?</h4><div class="faq-toggle">+</div></div><div class="faq-answer"><p>We are optimizing Anvil to run on a wide range of modern PCs. Generally, you'll need a dedicated graphics card (NVIDIA GTX 1060 / AMD RX 580 or better) and at least 8GB of RAM for a smooth experience.</p></div></div>
+                <div class="faq-item"><div class="faq-question"><h4>What 3D file formats can I import into the Forge?</h4><div class="faq-toggle">+</div></div><div class="faq-answer"><p>The Anvil Forge supports all major 3D formats, including .FBX, .OBJ, and .GLTF. Our goal is to make it as easy as possible to bring your existing creations into the Anvil ecosystem.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <a href="#" class="logo"><i class="fa-solid fa-cubes-stacked"></i> Fugth AI Anvil</a>
+            <div class="social-links" style="margin: 20px 0;"><a href="#"><i class="fab fa-twitter"></i></a><a href="#"><i class="fab fa-discord"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div>
+            <p>&copy; 2025 Fugthdesign.space. All Rights Reserved.</p>
+        </div>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- STATE MANAGEMENT ---
-            const state = {
-                projectName: 'My Custom AI',
-                oneTimeCost: 99.0,
-                selectedFeatures: new Set(),
-                proPlan: {
-                    basePrice: 9.99,
-                    period: 'monthly', // 'monthly', '6months', 'yearly'
-                    discount: 0
-                }
-            };
 
-            // --- UI ELEMENT REFERENCES ---
-            const ui = {
-                // Background Animation
-                backgroundAnimation: document.getElementById('background-animation'),
-                // Live Customization
-                projectNameEl: document.getElementById('project-name'),
-                headerColorPicker: document.getElementById('header-color'),
-                bgColorPicker: document.getElementById('bg-color'),
-                aiBubbleColorPicker: document.getElementById('ai-bubble-color'),
-                userBubbleColorPicker: document.getElementById('user-bubble-color'),
-                preview: {
-                    header: document.getElementById('preview-header'),
-                    title: document.getElementById('preview-title'),
-                    body: document.getElementById('preview-body'),
-                    aiBubble: document.getElementById('preview-ai-bubble'),
-                    userBubble: document.getElementById('preview-user-bubble'),
-                    sendBtn: document.getElementById('preview-send-btn'),
-                },
-                // Pricing
-                featureCards: document.querySelectorAll('.feature-card'),
-                totalOneTimeCostEl: document.getElementById('total-onetime-cost'),
-                proPlanToggles: {
-                    monthly: document.getElementById('plan-monthly'),
-                    sixMonths: document.getElementById('plan-6months'),
-                    yearly: document.getElementById('plan-yearly'),
-                },
-                proPlanPriceEl: document.getElementById('pro-plan-price'),
-                proPlanDiscountTextEl: document.getElementById('pro-plan-discount-text'),
-                totalProCostEl: document.getElementById('total-pro-cost'),
-            };
+            // Log to console to show script is running
+            console.log("Fugth AI Anvil Demo Page Initialized.");
 
-            // --- FUNCTIONS ---
+            // ------------------------------------------
+            // ----- 1. HEADER SCROLL EFFECT ----------
+            // ------------------------------------------
+            const header = document.getElementById('main-header');
+            if (header) {
+                window.addEventListener('scroll', () => {
+                    header.classList.toggle('scrolled', window.scrollY > 50);
+                });
+            }
 
-            // 1. Background Animation
-            function initBackgroundAnimation() {
-                const toolSVGs = [
-                    '<svg viewBox="0 0 24 24" fill="#a5b4fc"><path d="M5 6H19L17 14H7L5 6Z"/><path d="M4 14V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V14H4Z"/></svg>',
-                    '<svg viewBox="0 0 24 24" fill="#f87171"><path d="M4 10h8l-2 8H2l2-8z"/><path d="M7 10V4h2v6H7z"/></svg>',
-                    '<svg viewBox="0 0 24 24" fill="#60a5fa"><path d="M10 18l-6-6 1.41-1.41L10 15.17l8.59-8.58L20 8l-10 10z"/></svg>',
-                    '<svg viewBox="0 0 24 24" fill="#34d399"><path d="M12 2c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v4h-2zm0 6h2v2h-2z"/></svg>'
-                ];
-                const toolCount = 20;
-                for (let i = 0; i < toolCount; i++) {
-                    const tool = document.createElement('div');
-                    tool.className = 'animated-tool';
-                    tool.innerHTML = toolSVGs[Math.floor(Math.random() * toolSVGs.length)];
-                    tool.style.left = `${Math.random() * 100}vw`;
-                    tool.style.top = `${Math.random() * 100}vh`;
-                    const size = Math.random() * 40 + 20;
-                    tool.style.width = `${size}px`;
-                    tool.style.height = `${size}px`;
-                    tool.style.animationDelay = `${Math.random() * 8}s`;
-                    tool.style.animationDuration = `${Math.random() * 5 + 5}s`;
-                    ui.backgroundAnimation.appendChild(tool);
-                }
+            // ------------------------------------------
+            // ----- 2. DYNAMIC SCROLL ANIMATIONS -----
+            // ------------------------------------------
+            const animatedElements = document.querySelectorAll('[data-animate]');
+            if (animatedElements.length > 0) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            // observer.unobserve(entry.target); // Uncomment to animate only once
+                        }
+                    });
+                }, { threshold: 0.1 });
+                animatedElements.forEach(el => observer.observe(el));
             }
             
-            // 2. Live UI Customization
-            function updateLivePreview() {
-                ui.preview.header.style.backgroundColor = ui.headerColorPicker.value;
-                ui.preview.body.style.backgroundColor = ui.bgColorPicker.value;
-                ui.preview.aiBubble.style.backgroundColor = ui.aiBubbleColorPicker.value;
-                ui.preview.userBubble.style.backgroundColor = ui.userBubbleColorPicker.value;
-                ui.preview.sendBtn.style.backgroundColor = ui.headerColorPicker.value; // Link send button to header color
-                ui.preview.title.textContent = ui.projectNameEl.value || "My Custom AI";
-                
-                // Text contrast
-                ui.preview.title.style.color = getContrastYIQ(ui.headerColorPicker.value);
-                ui.preview.aiBubble.style.color = getContrastYIQ(ui.aiBubbleColorPicker.value);
-                ui.preview.userBubble.style.color = getContrastYIQ(ui.userBubbleColorPicker.value);
-            }
-
-            function getContrastYIQ(hexcolor) {
-                hexcolor = hexcolor.replace("#", "");
-                var r = parseInt(hexcolor.substr(0, 2), 16), g = parseInt(hexcolor.substr(2, 2), 16), b = parseInt(hexcolor.substr(4, 2), 16);
-                return (((r * 299) + (g * 587) + (b * 114)) / 1000) >= 128 ? 'black' : 'white';
-            }
-
-            // 3. Pricing Calculation
-            function updatePricing() {
-                // One-time cost
-                let currentOneTimeCost = 99.0;
-                state.selectedFeatures.forEach(price => {
-                    currentOneTimeCost += price;
+            const staggerContainers = document.querySelectorAll('.stagger-children');
+            staggerContainers.forEach(container => {
+                const children = container.querySelectorAll('[data-animate]');
+                children.forEach((child, index) => {
+                    child.style.setProperty('--stagger-index', index);
                 });
-                state.oneTimeCost = currentOneTimeCost;
-                ui.totalOneTimeCostEl.textContent = `$${state.oneTimeCost.toFixed(2)}`;
+            });
 
-                // Pro subscription cost
-                let monthlyPrice = state.proPlan.basePrice;
-                let periodText = '/mo';
-                let discountText = 'Billed monthly';
-                let totalText = `$${(monthlyPrice).toFixed(2)} / month`;
-
-                if(state.proPlan.period === '6months') {
-                    monthlyPrice *= (1 - 0.20); // 20% discount
-                    periodText = '/mo';
-                    discountText = '20% Off - Billed as $'+(monthlyPrice * 6).toFixed(2)+' every 6 months';
-                    totalText = `$${(monthlyPrice * 6).toFixed(2)} / 6 months`;
-                } else if(state.proPlan.period === 'yearly') {
-                    monthlyPrice *= (1 - 0.30); // 30% discount
-                    periodText = '/mo';
-                    discountText = '30% Off - Billed as $'+(monthlyPrice * 12).toFixed(2)+' annually';
-                    totalText = `$${(monthlyPrice * 12).toFixed(2)} / year`;
-                }
-
-                ui.proPlanPriceEl.innerHTML = `$${monthlyPrice.toFixed(2)}<span class="text-base font-normal text-gray-400">${periodText}</span>`;
-                ui.proPlanDiscountTextEl.textContent = discountText;
-                ui.totalProCostEl.textContent = totalText;
-            }
-
-            // --- EVENT LISTENERS ---
+            // ------------------------------------------
+            // ----- 3. INTERACTIVE MARKETPLACE FILTERS -----
+            // ------------------------------------------
+            const filtersContainer = document.querySelector('.market-filters');
+            const marketItems = document.querySelectorAll('.market-card');
             
-            // Initialize
-            initBackgroundAnimation();
+            if (filtersContainer && marketItems.length > 0) {
+                filtersContainer.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'BUTTON') return;
 
-            // Live Customization Listeners
-            [ui.headerColorPicker, ui.bgColorPicker, ui.aiBubbleColorPicker, ui.userBubbleColorPicker, ui.projectNameEl].forEach(el => {
-                el.addEventListener('input', updateLivePreview);
-            });
+                    const filter = e.target.dataset.filter;
 
-            // Pricing Listeners
-            ui.featureCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    card.classList.toggle('selected');
-                    const price = parseFloat(card.dataset.price);
-                    const checkbox = card.querySelector('input[type="checkbox"]');
-                    checkbox.checked = !checkbox.checked;
+                    // Update active button
+                    filtersContainer.querySelector('.active').classList.remove('active');
+                    e.target.classList.add('active');
 
-                    if(checkbox.checked) {
-                        state.selectedFeatures.add(price);
-                    } else {
-                        state.selectedFeatures.delete(price);
-                    }
-                    updatePricing();
+                    // Filter items
+                    marketItems.forEach(item => {
+                        const itemCategory = item.dataset.category;
+                        if (filter === 'all' || itemCategory === filter) {
+                            item.classList.remove('hidden');
+                        } else {
+                            item.classList.add('hidden');
+                        }
+                    });
                 });
-            });
+            }
 
-            Object.values(ui.proPlanToggles).forEach(button => {
-                button.addEventListener('click', () => {
-                    Object.values(ui.proPlanToggles).forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    if (button.id === 'plan-monthly') state.proPlan.period = 'monthly';
-                    if (button.id === 'plan-6months') state.proPlan.period = '6months';
-                    if (button.id === 'plan-yearly') state.proPlan.period = 'yearly';
-                    updatePricing();
+
+            // ------------------------------------------
+            // ----- 4. INTERACTIVE FAQ ACCORDION -----
+            // ------------------------------------------
+            const faqItems = document.querySelectorAll('.faq-item');
+            if (faqItems.length > 0) {
+                faqItems.forEach(item => {
+                    const question = item.querySelector('.faq-question');
+                    question.addEventListener('click', () => {
+                        const isActive = item.classList.contains('active');
+                        // Optional: Close all others when one is opened
+                        // faqItems.forEach(i => i.classList.remove('active'));
+                        if (!isActive) {
+                            item.classList.add('active');
+                        } else {
+                            item.classList.remove('active');
+                        }
+                    });
                 });
-            });
+            }
 
+            // ------------------------------------------
+            // ----- 5. CREATOR SPOTLIGHT CAROUSEL ----
+            // ------------------------------------------
+            const track = document.querySelector('.spotlight-track');
+            if (track) {
+                const cards = Array.from(track.children);
+                cards.forEach(card => {
+                    const clone = card.cloneNode(true);
+                    track.appendChild(clone);
+                });
+            }
         });
     </script>
 </body>
