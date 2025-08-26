@@ -3,23 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fugth AI Anvil - Forge Your Reality [v5 - Director's Cut]</title>
+    <title>Fugth AI Anvil - Forge Your Reality [v7 - Nexus Update]</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
         /* ==================================
         --- 🔮 HOLOGRAPHIC THEME 🔮 ---
-        ==================================
-        This theme uses a multi-layered approach:
-        1. A fixed, animated gradient background (.aurora-background) provides ambient color.
-        2. Content sections sit on top with a transparent background.
-        3. Glassmorphism cards (.glass-card) create a frosted, floating effect.
-        */
+        ================================== */
         :root {
             --color-background: #01010F;
             --color-surface: #161B22;
@@ -31,26 +26,17 @@
             --gradient-3: #00BFFF; /* Cyan */
             --gradient-4: #24FE41; /* Green */
             
-            --glass-bg: rgba(22, 26, 43, 0.55);
+            --glass-bg: rgba(22, 26, 43, 0.6);
             --glass-border: rgba(255, 255, 255, 0.1);
             --glass-shadow: rgba(0, 0, 0, 0.35);
         }
 
         /* ==================================
         ----- GLOBAL & UTILITY STYLES ----
-        ==================================
-        */
+        ================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--color-background);
-            color: var(--color-text-primary);
-            line-height: 1.7;
-            overflow-x: hidden;
-        }
-
-        /* Custom Scrollbar */
+        body { font-family: 'Poppins', sans-serif; background-color: var(--color-background); color: var(--color-text-primary); line-height: 1.7; overflow-x: hidden; }
         body::-webkit-scrollbar { width: 10px; }
         body::-webkit-scrollbar-track { background: var(--color-background); }
         body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--gradient-1), var(--gradient-3)); border-radius: 10px; }
@@ -76,15 +62,13 @@
         
         /* ==================================
         --- ✨ ANIMATED BACKGROUND ✨ ---
-        ==================================
-        */
+        ================================== */
         .aurora-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background: linear-gradient(240deg, var(--gradient-1), var(--gradient-2), var(--gradient-3), var(--gradient-4)); background-size: 400% 400%; animation: aurora-flow 20s ease infinite; filter: blur(120px) opacity(0.8); }
         @keyframes aurora-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         /* ==================================
         ------------ HEADER --------------
-        ==================================
-        */
+        ================================== */
         header { position: fixed; width: 100%; top: 0; left: 0; z-index: 1000; padding: 20px 0; transition: all 0.3s ease; }
         header.scrolled { background: rgba(1, 1, 15, 0.5); backdrop-filter: blur(15px); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         nav { display: flex; justify-content: space-between; align-items: center; }
@@ -99,41 +83,48 @@
         
         /* ==================================
         ---------- HERO SECTION ----------
-        ==================================
-        */
+        ================================== */
         #hero { min-height: 100vh; display: flex; align-items: center; text-align: center; }
         .hero-content { max-width: 850px; margin: 0 auto; }
         .hero-content p { font-size: 1.25rem; margin-bottom: 2.5rem; }
         .hero-headline .cursor { display: inline-block; background-color: var(--color-text-primary); margin-left: 0.1rem; width: 4px; animation: blink 1s infinite; }
-        .hero-headline .cursor.typing { animation: none; }
-        @keyframes blink { 50% { background-color: transparent; } }
         .hero-avatar { width: 200px; height: 200px; margin: 0 auto 3rem; border-radius: 50%; background: linear-gradient(45deg, var(--gradient-1), var(--gradient-3)); display: flex; align-items: center; justify-content: center; font-size: 6rem; animation: float 6s ease-in-out infinite; position: relative; border: 4px solid rgba(255,255,255,0.1); }
-        .hero-avatar::before, .hero-avatar::after { content: ''; position: absolute; border-radius: 50%; z-index: -1; animation: pulse 3s ease-in-out infinite; }
-        .hero-avatar::before { inset: -15px; border: 2px solid var(--gradient-3); }
-        .hero-avatar::after { inset: -25px; border: 1px solid var(--gradient-1); animation-delay: 0.5s; }
+        @keyframes blink { 50% { background-color: transparent; } }
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-25px); } 100% { transform: translateY(0px); } }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 0.3; } 100% { transform: scale(1); opacity: 0.8; } }
-
+        
         /* ==================================
         ---- 🧊 GLASSMORPHISM UI 🧊 ----
-        ==================================
-        */
+        ================================== */
         .glass-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: 0 8px 32px 0 var(--glass-shadow); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 2.5rem; transition: transform 0.4s ease, box-shadow 0.4s ease; border-image-slice: 1; }
         .glass-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 15px 40px var(--glass-shadow); border-image-source: linear-gradient(to left, var(--gradient-1), var(--gradient-3)); }
 
         /* ==================================
-        ------ GET STARTED SECTION -------
-        ==================================
-        */
-        .get-started-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; position: relative; }
-        .get-started-step { text-align: center; }
-        .step-number { font-size: 4rem; font-weight: 800; background: linear-gradient(180deg, var(--gradient-1), var(--gradient-3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; margin-bottom: 1rem; }
-        .get-started-grid .connector { display: none; } /* Show on larger screens */
+        ------ THE FORGE UI MOCKUP -------
+        ================================== */
+        #forge { background: rgba(0,0,0,0.15); }
+        .forge-showcase { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: center; }
+        .forge-features .feature-item { margin-bottom: 2rem; }
+        .forge-features .feature-item .icon { font-size: 1.5rem; margin-right: 1rem; color: var(--gradient-3); }
+        .forge-window { background: #080A18; border: 1px solid var(--glass-border); border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); min-height: 500px; display: flex; flex-direction: column; }
+        .forge-window .title-bar { padding: 10px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; }
+        .forge-window .dots span { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+        .forge-window .dots .d1 { background: #ff5f56; } .forge-window .dots .d2 { background: #ffbd2e; } .forge-window .dots .d3 { background: #27c93f; }
+        .forge-window .main-content { display: flex; flex-grow: 1; }
+        .forge-window .sidebar { width: 150px; padding: 1rem; border-right: 1px solid var(--glass-border); font-size: 0.9rem; }
+        .forge-window .sidebar h5 { font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 1rem; }
+        .forge-window .sidebar ul { list-style: none; }
+        .forge-window .sidebar li { margin-bottom: 0.8rem; cursor: pointer; transition: color 0.3s; }
+        .forge-window .sidebar li:hover, .forge-window .sidebar li.active { color: var(--gradient-3); }
+        .forge-window .canvas { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: 6rem; color: var(--color-text-secondary); opacity: 0.5; }
+        .forge-window .properties { width: 200px; padding: 1rem; border-left: 1px solid var(--glass-border); font-size: 0.8rem; }
+        .forge-window .prop-item { margin-bottom: 1rem; }
+        .forge-window .prop-item label { display: block; margin-bottom: 5px; color: var(--color-text-secondary); }
+        .forge-window .prop-item input[type="range"] { width: 100%; }
+        .forge-window .prop-item input[type="color"] { width: 100%; height: 30px; border: none; padding: 0; background: none; }
 
         /* ==================================
         -- INTERACTIVE MARKETPLACE SECTION --
-        ==================================
-        */
+        ================================== */
         #marketplace { background: rgba(0,0,0,0.25); }
         .market-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 3rem; }
         .market-filters button { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--color-text-secondary); font-weight: 600; padding: 10px 20px; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; }
@@ -141,45 +132,52 @@
         .market-filters button.active { color: var(--color-background); background: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); border-color: var(--gradient-4); }
 
         .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
-        .market-card { padding: 0; overflow: hidden; transition: transform 0.4s ease, opacity 0.4s ease; }
-        .market-card.hidden { transform: scale(0.8); opacity: 0; pointer-events: none; height: 0; padding: 0; margin: 0; border: none; }
-        .market-card .card-image { height: 220px; background-color: #01010F; display: flex; align-items: center; justify-content: center; font-size: 4rem; border-bottom: 1px solid var(--glass-border); }
-        .market-card .card-content { padding: 1.5rem; }
-        .market-card .card-title { font-size: 1.2rem; font-weight: 600; }
-        .market-card .card-creator { font-size: 0.9rem; color: var(--color-text-secondary); margin-bottom: 1rem; }
+        .market-card { padding: 0; overflow: hidden; transition: opacity 0.4s ease, transform 0.4s ease; display: flex; flex-direction: column; }
+        .market-card.hidden { transform: scale(0.8); opacity: 0; }
+        .market-card .card-image { height: 220px; background-color: #01010F; display: flex; align-items: center; justify-content: center; font-size: 4rem; border-bottom: 1px solid var(--glass-border); position: relative; }
+        .market-card .card-badge { position: absolute; top: 10px; left: 10px; font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 50px; }
+        .badge-new { background: var(--gradient-3); color: var(--color-background); }
+        .badge-best { background: var(--gradient-1); color: #fff; }
+        .market-card .card-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .market-card .card-header { display: flex; align-items: center; margin-bottom: 1rem; }
+        .market-card .creator-avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; }
+        .market-card .card-title { font-size: 1.1rem; font-weight: 600; line-height: 1.3; }
+        .market-card .card-creator { font-size: 0.8rem; color: var(--color-text-secondary); }
+        .market-card .card-stats { display: flex; font-size: 0.9rem; color: var(--color-text-secondary); margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--glass-border);}
+        .market-card .card-rating { margin-right: auto; }
+        .market-card .card-rating .fa-star { color: #ffbd2e; }
+        .market-card .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: rgba(0,0,0,0.2); }
         .market-card .card-price { font-size: 1.3rem; font-weight: 700; background: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* ==================================
+        ------ THE NEXUS (INTEGRATIONS) ----
+        ================================== */
+        .nexus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 2rem; }
+        .nexus-item { text-align: center; }
+        .nexus-item .icon-wrapper { width: 100px; height: 100px; margin: 0 auto 1rem; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 3rem; transition: all 0.3s ease; }
+        .nexus-item:hover .icon-wrapper { transform: scale(1.1); background: var(--glass-bg); box-shadow: 0 8px 32px 0 var(--glass-shadow); }
+        .nexus-item p { margin-top: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        
+        /* ==================================
         --- GUILD PASS PRICING TABLE ---
-        ==================================
-        */
+        ================================== */
+        #guild-pass { background: rgba(0,0,0,0.15); }
         .pricing-table-container { overflow-x: auto; }
         .pricing-table { width: 100%; border-collapse: collapse; min-width: 800px; }
         .pricing-table th, .pricing-table td { padding: 1.5rem; text-align: left; border-bottom: 1px solid var(--glass-border); }
-        .pricing-table th { font-size: 1.2rem; }
-        .pricing-table td.feature-name { font-weight: 600; }
+        .pricing-table .feature-name { font-weight: 600; position: relative; }
+        .info-icon { margin-left: 8px; color: var(--color-text-secondary); cursor: help; }
+        .tooltip { visibility: hidden; width: 220px; background-color: var(--color-surface); color: #fff; text-align: center; border-radius: 6px; padding: 10px; position: absolute; z-index: 10; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s; font-weight: normal; font-size: 0.9rem; pointer-events: none; }
+        .feature-name:hover .tooltip { visibility: visible; opacity: 1; }
         .pricing-table td .fa-check { color: var(--gradient-4); }
         .pricing-table td .fa-times { color: #8B949E; }
         .pricing-table thead .tier-highlight { background-image: linear-gradient(45deg, var(--gradient-1), var(--gradient-2)); }
         .pricing-table .price { font-size: 2.5rem; font-weight: 700; }
         .pricing-table .period { font-size: 1rem; color: var(--color-text-secondary); }
-
+        
         /* ==================================
-        ------ OTHER SECTION STYLES ------
-        ==================================
-        */
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-        .icon-card { text-align: center; }
-        .icon-card .icon { width: 80px; height: 80px; margin: 0 auto 1.5rem; border-radius: 50%; background: linear-gradient(45deg, var(--gradient-1), var(--gradient-2)); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
-        
-        #spotlight { overflow: hidden; }
-        .carousel-container { position: relative; width: 100vw; left: 50%; transform: translateX(-50%); padding: 2rem 0; }
-        .spotlight-track { display: flex; width: calc(2 * 350px * 8); animation: scroll 60s linear infinite; }
-        .spotlight-track:hover { animation-play-state: paused; }
-        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-350px * 8)); } }
-        .creator-card { flex-shrink: 0; width: 320px; margin: 0 15px; }
-        .creator-card img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--gradient-3); margin-right: 1rem; }
-        
+        -------- ROADMAP SECTION --------
+        ================================== */
         .timeline { position: relative; max-width: 800px; margin: 0 auto; }
         .timeline::after { content: ''; position: absolute; width: 4px; background: var(--glass-border); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
         .timeline-item { padding: 10px 40px; position: relative; width: 50%; }
@@ -188,7 +186,13 @@
         .timeline-item::after { content: ''; position: absolute; width: 20px; height: 20px; right: -10px; background-color: var(--color-background); border: 4px solid var(--gradient-3); top: 25px; border-radius: 50%; z-index: 1; transition: transform 0.3s ease; }
         .timeline-item:hover::after { transform: scale(1.2); }
         .timeline-item.right::after { left: -10px; }
+        .roadmap-status { display: inline-block; font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 50px; margin-top: 1rem; }
+        .status-planned { background: var(--glass-bg); border: 1px solid var(--gradient-3); color: var(--gradient-3); }
+        .status-progress { background: var(--gradient-1); color: #fff; }
         
+        /* ==================================
+        --------- FAQ & FOOTER ---------
+        ================================== */
         .faq-container { max-width: 800px; margin: 0 auto; }
         .faq-item { border-bottom: 1px solid var(--glass-border); }
         .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; cursor: pointer; }
@@ -196,30 +200,23 @@
         .faq-item.active .faq-answer { max-height: 200px; }
         .faq-toggle { font-size: 1.5rem; transition: transform 0.3s ease; }
         .faq-item.active .faq-toggle { transform: rotate(45deg); }
-        
         .pre-footer-cta { text-align: center; background: linear-gradient(45deg, rgba(74, 0, 224, 0.2), rgba(142, 45, 226, 0.2)); border-radius: 20px; padding: 4rem; }
-
         footer { padding: 50px 0; text-align: center; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.1); }
         
         /* ==================================
         --- ✨ SCROLL ANIMATIONS ✨ ---
-        ==================================
-        */
+        ================================== */
         [data-animate] { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
         [data-animate].is-visible { opacity: 1; transform: translateY(0); }
-        .stagger-children > * { transition-delay: calc(var(--stagger-index, 0) * 100ms); }
-
+        
         /* ==================================
         ------- RESPONSIVENESS -------
-        ==================================
-        */
-        @media (min-width: 993px) {
-            .get-started-grid .connector { display: block; position: absolute; top: 3.5rem; left: 25%; width: 50%; height: 2px; background: linear-gradient(90deg, transparent, var(--glass-border), transparent); z-index: -1; }
-        }
+        ================================== */
         @media (max-width: 992px) {
             h1 { font-size: 3.2rem; }
             h2 { font-size: 2.4rem; }
-            .grid-3 { grid-template-columns: 1fr; }
+            .forge-showcase { grid-template-columns: 1fr; }
+            .forge-window { margin-top: 2rem; }
         }
         @media (max-width: 768px) {
             .nav-links { display: none; }
@@ -227,9 +224,7 @@
             .timeline-item { width: 100%; padding-left: 50px; padding-right: 20px; }
             .timeline-item.right { left: 0%; }
             .timeline-item::after { left: 1px; }
-            .get-started-grid { grid-template-columns: 1fr; }
         }
-
     </style>
 </head>
 <body>
@@ -242,11 +237,11 @@
                 <ul class="nav-links">
                     <li><a href="#forge">The Forge</a></li>
                     <li><a href="#marketplace">Marketplace</a></li>
+                    <li><a href="#nexus">Nexus</a></li>
                     <li><a href="#guild-pass">Guild Pass</a></li>
                     <li><a href="#roadmap">Roadmap</a></li>
-                    <li><a href="#faq">FAQ</a></li>
                 </ul>
-                <a href="#" class="btn btn-primary">Download Anvil</a>
+                <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary">Download Anvil</a>
             </nav>
         </div>
     </header>
@@ -256,31 +251,7 @@
             <div class="hero-avatar"><i class="fa-solid fa-brain"></i></div>
             <h1 class="hero-headline"><span id="typing-effect"></span><span class="cursor"></span></h1>
             <p>Go beyond assistants. Create a true AI companion. Fugth AI Anvil is the ultimate creative suite for designing, customizing, and bringing to life an intelligent entity that lives on your desktop.</p>
-            <a href="#" class="btn btn-primary">Purchase For $99.99</a>
-        </div>
-    </section>
-
-    <section id="get-started">
-        <div class="container">
-            <h2 data-animate>Get Started in <span class="text-gradient">Three Steps</span></h2>
-            <div class="get-started-grid">
-                <div class="connector"></div>
-                <div class="get-started-step" data-animate style="--stagger-index: 1;">
-                    <div class="step-number">1</div>
-                    <h3>Purchase & Install</h3>
-                    <p>Get instant access to the Anvil software with a secure one-time purchase.</p>
-                </div>
-                <div class="get-started-step" data-animate style="--stagger-index: 2;">
-                    <div class="step-number">2</div>
-                    <h3>Forge Your Companion</h3>
-                    <p>Use our powerful editor to customize one of the starter avatars or build your own from scratch.</p>
-                </div>
-                <div class="get-started-step" data-animate style="--stagger-index: 3;">
-                    <div class="step-number">3</div>
-                    <h3>Connect & Extend</h3>
-                    <p>Bring your companion to life on your desktop and expand its capabilities with assets from the marketplace.</p>
-                </div>
-            </div>
+            <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary">Purchase For $99.99</a>
         </div>
     </section>
 
@@ -288,10 +259,22 @@
         <div class="container">
             <h2 data-animate>Inside <span class="text-gradient">The Anvil Forge</span></h2>
             <p class="section-subtitle" data-animate>The heart of creation. Our integrated, user-friendly editor gives you god-like control over every aspect of your companion.</p>
-            <div class="grid-3 stagger-children">
-                <div class="glass-card icon-card" data-animate style="--stagger-index: 1;"><div class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div><h3>Visual Editor</h3><p>No code required. Drag, drop, and customize models, textures, and particle effects with a real-time 3D preview.</p></div>
-                <div class="glass-card icon-card" data-animate style="--stagger-index: 2;"><div class="icon"><i class="fa-solid fa-sitemap"></i></div><h3>Personality Matrix</h3><p>Visually script your AI's behavior. Use our node-based logic editor to define its quirks, memories, and conversational flows.</p></div>
-                <div class="glass-card icon-card" data-animate style="--stagger-index: 3;"><div class="icon"><i class="fa-solid fa-upload"></i></div><h3>One-Click Publishing</h3><p>Ready to share your creation? Publish your avatars and personalities directly to the Community Marketplace from within the Forge.</p></div>
+            
+            <div class="forge-showcase">
+                <div class="forge-features" data-animate>
+                    <div class="feature-item"><h3><i class="icon fa-solid fa-wand-magic-sparkles"></i> Visual Editor</h3><p>No code required. A real-time 3D viewport lets you drag, drop, and customize models, textures, and particle effects with instant feedback.</p></div>
+                    <div class="feature-item"><h3><i class="icon fa-solid fa-sitemap"></i> Personality Matrix</h3><p>Visually script your AI's behavior. Use our node-based logic editor to define its quirks, memories, and conversational flows.</p></div>
+                    <div class="feature-item"><h3><i class="icon fa-solid fa-upload"></i> One-Click Publishing</h3><p>Ready to share? Publish your avatars and personalities directly to the Community Marketplace from within the Forge.</p></div>
+                </div>
+
+                <div class="forge-window glass-card" data-animate>
+                    <div class="title-bar"><div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div></div>
+                    <div class="main-content">
+                        <div class="sidebar"><h5>Assets</h5><ul><li class="active"><i class="fa-solid fa-cube fa-fw"></i> Models</li><li><i class="fa-solid fa-image fa-fw"></i> Textures</li><li><i class="fa-solid fa-star fa-fw"></i> Particle FX</li><li><i class="fa-solid fa-person-running fa-fw"></i> Animations</li></ul></div>
+                        <div class="canvas"><i class="fa-solid fa-ghost"></i></div>
+                        <div class="properties"><h5>Properties</h5><div class="prop-item"><label for="opacity">Opacity</label><input type="range" id="opacity" name="opacity" min="0" max="100" value="80"></div><div class="prop-item"><label for="glow">Glow Color</label><input type="color" id="glow" name="glow" value="#00bfff"></div><div class="prop-item"><label>Animation</label><p>Idle_Float_01</p></div></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -301,79 +284,72 @@
             <h2 data-animate>The <span class="text-gradient">Marketplace</span></h2>
             <p class="section-subtitle" data-animate>The central hub for all Anvil creations. Discover thousands of unique assets from our official studio and talented community creators.</p>
 
-            <div class="market-filters" data-animate>
-                <button class="active" data-filter="all">All</button>
-                <button data-filter="skin">Skins</button>
-                <button data-filter="accessory">Accessories</button>
-                <button data-filter="personality">Personalities</button>
-                <button data-filter="animation">Animations</button>
-            </div>
+            <div class="market-filters" data-animate><button class="active" data-filter="all">All</button><button data-filter="skin">Skins</button><button data-filter="accessory">Accessories</button><button data-filter="personality">Personalities</button></div>
 
             <div class="market-grid">
-                <div class="market-card glass-card" data-category="skin"><div class="card-image"><i class="fa-solid fa-dragon"></i></div><div class="card-content"><h4 class="card-title">Inferno Guardian</h4><p class="card-creator">by FugthDesign</p><div class="card-price">$19.99</div></div></div>
-                <div class="market-card glass-card" data-category="accessory"><div class="card-image"><i class="fa-solid fa-hat-wizard"></i></div><div class="card-content"><h4 class="card-title">Archmage Hat</h4><p class="card-creator">by AuraWeaver</p><div class="card-price">$7.99</div></div></div>
-                <div class="market-card glass-card" data-category="personality"><div class="card-image"><i class="fa-solid fa-user-secret"></i></div><div class="card-content"><h4 class="card-title">Noir Detective</h4><p class="card-creator">by SynthwaveScribe</p><div class="card-price">$9.99</div></div></div>
-                <div class="market-card glass-card" data-category="skin"><div class="card-image"><i class="fa-solid fa-robot"></i></div><div class="card-content"><h4 class="card-title">G-Type Juggernaut</h4><p class="card-creator">by MechMaestro</p><div class="card-price">$24.99</div></div></div>
-                <div class="market-card glass-card" data-category="animation"><div class="card-image"><i class="fa-solid fa-person-running"></i></div><div class="card-content"><h4 class="card-title">Glitch Dash</h4><p class="card-creator">by GhostFX</p><div class="card-price">$4.99</div></div></div>
-                <div class="market-card glass-card" data-category="accessory"><div class="card-image"><i class="fa-solid fa-link"></i></div><div class="card-content"><h4 class="card-title">Spectral Chains</h4><p class="card-creator">by GhostFX</p><div class="card-price">$4.99</div></div></div>
-                <div class="market-card glass-card" data-category="skin"><div class="card-image"><i class="fa-solid fa-ghost"></i></div><div class="card-content"><h4 class="card-title">Forest Spirit</h4><p class="card-creator">by FugthDesign</p><div class="card-price">$14.99</div></div></div>
-                <div class="market-card glass-card" data-category="personality"><div class="card-image"><i class="fa-solid fa-gamepad"></i></div><div class="card-content"><h4 class="card-title">Gamer Sidekick</h4><p class="card-creator">by FugthDesign</p><div class="card-price">$9.99</div></div></div>
-                <div class="market-card glass-card" data-category="accessory"><div class="card-image"><i class="fa-solid fa-glasses"></i></div><div class="card-content"><h4 class="card-title">Holo-Visor</h4><p class="card-creator">by PixelProphet</p><div class="card-price">$5.99</div></div></div>
-                <div class="market-card glass-card" data-category="skin"><div class="card-image"><i class="fa-solid fa-cat"></i></div><div class="card-content"><h4 class="card-title">Neko Chan</h4><p class="card-creator">by ChibiChan</p><div class="card-price">$12.99</div></div></div>
-                <div class="market-card glass-card" data-category="personality"><div class="card-image"><i class="fa-solid fa-scroll"></i></div><div class="card-content"><h4 class="card-title">Stoic Philosopher</h4><p class="card-creator">by LogicLord</p><div class="card-price">$9.99</div></div></div>
-                <div class="market-card glass-card" data-category="animation"><div class="card-image"><i class="fa-solid fa-hands-holding-circle"></i></div><div class="card-content"><h4 class="card-title">Meditate Emote</h4><p class="card-creator">by AuraWeaver</p><div class="card-price">$2.99</div></div></div>
+                <div class="market-card glass-card" data-category="skin">
+                    <div class="card-image"><div class="card-badge badge-best">Best Seller</div><i class="fa-solid fa-dragon"></i></div>
+                    <div class="card-content"><div class="card-header"><img src="https://i.pravatar.cc/100?u=fugth" class="creator-avatar" alt="creator"><div><h4 class="card-title">Inferno Guardian</h4><p class="card-creator">by FugthDesign</p></div></div><div class="card-stats"><div class="card-rating"><i class="fa-solid fa-star"></i> 4.9</div><div><i class="fa-solid fa-download"></i> 12.1k</div></div></div>
+                    <div class="card-footer"><span class="card-price">$19.99</span> <a href="#" class="btn">View</a></div>
+                </div>
+                <div class="market-card glass-card" data-category="accessory">
+                    <div class="card-image"><i class="fa-solid fa-hat-wizard"></i></div>
+                    <div class="card-content"><div class="card-header"><img src="https://i.pravatar.cc/100?u=c" class="creator-avatar" alt="creator"><div><h4 class="card-title">Archmage Hat</h4><p class="card-creator">by AuraWeaver</p></div></div><div class="card-stats"><div class="card-rating"><i class="fa-solid fa-star"></i> 4.8</div><div><i class="fa-solid fa-download"></i> 8.7k</div></div></div>
+                    <div class="card-footer"><span class="card-price">$7.99</span> <a href="#" class="btn">View</a></div>
+                </div>
+                <div class="market-card glass-card" data-category="personality">
+                    <div class="card-image"><div class="card-badge badge-new">New!</div><i class="fa-solid fa-user-secret"></i></div>
+                    <div class="card-content"><div class="card-header"><img src="https://i.pravatar.cc/100?u=b" class="creator-avatar" alt="creator"><div><h4 class="card-title">Noir Detective</h4><p class="card-creator">by SynthwaveScribe</p></div></div><div class="card-stats"><div class="card-rating"><i class="fa-solid fa-star"></i> 5.0</div><div><i class="fa-solid fa-download"></i> 1.2k</div></div></div>
+                    <div class="card-footer"><span class="card-price">$9.99</span> <a href="#" class="btn">View</a></div>
+                </div>
+                <div class="market-card glass-card" data-category="skin">
+                    <div class="card-image"><i class="fa-solid fa-robot"></i></div>
+                    <div class="card-content"><div class="card-header"><img src="https://i.pravatar.cc/100?u=d" class="creator-avatar" alt="creator"><div><h4 class="card-title">G-Type Juggernaut</h4><p class="card-creator">by MechMaestro</p></div></div><div class="card-stats"><div class="card-rating"><i class="fa-solid fa-star"></i> 4.9</div><div><i class="fa-solid fa-download"></i> 6.4k</div></div></div>
+                    <div class="card-footer"><span class="card-price">$24.99</span> <a href="#" class="btn">View</a></div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="guild-pass">
+    <section id="nexus">
+        <div class="container">
+            <h2 data-animate>The Anvil <span class="text-gradient">Nexus</span></h2>
+            <p class="section-subtitle" data-animate>Anvil isn't an island. It’s a hub. Connect your companion to your favorite apps and services to give it real-world utility and make it a true part of your digital life.</p>
+            <div class="glass-card" data-animate>
+                <div class="nexus-grid">
+                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fab fa-discord"></i></div><p>Discord</p></div>
+                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fab fa-spotify"></i></div><p>Spotify</p></div>
+                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fab fa-slack"></i></div><p>Slack</p></div>
+                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fab fa-github"></i></div><p>GitHub</p></div>
+                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fa-solid fa-code"></i></div><p>VS Code</p></div>
+                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fa-solid fa-plug"></i></div><p>Developer API</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="guild-pass" style="background: rgba(0,0,0,0.15);">
         <div class="container">
             <h2 data-animate>Join the <span class="text-gradient">Anvil Guild</span></h2>
             <p class="section-subtitle" data-animate>While the core Anvil experience is a one-time purchase, the optional Guild Pass subscription is your key to exclusive content and our most powerful features.</p>
             <div class="glass-card" data-animate>
                 <div class="pricing-table-container">
                     <table class="pricing-table">
-                        <thead>
-                            <tr>
-                                <th>Feature</th>
-                                <th>Anvil Owner</th>
-                                <th class="tier-highlight">Guild Member</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Feature</th><th>Anvil Owner</th><th class="tier-highlight">Guild Member</th></tr></thead>
                         <tbody>
-                            <tr>
-                                <td class="feature-name">Price</td>
-                                <td>$99.99 One-Time</td>
-                                <td><div class="price">$7.99</div><span class="period">/ month</span></td>
-                            </tr>
+                            <tr><td class="feature-name">Price</td><td>$99.99 One-Time</td><td><div class="price">$7.99</div><span class="period">/ month</span></td></tr>
                             <tr><td class="feature-name">The Anvil Forge Software</td><td><i class="fas fa-check"></i></td><td><i class="fas fa-check"></i></td></tr>
                             <tr><td class="feature-name">Marketplace Access (Buy/Sell)</td><td><i class="fas fa-check"></i></td><td><i class="fas fa-check"></i></td></tr>
                             <tr><td class="feature-name">Standard Local AI Models</td><td><i class="fas fa-check"></i></td><td><i class="fas fa-check"></i></td></tr>
-                            <tr><td class="feature-name">Monthly Exclusive Item Drop</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
+                            <tr><td class="feature-name">Monthly Exclusive Item Drop<i class="fas fa-info-circle info-icon"><span class="tooltip">A free, high-quality skin or accessory delivered to your account every month.</span></i></td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
                             <tr><td class="feature-name">Marketplace Purchase Discount</td><td><i class="fas fa-times"></i></td><td>15% Off</td></tr>
                             <tr><td class="feature-name">Reduced Creator Transaction Fee</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
-                            <tr><td class="feature-name">Access to Premium Cloud AI Models</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
+                            <tr><td class="feature-name">Premium Cloud AI Models<i class="fas fa-info-circle info-icon"><span class="tooltip">Optional access to larger, more powerful AI models hosted by us for more complex conversations.</span></i></td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
                             <tr><td class="feature-name">Beta Access to New Features</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
-                            <tr><td></td><td></td><td><a href="#" class="btn btn-primary">Subscribe Now</a></td></tr>
+                            <tr><td></td><td><a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn">Purchase Anvil</a></td><td><a href="https://buy.stripe.com/8x228rbz23YA9OzbYEgrS0b" target="_blank" class="btn btn-primary">Subscribe Now</a></td></tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-    </section>
-    
-    <section id="spotlight" style="background: rgba(0,0,0,0.15);">
-        <div class="container"><h2 data-animate>Creator <span class="text-gradient">Spotlight</span></h2><p class="section-subtitle" data-animate>Our platform is powered by the passion of our community. Discover some of the amazing creations forged in the Anvil.</p></div>
-        <div class="carousel-container" data-animate>
-            <div class="spotlight-track">
-                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=a" alt="Creator Avatar"><div class="creator-info"><h4>PixelProphet</h4><p>Voxel Artist</p></div></div><p>"The Forge's voxel tools are incredible. I've been able to bring my pixel characters to life..."</p></div>
-                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=b" alt="Creator Avatar"><div class="creator-info"><h4>SynthwaveScribe</h4><p>Personality Scripter</p></div></div><p>"The Personality Matrix is a game-changer. I've created a companion that's a sarcastic, neo-noir detective."</p></div>
-                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=c" alt="Creator Avatar"><div class="creator-info"><h4>AuraWeaver</h4><p>Particle Effects Artist</p></div></div><p>"I specialize in magical auras and effects. Anvil lets me sell these as accessories that work on any avatar."</p></div>
-                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=d" alt="Creator Avatar"><div class="creator-info"><h4>MechMaestro</h4><p>3D Modeler</p></div></div><p>"The import pipeline is seamless. I model my mechs in Blender and they look even better in the Anvil engine."</p></div>
-                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=e" alt="Creator Avatar"><div class="creator-info"><h4>ChibiChan</h4><p>Anime Avatar Creator</p></div></div><p>"My dream was to create and sell cute anime-style avatars. Anvil made it a reality. The community is so supportive!"</p></div>
-                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=f" alt="Creator Avatar"><div class="creator-info"><h4>BioMorph</h4><p>Organic Modeler</p></div></div><p>"I create alien flora and fauna. With Anvil, my creatures can now be people's desktop companions."</p></div>
-                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=g" alt="Creator Avatar"><div class="creator-info"><h4>LogicLord</h4><p>Utility AI Developer</p></div></div><p>"The API is surprisingly robust. I've made a personality that helps me code by interfacing with my IDE."</p></div>
-                <div class="creator-card glass-card"><div class="creator-header"><img src="https://i.pravatar.cc/100?u=h" alt="Creator Avatar"><div class="creator-info"><h4>GhostFX</h4><p>Haunted Accessories</p></div></div><p>"My shop sells spectral chains and ghostly followers. The accessory system is perfect for these smaller items."</p></div>
             </div>
         </div>
     </section>
@@ -383,33 +359,19 @@
             <h2 data-animate>The <span class="text-gradient">Future Forged</span></h2>
             <p class="section-subtitle" data-animate>Our journey is just beginning. We are committed to continuously expanding the Anvil universe with groundbreaking features.</p>
             <div class="timeline" data-animate>
-                <div class="timeline-item left"><div class="content glass-card"><h4>Q4 2025: Mobile Companion App</h4><p>Take your AI with you. Interact and chat with your companion from anywhere.</p></div></div>
-                <div class="timeline-item right"><div class="content glass-card"><h4>Q1 2026: VR/AR Integration</h4><p>Bring your companion into your space with Virtual and Augmented Reality support.</p></div></div>
-                <div class="timeline-item left"><div class="content glass-card"><h4>Q2 2026: Collaborative Forging</h4><p>Team up with other creators in real-time to build complex avatars and personalities together.</p></div></div>
-                <div class="timeline-item right"><div class="content glass-card"><h4>Q4 2026: Procedural Generation</h4><p>AI-assisted creation tools within the Forge to help you generate textures, models, and ideas.</p></div></div>
+                <div class="timeline-item left"><div class="content glass-card"><h4>Mobile Companion App</h4><p>Take your AI with you. Interact and chat with your companion from anywhere.</p><span class="roadmap-status status-progress">In Progress</span></div></div>
+                <div class="timeline-item right"><div class="content glass-card"><h4>VR/AR Integration</h4><p>Bring your companion into your space with Virtual and Augmented Reality support.</p><span class="roadmap-status status-planned">Planned</span></div></div>
+                <div class="timeline-item left"><div class="content glass-card"><h4>Collaborative Forging</h4><p>Team up with other creators in real-time to build complex avatars and personalities together.</p><span class="roadmap-status status-planned">Planned</span></div></div>
             </div>
         </div>
     </section>
 
-    <section id="pre-footer">
+    <section id="pre-footer" style="padding-bottom: 0;">
         <div class="container">
             <div class="pre-footer-cta glass-card" data-animate>
                 <h2>Ready to Forge Your Reality?</h2>
                 <p>The ultimate tool for AI creation is waiting. Join a new generation of creators and bring your imagination to life.</p>
-                <a href="#" class="btn btn-primary">Download Anvil Now</a>
-            </div>
-        </div>
-    </section>
-
-    <section id="faq" style="padding-top: 0;">
-        <div class="container">
-            <h2 data-animate>Frequently Asked <span class="text-gradient">Questions</span></h2>
-            <div class="faq-container" data-animate>
-                <div class="faq-item"><div class="faq-question"><h4>Is the $99.99 a one-time purchase?</h4><div class="faq-toggle">+</div></div><div class="faq-answer"><p>Yes! The core Anvil software and marketplace access are yours forever with a single purchase. The Guild Pass subscription is an optional add-on for those who want exclusive monthly content and premium features.</p></div></div>
-                <div class="faq-item"><div class="faq-question"><h4>Does the AI run locally on my computer?</h4><div class="faq-toggle">+</div></div><div class="faq-answer"><p>Absolutely. The default AI models run 100% locally on your machine, ensuring your conversations and data remain private. The optional Guild Pass may offer access to more powerful cloud-based models, but local-first is our core principle.</p></div></div>
-                <div class="faq-item"><div class="faq-question"><h4>What are the system requirements?</h4><div class="faq-toggle">+</div></div><div class="faq-answer"><p>We are optimizing Anvil to run on a wide range of modern PCs. Generally, you'll need a dedicated graphics card (NVIDIA GTX 1060 / AMD RX 580 or better) and at least 8GB of RAM for a smooth experience.</p></div></div>
-                <div class="faq-item"><div class="faq-question"><h4>What 3D file formats can I import into the Forge?</h4><div class="faq-toggle">+</div></div><div class="faq-answer"><p>The Anvil Forge supports all major 3D formats, including .FBX, .OBJ, and .GLTF. Our goal is to make it as easy as possible to bring your existing creations into the Anvil ecosystem.</p></div></div>
-                <div class="faq-item"><div class="faq-question"><h4>Can I get a refund if I don't like it?</h4><div class="faq-toggle">+</div></div><div class="faq-answer"><p>We offer a 14-day, no-questions-asked refund policy. We're confident you'll love the Anvil, but if it's not for you, we'll make it right.</p></div></div>
+                <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary">Download Anvil Now</a>
             </div>
         </div>
     </section>
@@ -417,17 +379,13 @@
     <footer>
         <div class="container">
             <a href="#" class="logo"><i class="fa-solid fa-cubes-stacked"></i> Fugth AI Anvil</a>
-            <div class="social-links" style="margin: 20px 0;"><a href="#"><i class="fab fa-twitter"></i></a><a href="#"><i class="fab fa-discord"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div>
-            <p>&copy; 2025 Fugthdesign.space. All Rights Reserved.</p>
+            <p style="margin-top: 1rem;">&copy; 2025 Fugthdesign.space. All Rights Reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Use a strict mode and a DOMContentLoaded listener for robust execution
         'use strict';
         document.addEventListener('DOMContentLoaded', () => {
-
-            console.log("Fugth AI Anvil Demo Page Initialized. [v5 - Director's Cut]");
 
             // ------------------------------------------
             // ----- 1. DYNAMIC TYPING EFFECT FOR HERO --
@@ -439,21 +397,13 @@
                 
                 function type() {
                     currentWord = words[i];
-                    if (isDeleting) {
-                        typingEffectElement.textContent = currentWord.substring(0, j--);
-                    } else {
-                        typingEffectElement.textContent = currentWord.substring(0, j++);
-                    }
+                    if (isDeleting) { typingEffectElement.textContent = currentWord.substring(0, j--); } 
+                    else { typingEffectElement.textContent = currentWord.substring(0, j++); }
 
-                    if (!isDeleting && j === currentWord.length) {
-                        setTimeout(() => isDeleting = true, 2000);
-                    } else if (isDeleting && j === 0) {
-                        isDeleting = false;
-                        i = (i + 1) % words.length;
-                    }
+                    if (!isDeleting && j === currentWord.length) { setTimeout(() => isDeleting = true, 2000); } 
+                    else if (isDeleting && j === 0) { isDeleting = false; i = (i + 1) % words.length; }
                     
-                    const typeSpeed = isDeleting ? 50 : 120;
-                    setTimeout(type, typeSpeed);
+                    setTimeout(type, isDeleting ? 50 : 120);
                 }
                 type();
             }
@@ -462,11 +412,7 @@
             // ----- 2. HEADER SCROLL EFFECT ----------
             // ------------------------------------------
             const header = document.getElementById('main-header');
-            if (header) {
-                window.addEventListener('scroll', () => {
-                    header.classList.toggle('scrolled', window.scrollY > 50);
-                });
-            }
+            if (header) { window.addEventListener('scroll', () => { header.classList.toggle('scrolled', window.scrollY > 50); }); }
 
             // ------------------------------------------
             // ----- 3. DYNAMIC SCROLL ANIMATIONS -----
@@ -475,39 +421,47 @@
             if (animatedElements.length > 0) {
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                        }
+                        if (entry.isIntersecting) { entry.target.classList.add('is-visible'); }
                     });
                 }, { threshold: 0.1 });
                 animatedElements.forEach(el => observer.observe(el));
             }
             
-            const staggerContainers = document.querySelectorAll('.stagger-children');
-            staggerContainers.forEach(container => {
-                const children = container.querySelectorAll('[data-animate]');
-                children.forEach((child, index) => {
-                    child.style.setProperty('--stagger-index', index);
-                });
-            });
-
             // ------------------------------------------
-            // ----- 4. INTERACTIVE MARKETPLACE FILTERS -
+            // ----- 4. MARKETPLACE FILTER LOGIC (FIXED) -
             // ------------------------------------------
             const filtersContainer = document.querySelector('.market-filters');
             const marketItems = document.querySelectorAll('.market-card');
             if (filtersContainer && marketItems.length > 0) {
+                const animationDuration = 400; // Corresponds to transition duration in CSS
+
                 filtersContainer.addEventListener('click', (e) => {
                     if (e.target.tagName !== 'BUTTON') return;
+                    
                     const filter = e.target.dataset.filter;
                     filtersContainer.querySelector('.active').classList.remove('active');
                     e.target.classList.add('active');
+
                     marketItems.forEach(item => {
                         const itemCategory = item.dataset.category;
-                        if (filter === 'all' || itemCategory === filter) {
-                            item.classList.remove('hidden');
+                        const shouldBeVisible = (filter === 'all' || itemCategory === filter);
+
+                        if (shouldBeVisible) {
+                            // If it's hidden and should be visible
+                            if(item.classList.contains('hidden')) {
+                                item.style.display = 'flex'; // Make it part of the layout *before* animating
+                                setTimeout(() => {
+                                    item.classList.remove('hidden');
+                                }, 10); // small delay to ensure display:flex is applied
+                            }
                         } else {
-                            item.classList.add('hidden');
+                            // If it's visible and should be hidden
+                            if(!item.classList.contains('hidden')) {
+                                item.classList.add('hidden');
+                                setTimeout(() => {
+                                    item.style.display = 'none'; // Hide it from the layout *after* animating
+                                }, animationDuration);
+                            }
                         }
                     });
                 });
@@ -522,24 +476,9 @@
                     const question = item.querySelector('.faq-question');
                     question.addEventListener('click', () => {
                         const isActive = item.classList.contains('active');
-                        // close all others before opening a new one
                         faqItems.forEach(i => i.classList.remove('active'));
-                        if (!isActive) {
-                            item.classList.add('active');
-                        }
+                        if (!isActive) { item.classList.add('active'); }
                     });
-                });
-            }
-
-            // ------------------------------------------
-            // ----- 6. CREATOR SPOTLIGHT CAROUSEL ----
-            // ------------------------------------------
-            const track = document.querySelector('.spotlight-track');
-            if (track) {
-                const cards = Array.from(track.children);
-                cards.forEach(card => {
-                    const clone = card.cloneNode(true);
-                    track.appendChild(clone);
                 });
             }
         });
