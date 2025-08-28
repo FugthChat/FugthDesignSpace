@@ -3,485 +3,411 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fugth AI Anvil - Forge Your Reality [v7 - Nexus Update]</title>
+    <title>Fugth AI Anvil | The Future of AI Companions</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-        /* ==================================
-        --- 🔮 HOLOGRAPHIC THEME 🔮 ---
-        ================================== */
         :root {
-            --color-background: #01010F;
-            --color-surface: #161B22;
-            --color-text-primary: #F0F4F8;
-            --color-text-secondary: #A9B2CC;
-            
-            --gradient-1: #8E2DE2; /* Purple */
-            --gradient-2: #4A00E0; /* Indigo */
-            --gradient-3: #00BFFF; /* Cyan */
-            --gradient-4: #24FE41; /* Green */
-            
-            --glass-bg: rgba(22, 26, 43, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-shadow: rgba(0, 0, 0, 0.35);
+            --color-background: #0B0F19;
+            --color-surface: #111827;
+            --color-surface-light: #1F2937;
+            --color-border: #374151;
+            --color-primary: #845EEE;
+            --color-secondary: #00DDEB;
+            --color-text-primary: #F9FAFB;
+            --color-text-secondary: #9CA3AF;
+            --color-text-heading: #FFFFFF;
+            --font-family: 'Inter', sans-serif;
         }
 
-        /* ==================================
-        ----- GLOBAL & UTILITY STYLES ----
-        ================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--color-background); color: var(--color-text-primary); line-height: 1.7; overflow-x: hidden; }
-        body::-webkit-scrollbar { width: 10px; }
-        body::-webkit-scrollbar-track { background: var(--color-background); }
-        body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--gradient-1), var(--gradient-3)); border-radius: 10px; }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        section { padding: 120px 0; position: relative; z-index: 2; }
-        
-        h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
-        h1 { font-size: 4.2rem; text-shadow: 0 0 25px rgba(255,255,255,0.25); }
-        h2 { font-size: 3rem; margin-bottom: 2rem; text-align: center; }
-        h3 { font-size: 1.8rem; margin-bottom: 1.5rem; }
-        h4 { font-size: 1.2rem; }
-        .text-gradient { background: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
+        body { font-family: var(--font-family); background-color: var(--color-background); color: var(--color-text-primary); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        section { padding: 100px 0; border-bottom: 1px solid var(--color-border); }
+        section:last-of-type { border-bottom: none; }
+        h1, h2, h3 { font-weight: 800; line-height: 1.2; color: var(--color-text-heading); letter-spacing: -0.02em; }
+        h1 { font-size: 4rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 1.75rem; }
         p { color: var(--color-text-secondary); margin-bottom: 1rem; }
-        .section-subtitle { text-align: center; max-width: 700px; margin: -1.5rem auto 3.5rem auto; color: var(--color-text-secondary); }
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 60px auto; }
+        .text-gradient { background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn { display: inline-block; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s ease-in-out; border: none; cursor: pointer; text-align: center; }
+        .btn-primary { background: var(--color-primary); color: #fff; }
+        .btn-primary:hover { background: #7146e2; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(132, 94, 238, 0.3); }
+        .btn-secondary { background: var(--color-surface-light); border: 1px solid var(--color-border); color: var(--color-text-primary); }
+        .btn-secondary:hover { background: var(--color-border); }
+        .btn-disabled { background: #374151; color: #6B7280; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .hidden { display: none !important; }
 
-        .btn { display: inline-block; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; position: relative; overflow: hidden; z-index: 1; }
-        .btn-primary { background: linear-gradient(90deg, var(--gradient-1), var(--gradient-2)); color: #fff; }
-        .btn-primary:before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); transition: all 0.4s ease; z-index: -1; }
-        .btn-primary:hover:before { left: 0; }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        
-        /* ==================================
-        --- ✨ ANIMATED BACKGROUND ✨ ---
-        ================================== */
-        .aurora-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background: linear-gradient(240deg, var(--gradient-1), var(--gradient-2), var(--gradient-3), var(--gradient-4)); background-size: 400% 400%; animation: aurora-flow 20s ease infinite; filter: blur(120px) opacity(0.8); }
-        @keyframes aurora-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        /* ==================================
-        ------------ HEADER --------------
-        ================================== */
-        header { position: fixed; width: 100%; top: 0; left: 0; z-index: 1000; padding: 20px 0; transition: all 0.3s ease; }
-        header.scrolled { background: rgba(1, 1, 15, 0.5); backdrop-filter: blur(15px); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        nav { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.8rem; font-weight: 800; text-decoration: none; color: var(--color-text-primary); }
-        .logo i { background-image: linear-gradient(45deg, var(--gradient-1), var(--gradient-3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .nav-links { list-style: none; display: flex; }
-        .nav-links li { margin-left: 35px; }
-        .nav-links a { text-decoration: none; color: var(--color-text-secondary); font-weight: 600; transition: color 0.3s ease; position: relative; }
-        .nav-links a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 50%; background-image: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); transition: all 0.3s ease; }
+        header { position: fixed; width: 100%; top: 0; left: 0; z-index: 1000; transition: background 0.3s ease-in-out, border-color 0.3s ease-in-out; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid transparent; }
+        header.scrolled { background: rgba(11, 15, 25, 0.8); border-bottom-color: var(--color-border); }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; }
+        .logo { font-size: 1.5rem; font-weight: 800; text-decoration: none; color: var(--color-text-primary); cursor: pointer; }
+        .nav-links { list-style: none; display: flex; gap: 32px; }
+        .nav-links a { text-decoration: none; color: var(--color-text-secondary); font-weight: 500; transition: color 0.2s ease, border-color 0.2s ease; cursor: pointer; padding: 8px 0; border-bottom: 2px solid transparent; }
         .nav-links a:hover { color: var(--color-text-primary); }
-        .nav-links a:hover::after { width: 100%; left: 0; }
-        
-        /* ==================================
-        ---------- HERO SECTION ----------
-        ================================== */
-        #hero { min-height: 100vh; display: flex; align-items: center; text-align: center; }
-        .hero-content { max-width: 850px; margin: 0 auto; }
-        .hero-content p { font-size: 1.25rem; margin-bottom: 2.5rem; }
-        .hero-headline .cursor { display: inline-block; background-color: var(--color-text-primary); margin-left: 0.1rem; width: 4px; animation: blink 1s infinite; }
-        .hero-avatar { width: 200px; height: 200px; margin: 0 auto 3rem; border-radius: 50%; background: linear-gradient(45deg, var(--gradient-1), var(--gradient-3)); display: flex; align-items: center; justify-content: center; font-size: 6rem; animation: float 6s ease-in-out infinite; position: relative; border: 4px solid rgba(255,255,255,0.1); }
-        @keyframes blink { 50% { background-color: transparent; } }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-25px); } 100% { transform: translateY(0px); } }
-        
-        /* ==================================
-        ---- 🧊 GLASSMORPHISM UI 🧊 ----
-        ================================== */
-        .glass-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: 0 8px 32px 0 var(--glass-shadow); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 2.5rem; transition: transform 0.4s ease, box-shadow 0.4s ease; border-image-slice: 1; }
-        .glass-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 15px 40px var(--glass-shadow); border-image-source: linear-gradient(to left, var(--gradient-1), var(--gradient-3)); }
+        .nav-links a.active { color: var(--color-text-primary); border-bottom-color: var(--color-primary); }
+        .auth-container { display: flex; align-items: center; gap: 12px; }
+        .user-status { font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; border-radius: 8px; transition: background-color 0.2s; }
+        .user-status:hover { background-color: var(--color-surface-light); }
+        .user-status img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--color-primary); }
 
-        /* ==================================
-        ------ THE FORGE UI MOCKUP -------
-        ================================== */
-        #forge { background: rgba(0,0,0,0.15); }
-        .forge-showcase { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: center; }
-        .forge-features .feature-item { margin-bottom: 2rem; }
-        .forge-features .feature-item .icon { font-size: 1.5rem; margin-right: 1rem; color: var(--gradient-3); }
-        .forge-window { background: #080A18; border: 1px solid var(--glass-border); border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); min-height: 500px; display: flex; flex-direction: column; }
-        .forge-window .title-bar { padding: 10px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; }
-        .forge-window .dots span { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
-        .forge-window .dots .d1 { background: #ff5f56; } .forge-window .dots .d2 { background: #ffbd2e; } .forge-window .dots .d3 { background: #27c93f; }
-        .forge-window .main-content { display: flex; flex-grow: 1; }
-        .forge-window .sidebar { width: 150px; padding: 1rem; border-right: 1px solid var(--glass-border); font-size: 0.9rem; }
-        .forge-window .sidebar h5 { font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 1rem; }
-        .forge-window .sidebar ul { list-style: none; }
-        .forge-window .sidebar li { margin-bottom: 0.8rem; cursor: pointer; transition: color 0.3s; }
-        .forge-window .sidebar li:hover, .forge-window .sidebar li.active { color: var(--gradient-3); }
-        .forge-window .canvas { flex-grow: 1; display: flex; align-items: center; justify-content: center; font-size: 6rem; color: var(--color-text-secondary); opacity: 0.5; }
-        .forge-window .properties { width: 200px; padding: 1rem; border-left: 1px solid var(--glass-border); font-size: 0.8rem; }
-        .forge-window .prop-item { margin-bottom: 1rem; }
-        .forge-window .prop-item label { display: block; margin-bottom: 5px; color: var(--color-text-secondary); }
-        .forge-window .prop-item input[type="range"] { width: 100%; }
-        .forge-window .prop-item input[type="color"] { width: 100%; height: 30px; border: none; padding: 0; background: none; }
+        #hero-page { min-height: 100vh; display: flex; align-items: center; text-align: center; padding-top: 80px; }
+        .hero-content { max-width: 800px; margin: 0 auto; }
+        .hero-content h1 { margin-bottom: 1.5rem; }
+        .hero-content .subtitle { font-size: 1.25rem; max-width: 600px; margin: 0 auto 2.5rem auto; color: var(--color-text-secondary); }
+        .hero-buttons { display: flex; justify-content: center; gap: 1rem; }
 
-        /* ==================================
-        -- INTERACTIVE MARKETPLACE SECTION --
-        ================================== */
-        #marketplace { background: rgba(0,0,0,0.25); }
-        .market-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 3rem; }
-        .market-filters button { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--color-text-secondary); font-weight: 600; padding: 10px 20px; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; }
-        .market-filters button:hover { color: var(--color-text-primary); background: rgba(255, 255, 255, 0.1); }
-        .market-filters button.active { color: var(--color-background); background: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); border-color: var(--gradient-4); }
+        .page-content { background-color: transparent; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
 
-        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
-        .market-card { padding: 0; overflow: hidden; transition: opacity 0.4s ease, transform 0.4s ease; display: flex; flex-direction: column; }
-        .market-card.hidden { transform: scale(0.8); opacity: 0; }
-        .market-card .card-image { height: 220px; background-color: #01010F; display: flex; align-items: center; justify-content: center; font-size: 4rem; border-bottom: 1px solid var(--glass-border); position: relative; }
-        .market-card .card-badge { position: absolute; top: 10px; left: 10px; font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 50px; }
-        .badge-new { background: var(--gradient-3); color: var(--color-background); }
-        .badge-best { background: var(--gradient-1); color: #fff; }
-        .market-card .card-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
-        .market-card .card-header { display: flex; align-items: center; margin-bottom: 1rem; }
-        .market-card .creator-avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; }
-        .market-card .card-title { font-size: 1.1rem; font-weight: 600; line-height: 1.3; }
-        .market-card .card-creator { font-size: 0.8rem; color: var(--color-text-secondary); }
-        .market-card .card-stats { display: flex; font-size: 0.9rem; color: var(--color-text-secondary); margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--glass-border);}
-        .market-card .card-rating { margin-right: auto; }
-        .market-card .card-rating .fa-star { color: #ffbd2e; }
-        .market-card .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: rgba(0,0,0,0.2); }
-        .market-card .card-price { font-size: 1.3rem; font-weight: 700; background: linear-gradient(90deg, var(--gradient-3), var(--gradient-4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .market-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; transition: all 0.2s ease-in-out; cursor: pointer; display: flex; flex-direction: column; }
+        .market-card:hover { transform: translateY(-5px); border-color: var(--color-primary); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .card-image { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: var(--color-background); }
+        .card-content { padding: 1rem; flex-grow: 1; }
+        .card-title { font-size: 1.1rem; font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.25rem; }
+        .card-creator { font-size: 0.875rem; color: var(--color-text-secondary); }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 0 1rem 1rem 1rem; font-size: 1rem; font-weight: 600; }
 
-        /* ==================================
-        ------ THE NEXUS (INTEGRATIONS) ----
-        ================================== */
-        .nexus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 2rem; }
-        .nexus-item { text-align: center; }
-        .nexus-item .icon-wrapper { width: 100px; height: 100px; margin: 0 auto 1rem; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 3rem; transition: all 0.3s ease; }
-        .nexus-item:hover .icon-wrapper { transform: scale(1.1); background: var(--glass-bg); box-shadow: 0 8px 32px 0 var(--glass-shadow); }
-        .nexus-item p { margin-top: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        .pricing-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 2rem; }
+        .pricing-card.highlight { border-color: var(--color-primary); box-shadow: 0 0 30px rgba(132, 94, 238, 0.2); }
+        .pricing-card .price { font-size: 3rem; font-weight: 800; }
+        .pricing-card .period { color: var(--color-text-secondary); }
+        .pricing-card ul { list-style: none; margin: 2rem 0; }
+        .pricing-card ul li { margin-bottom: 1rem; display: flex; align-items: center; }
+        .pricing-card ul li i { color: var(--color-primary); margin-right: 0.75rem; }
+
+        .modal-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: var(--color-surface); border-radius: 12px; border: 1px solid var(--color-border); width: 90%; max-width: 450px; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .modal-auth { padding: 2rem; }
+        .modal-auth h3 { text-align: center; }
+        .auth-form { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
+        .auth-form input { background: var(--color-background); border: 1px solid var(--color-border); color: var(--color-text-primary); padding: 12px; border-radius: 8px; font-size: 1rem; }
+        .auth-form input:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 3px rgba(132, 94, 238, 0.3); }
+        .modal-close { position: absolute; top: 12px; right: 12px; font-size: 1rem; cursor: pointer; color: var(--color-text-secondary); background: var(--color-surface-light); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .form-error { color: #f87171; text-align: center; font-size: 0.875rem; min-height: 1.2rem; }
         
-        /* ==================================
-        --- GUILD PASS PRICING TABLE ---
-        ================================== */
-        #guild-pass { background: rgba(0,0,0,0.15); }
-        .pricing-table-container { overflow-x: auto; }
-        .pricing-table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        .pricing-table th, .pricing-table td { padding: 1.5rem; text-align: left; border-bottom: 1px solid var(--glass-border); }
-        .pricing-table .feature-name { font-weight: 600; position: relative; }
-        .info-icon { margin-left: 8px; color: var(--color-text-secondary); cursor: help; }
-        .tooltip { visibility: hidden; width: 220px; background-color: var(--color-surface); color: #fff; text-align: center; border-radius: 6px; padding: 10px; position: absolute; z-index: 10; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s; font-weight: normal; font-size: 0.9rem; pointer-events: none; }
-        .feature-name:hover .tooltip { visibility: visible; opacity: 1; }
-        .pricing-table td .fa-check { color: var(--gradient-4); }
-        .pricing-table td .fa-times { color: #8B949E; }
-        .pricing-table thead .tier-highlight { background-image: linear-gradient(45deg, var(--gradient-1), var(--gradient-2)); }
-        .pricing-table .price { font-size: 2.5rem; font-weight: 700; }
-        .pricing-table .period { font-size: 1rem; color: var(--color-text-secondary); }
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 3000; }
+        .toast { padding: 12px 20px; border-radius: 8px; color: #fff; margin-top: 10px; opacity: 0; transform: translateY(20px); transition: all 0.4s ease; background-color: var(--color-surface-light); border: 1px solid var(--color-border); }
+        .toast.show { opacity: 1; transform: translateY(0); }
         
-        /* ==================================
-        -------- ROADMAP SECTION --------
-        ================================== */
-        .timeline { position: relative; max-width: 800px; margin: 0 auto; }
-        .timeline::after { content: ''; position: absolute; width: 4px; background: var(--glass-border); top: 0; bottom: 0; left: 50%; margin-left: -2px; }
-        .timeline-item { padding: 10px 40px; position: relative; width: 50%; }
-        .timeline-item.left { left: 0; }
-        .timeline-item.right { left: 50%; }
-        .timeline-item::after { content: ''; position: absolute; width: 20px; height: 20px; right: -10px; background-color: var(--color-background); border: 4px solid var(--gradient-3); top: 25px; border-radius: 50%; z-index: 1; transition: transform 0.3s ease; }
-        .timeline-item:hover::after { transform: scale(1.2); }
-        .timeline-item.right::after { left: -10px; }
-        .roadmap-status { display: inline-block; font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 50px; margin-top: 1rem; }
-        .status-planned { background: var(--glass-bg); border: 1px solid var(--gradient-3); color: var(--gradient-3); }
-        .status-progress { background: var(--gradient-1); color: #fff; }
+        .loader-container { width: 100%; display: flex; justify-content: center; padding: 4rem; }
+        .loader { width: 40px; height: 40px; border: 4px solid var(--color-border); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        footer { background-color: var(--color-surface); padding: 40px 0; text-align: center; margin-top: 100px; }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .social-links { list-style: none; display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; }
+        .social-links a { color: var(--color-text-secondary); font-size: 1.5rem; transition: color 0.2s ease; }
+        .social-links a:hover { color: var(--color-primary); }
         
-        /* ==================================
-        --------- FAQ & FOOTER ---------
-        ================================== */
-        .faq-container { max-width: 800px; margin: 0 auto; }
-        .faq-item { border-bottom: 1px solid var(--glass-border); }
-        .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; cursor: pointer; }
-        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
-        .faq-item.active .faq-answer { max-height: 200px; }
-        .faq-toggle { font-size: 1.5rem; transition: transform 0.3s ease; }
-        .faq-item.active .faq-toggle { transform: rotate(45deg); }
-        .pre-footer-cta { text-align: center; background: linear-gradient(45deg, rgba(74, 0, 224, 0.2), rgba(142, 45, 226, 0.2)); border-radius: 20px; padding: 4rem; }
-        footer { padding: 50px 0; text-align: center; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.1); }
-        
-        /* ==================================
-        --- ✨ SCROLL ANIMATIONS ✨ ---
-        ================================== */
-        [data-animate] { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
-        [data-animate].is-visible { opacity: 1; transform: translateY(0); }
-        
-        /* ==================================
-        ------- RESPONSIVENESS -------
-        ================================== */
         @media (max-width: 992px) {
-            h1 { font-size: 3.2rem; }
-            h2 { font-size: 2.4rem; }
-            .forge-showcase { grid-template-columns: 1fr; }
-            .forge-window { margin-top: 2rem; }
-        }
-        @media (max-width: 768px) {
+            h1 { font-size: 3rem; } h2 { font-size: 2rem; }
             .nav-links { display: none; }
-            .timeline::after { left: 10px; }
-            .timeline-item { width: 100%; padding-left: 50px; padding-right: 20px; }
-            .timeline-item.right { left: 0%; }
-            .timeline-item::after { left: 1px; }
         }
     </style>
 </head>
 <body>
-    <div class="aurora-background"></div>
+    <div id="modal-container" class="modal-container hidden"></div>
+    <div id="toast-container"></div>
 
     <header id="main-header">
         <div class="container">
             <nav>
-                <a href="#" class="logo"><i class="fa-solid fa-cubes-stacked"></i> Fugth AI Anvil</a>
+                <a class="logo nav-link" data-target="hero-page"><i class="fa-solid fa-bolt"></i> Anvil</a>
                 <ul class="nav-links">
-                    <li><a href="#forge">The Forge</a></li>
-                    <li><a href="#marketplace">Marketplace</a></li>
-                    <li><a href="#nexus">Nexus</a></li>
-                    <li><a href="#guild-pass">Guild Pass</a></li>
-                    <li><a href="#roadmap">Roadmap</a></li>
+                    <li><a class="nav-link" data-target="marketplace-page">Marketplace</a></li>
+                    <li><a class="nav-link" data-target="guildpass-page">Guild Pass</a></li>
+                    <li><a class="nav-link hidden" data-target="inventory-page" id="inventory-nav-link">My Assets</a></li>
                 </ul>
-                <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary">Download Anvil</a>
+                <div class="auth-container">
+                    <div class="user-status" id="user-status-container"></div>
+                    <a href="#" id="auth-button" class="btn btn-secondary">Login</a>
+                    <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" id="cta-header-btn" class="btn btn-primary">Get Anvil</a>
+                </div>
             </nav>
         </div>
     </header>
 
-    <section id="hero">
-        <div class="hero-content" data-animate>
-            <div class="hero-avatar"><i class="fa-solid fa-brain"></i></div>
-            <h1 class="hero-headline"><span id="typing-effect"></span><span class="cursor"></span></h1>
-            <p>Go beyond assistants. Create a true AI companion. Fugth AI Anvil is the ultimate creative suite for designing, customizing, and bringing to life an intelligent entity that lives on your desktop.</p>
-            <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary">Purchase For $99.99</a>
-        </div>
-    </section>
-
-    <section id="forge" style="background: rgba(0,0,0,0.15);">
-        <div class="container">
-            <h2 data-animate>Inside <span class="text-gradient">The Anvil Forge</span></h2>
-            <p class="section-subtitle" data-animate>The heart of creation. Our integrated, user-friendly editor gives you god-like control over every aspect of your companion.</p>
-            
-            <div class="forge-showcase">
-                <div class="forge-features" data-animate>
-                    <div class="feature-item"><h3><i class="icon fa-solid fa-wand-magic-sparkles"></i> Visual Editor</h3><p>No code required. A real-time 3D viewport lets you drag, drop, and customize models, textures, and particle effects with instant feedback.</p></div>
-                    <div class="feature-item"><h3><i class="icon fa-solid fa-sitemap"></i> Personality Matrix</h3><p>Visually script your AI's behavior. Use our node-based logic editor to define its quirks, memories, and conversational flows.</p></div>
-                    <div class="feature-item"><h3><i class="icon fa-solid fa-upload"></i> One-Click Publishing</h3><p>Ready to share? Publish your avatars and personalities directly to the Community Marketplace from within the Forge.</p></div>
-                </div>
-
-                <div class="forge-window glass-card" data-animate>
-                    <div class="title-bar"><div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div></div>
-                    <div class="main-content">
-                        <div class="sidebar"><h5>Assets</h5><ul><li class="active"><i class="fa-solid fa-cube fa-fw"></i> Models</li><li><i class="fa-solid fa-image fa-fw"></i> Textures</li><li><i class="fa-solid fa-star fa-fw"></i> Particle FX</li><li><i class="fa-solid fa-person-running fa-fw"></i> Animations</li></ul></div>
-                        <div class="canvas"><i class="fa-solid fa-ghost"></i></div>
-                        <div class="properties"><h5>Properties</h5><div class="prop-item"><label for="opacity">Opacity</label><input type="range" id="opacity" name="opacity" min="0" max="100" value="80"></div><div class="prop-item"><label for="glow">Glow Color</label><input type="color" id="glow" name="glow" value="#00bfff"></div><div class="prop-item"><label>Animation</label><p>Idle_Float_01</p></div></div>
+    <main>
+        <section id="hero-page">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Your Personal <span class="text-gradient">AI Companion</span>, Forged by You.</h1>
+                    <p class="subtitle">Anvil is a powerful desktop application that lets you build, customize, and interact with a truly personal AI. Go beyond assistants—create a personality.</p>
+                    <div class="hero-buttons">
+                        <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary" style="padding: 16px 32px; font-size: 1.1rem;">Purchase Anvil - $99.99</a>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <section id="marketplace">
-        <div class="container">
-            <h2 data-animate>The <span class="text-gradient">Marketplace</span></h2>
-            <p class="section-subtitle" data-animate>The central hub for all Anvil creations. Discover thousands of unique assets from our official studio and talented community creators.</p>
-
-            <div class="market-filters" data-animate><button class="active" data-filter="all">All</button><button data-filter="skin">Skins</button><button data-filter="accessory">Accessories</button><button data-filter="personality">Personalities</button></div>
-
-            <div class="market-grid">
-                <div class="market-card glass-card" data-category="skin">
-                    <div class="card-image"><div class="card-badge badge-best">Best Seller</div><i class="fa-solid fa-dragon"></i></div>
-                    <div class="card-content"><div class="card-header"><img src="https://i.pravatar.cc/100?u=fugth" class="creator-avatar" alt="creator"><div><h4 class="card-title">Inferno Guardian</h4><p class="card-creator">by FugthDesign</p></div></div><div class="card-stats"><div class="card-rating"><i class="fa-solid fa-star"></i> 4.9</div><div><i class="fa-solid fa-download"></i> 12.1k</div></div></div>
-                    <div class="card-footer"><span class="card-price">$19.99</span> <a href="#" class="btn">View</a></div>
+        </section>
+        
+        <section id="marketplace-page" class="hidden">
+            <div class="container">
+                <div class="section-header">
+                    <h2>The <span class="text-gradient">Marketplace</span></h2>
+                    <p>Discover and acquire unique personalities, skins, and tools for your AI companion, crafted by the community and our studio.</p>
                 </div>
-                <div class="market-card glass-card" data-category="accessory">
-                    <div class="card-image"><i class="fa-solid fa-hat-wizard"></i></div>
-                    <div class="card-content"><div class="card-header"><img src="https://i.pravatar.cc/100?u=c" class="creator-avatar" alt="creator"><div><h4 class="card-title">Archmage Hat</h4><p class="card-creator">by AuraWeaver</p></div></div><div class="card-stats"><div class="card-rating"><i class="fa-solid fa-star"></i> 4.8</div><div><i class="fa-solid fa-download"></i> 8.7k</div></div></div>
-                    <div class="card-footer"><span class="card-price">$7.99</span> <a href="#" class="btn">View</a></div>
-                </div>
-                <div class="market-card glass-card" data-category="personality">
-                    <div class="card-image"><div class="card-badge badge-new">New!</div><i class="fa-solid fa-user-secret"></i></div>
-                    <div class="card-content"><div class="card-header"><img src="https://i.pravatar.cc/100?u=b" class="creator-avatar" alt="creator"><div><h4 class="card-title">Noir Detective</h4><p class="card-creator">by SynthwaveScribe</p></div></div><div class="card-stats"><div class="card-rating"><i class="fa-solid fa-star"></i> 5.0</div><div><i class="fa-solid fa-download"></i> 1.2k</div></div></div>
-                    <div class="card-footer"><span class="card-price">$9.99</span> <a href="#" class="btn">View</a></div>
-                </div>
-                <div class="market-card glass-card" data-category="skin">
-                    <div class="card-image"><i class="fa-solid fa-robot"></i></div>
-                    <div class="card-content"><div class="card-header"><img src="https://i.pravatar.cc/100?u=d" class="creator-avatar" alt="creator"><div><h4 class="card-title">G-Type Juggernaut</h4><p class="card-creator">by MechMaestro</p></div></div><div class="card-stats"><div class="card-rating"><i class="fa-solid fa-star"></i> 4.9</div><div><i class="fa-solid fa-download"></i> 6.4k</div></div></div>
-                    <div class="card-footer"><span class="card-price">$24.99</span> <a href="#" class="btn">View</a></div>
+                <div class="page-content">
+                    <div class="grid-container" id="market-grid-container"></div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <section id="nexus">
-        <div class="container">
-            <h2 data-animate>The Anvil <span class="text-gradient">Nexus</span></h2>
-            <p class="section-subtitle" data-animate>Anvil isn't an island. It’s a hub. Connect your companion to your favorite apps and services to give it real-world utility and make it a true part of your digital life.</p>
-            <div class="glass-card" data-animate>
-                <div class="nexus-grid">
-                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fab fa-discord"></i></div><p>Discord</p></div>
-                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fab fa-spotify"></i></div><p>Spotify</p></div>
-                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fab fa-slack"></i></div><p>Slack</p></div>
-                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fab fa-github"></i></div><p>GitHub</p></div>
-                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fa-solid fa-code"></i></div><p>VS Code</p></div>
-                    <div class="nexus-item"><div class="icon-wrapper glass-card"><i class="fa-solid fa-plug"></i></div><p>Developer API</p></div>
+        </section>
+        
+        <section id="inventory-page" class="hidden">
+             <div class="container">
+                <div class="section-header">
+                    <h2>My <span class="text-gradient">Assets</span></h2>
+                    <p>All of your acquired assets in one place, ready to be used in the Anvil desktop app.</p>
+                </div>
+                <div class="page-content">
+                    <div class="grid-container" id="inventory-grid-container"></div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+        
+        <section id="guildpass-page" class="hidden">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Join the <span class="text-gradient">Anvil Guild</span></h2>
+                    <p>The core Anvil app is a one-time purchase. The optional Guild Pass subscription unlocks exclusive content and our most powerful cloud features.</p>
+                </div>
+                <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                     <div class="pricing-card">
+                        <h3>Anvil Application</h3>
+                        <div>
+                            <span class="price">$99.99</span>
+                            <span class="period">One-Time Purchase</span>
+                        </div>
+                        <ul>
+                            <li><i class="fa-solid fa-check-circle"></i> Full Anvil Forge Software</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Marketplace Access (Buy/Acquire)</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Run powerful local AI models</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Community asset publishing</li>
+                        </ul>
+                        <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-secondary" style="width: 100%;">Purchase Application</a>
+                     </div>
+                     <div class="pricing-card highlight">
+                        <h3>Guild Pass</h3>
+                        <div>
+                            <span class="price">$7.99</span>
+                            <span class="period">/ month</span>
+                        </div>
+                        <ul>
+                            <li><i class="fa-solid fa-check-circle"></i> All standard features, plus:</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Monthly Exclusive Item Drops</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Access to Premium Cloud AI Models</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Beta Access to New Features</li>
+                        </ul>
+                        <a href="https://buy.stripe.com/8x228rbz23YA9OzbYEgrS0b" target="_blank" class="btn btn-primary" style="width: 100%;">Subscribe to Guild Pass</a>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
     
-    <section id="guild-pass" style="background: rgba(0,0,0,0.15);">
-        <div class="container">
-            <h2 data-animate>Join the <span class="text-gradient">Anvil Guild</span></h2>
-            <p class="section-subtitle" data-animate>While the core Anvil experience is a one-time purchase, the optional Guild Pass subscription is your key to exclusive content and our most powerful features.</p>
-            <div class="glass-card" data-animate>
-                <div class="pricing-table-container">
-                    <table class="pricing-table">
-                        <thead><tr><th>Feature</th><th>Anvil Owner</th><th class="tier-highlight">Guild Member</th></tr></thead>
-                        <tbody>
-                            <tr><td class="feature-name">Price</td><td>$99.99 One-Time</td><td><div class="price">$7.99</div><span class="period">/ month</span></td></tr>
-                            <tr><td class="feature-name">The Anvil Forge Software</td><td><i class="fas fa-check"></i></td><td><i class="fas fa-check"></i></td></tr>
-                            <tr><td class="feature-name">Marketplace Access (Buy/Sell)</td><td><i class="fas fa-check"></i></td><td><i class="fas fa-check"></i></td></tr>
-                            <tr><td class="feature-name">Standard Local AI Models</td><td><i class="fas fa-check"></i></td><td><i class="fas fa-check"></i></td></tr>
-                            <tr><td class="feature-name">Monthly Exclusive Item Drop<i class="fas fa-info-circle info-icon"><span class="tooltip">A free, high-quality skin or accessory delivered to your account every month.</span></i></td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
-                            <tr><td class="feature-name">Marketplace Purchase Discount</td><td><i class="fas fa-times"></i></td><td>15% Off</td></tr>
-                            <tr><td class="feature-name">Reduced Creator Transaction Fee</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
-                            <tr><td class="feature-name">Premium Cloud AI Models<i class="fas fa-info-circle info-icon"><span class="tooltip">Optional access to larger, more powerful AI models hosted by us for more complex conversations.</span></i></td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
-                            <tr><td class="feature-name">Beta Access to New Features</td><td><i class="fas fa-times"></i></td><td><i class="fas fa-check"></i></td></tr>
-                            <tr><td></td><td><a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn">Purchase Anvil</a></td><td><a href="https://buy.stripe.com/8x228rbz23YA9OzbYEgrS0b" target="_blank" class="btn btn-primary">Subscribe Now</a></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="roadmap">
-        <div class="container">
-            <h2 data-animate>The <span class="text-gradient">Future Forged</span></h2>
-            <p class="section-subtitle" data-animate>Our journey is just beginning. We are committed to continuously expanding the Anvil universe with groundbreaking features.</p>
-            <div class="timeline" data-animate>
-                <div class="timeline-item left"><div class="content glass-card"><h4>Mobile Companion App</h4><p>Take your AI with you. Interact and chat with your companion from anywhere.</p><span class="roadmap-status status-progress">In Progress</span></div></div>
-                <div class="timeline-item right"><div class="content glass-card"><h4>VR/AR Integration</h4><p>Bring your companion into your space with Virtual and Augmented Reality support.</p><span class="roadmap-status status-planned">Planned</span></div></div>
-                <div class="timeline-item left"><div class="content glass-card"><h4>Collaborative Forging</h4><p>Team up with other creators in real-time to build complex avatars and personalities together.</p><span class="roadmap-status status-planned">Planned</span></div></div>
-            </div>
-        </div>
-    </section>
-
-    <section id="pre-footer" style="padding-bottom: 0;">
-        <div class="container">
-            <div class="pre-footer-cta glass-card" data-animate>
-                <h2>Ready to Forge Your Reality?</h2>
-                <p>The ultimate tool for AI creation is waiting. Join a new generation of creators and bring your imagination to life.</p>
-                <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary">Download Anvil Now</a>
-            </div>
-        </div>
-    </section>
-
     <footer>
         <div class="container">
-            <a href="#" class="logo"><i class="fa-solid fa-cubes-stacked"></i> Fugth AI Anvil</a>
-            <p style="margin-top: 1rem;">&copy; 2025 Fugthdesign.space. All Rights Reserved.</p>
+            <div class="footer-content">
+                <ul class="social-links">
+                    <li><a href="https://www.instagram.com/fugthchat/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a></li>
+                    <li><a href="https://discord.com/invite/dKqyeUAjzP" target="_blank" aria-label="Discord"><i class="fab fa-discord"></i></a></li>
+                    <li><a href="https://www.youtube.com/@FugthChat" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a></li>
+                    <li><a href="https://givebutter.com/23ysSh" target="_blank" aria-label="Givebutter"><i class="fa-solid fa-hand-holding-heart"></i></a></li>
+                </ul>
+                <p>&copy; 2025 Fugth AI. All Rights Reserved. A new era of digital companionship.</p>
+            </div>
         </div>
     </footer>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
-        'use strict';
-        document.addEventListener('DOMContentLoaded', () => {
+    'use strict';
+    document.addEventListener('DOMContentLoaded', () => {
 
-            // ------------------------------------------
-            // ----- 1. DYNAMIC TYPING EFFECT FOR HERO --
-            // ------------------------------------------
-            const typingEffectElement = document.getElementById('typing-effect');
-            if (typingEffectElement) {
-                const words = ["Forge Your Digital Soul.", "Create Your AI Companion.", "Bring Imagination to Life."];
-                let i = 0, j = 0, currentWord = "", isDeleting = false;
-                
-                function type() {
-                    currentWord = words[i];
-                    if (isDeleting) { typingEffectElement.textContent = currentWord.substring(0, j--); } 
-                    else { typingEffectElement.textContent = currentWord.substring(0, j++); }
+        // --- CONFIG & STATE MANAGEMENT ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5unDqHi53PktvTY_GqZtA35FYqJdmzlQ",
+            authDomain: "fugth-design.firebaseapp.com",
+            projectId: "fugth-design",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        let currentUser = null;
+        let userInventory = new Set();
+        let allProductsCache = new Map();
 
-                    if (!isDeleting && j === currentWord.length) { setTimeout(() => isDeleting = true, 2000); } 
-                    else if (isDeleting && j === 0) { isDeleting = false; i = (i + 1) % words.length; }
-                    
-                    setTimeout(type, isDeleting ? 50 : 120);
-                }
-                type();
-            }
-
-            // ------------------------------------------
-            // ----- 2. HEADER SCROLL EFFECT ----------
-            // ------------------------------------------
-            const header = document.getElementById('main-header');
-            if (header) { window.addEventListener('scroll', () => { header.classList.toggle('scrolled', window.scrollY > 50); }); }
-
-            // ------------------------------------------
-            // ----- 3. DYNAMIC SCROLL ANIMATIONS -----
-            // ------------------------------------------
-            const animatedElements = document.querySelectorAll('[data-animate]');
-            if (animatedElements.length > 0) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) { entry.target.classList.add('is-visible'); }
-                    });
-                }, { threshold: 0.1 });
-                animatedElements.forEach(el => observer.observe(el));
-            }
+        // --- ELEMENT REFERENCES ---
+        const authButton = document.getElementById('auth-button');
+        const userStatusContainer = document.getElementById('user-status-container');
+        const marketGrid = document.getElementById('market-grid-container');
+        const inventoryGrid = document.getElementById('inventory-grid-container');
+        const modalContainer = document.getElementById('modal-container');
+        const inventoryNavLink = document.getElementById('inventory-nav-link');
+        const ctaHeaderBtn = document.getElementById('cta-header-btn');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const header = document.getElementById('main-header');
+        
+        // --- INITIALIZATION ---
+        async function initializeApp() {
+            renderLoader(marketGrid);
+            // CORRECTED: Await the product fetch before setting up the auth listener
+            await fetchAllProducts(); 
             
-            // ------------------------------------------
-            // ----- 4. MARKETPLACE FILTER LOGIC (FIXED) -
-            // ------------------------------------------
-            const filtersContainer = document.querySelector('.market-filters');
-            const marketItems = document.querySelectorAll('.market-card');
-            if (filtersContainer && marketItems.length > 0) {
-                const animationDuration = 400; // Corresponds to transition duration in CSS
-
-                filtersContainer.addEventListener('click', (e) => {
-                    if (e.target.tagName !== 'BUTTON') return;
-                    
-                    const filter = e.target.dataset.filter;
-                    filtersContainer.querySelector('.active').classList.remove('active');
-                    e.target.classList.add('active');
-
-                    marketItems.forEach(item => {
-                        const itemCategory = item.dataset.category;
-                        const shouldBeVisible = (filter === 'all' || itemCategory === filter);
-
-                        if (shouldBeVisible) {
-                            // If it's hidden and should be visible
-                            if(item.classList.contains('hidden')) {
-                                item.style.display = 'flex'; // Make it part of the layout *before* animating
-                                setTimeout(() => {
-                                    item.classList.remove('hidden');
-                                }, 10); // small delay to ensure display:flex is applied
-                            }
-                        } else {
-                            // If it's visible and should be hidden
-                            if(!item.classList.contains('hidden')) {
-                                item.classList.add('hidden');
-                                setTimeout(() => {
-                                    item.style.display = 'none'; // Hide it from the layout *after* animating
-                                }, animationDuration);
-                            }
-                        }
-                    });
-                });
-            }
-
-            // ------------------------------------------
-            // ----- 5. INTERACTIVE FAQ ACCORDION -----
-            // ------------------------------------------
-            const faqItems = document.querySelectorAll('.faq-item');
-            if (faqItems.length > 0) {
-                faqItems.forEach(item => {
-                    const question = item.querySelector('.faq-question');
-                    question.addEventListener('click', () => {
-                        const isActive = item.classList.contains('active');
-                        faqItems.forEach(i => i.classList.remove('active'));
-                        if (!isActive) { item.classList.add('active'); }
-                    });
-                });
-            }
+            auth.onAuthStateChanged(async user => {
+                if (user) {
+                    currentUser = user;
+                    await fetchUserInventory();
+                    updateUIForLoggedInUser();
+                } else {
+                    currentUser = null;
+                    updateUIForLoggedOutUser();
+                }
+                // Render the marketplace AFTER we know the user's login state and inventory
+                renderMarketplace();
+            });
+            
+            // Set initial page view
+            switchToPage('hero-page');
+        }
+        
+        // --- AUTHENTICATION ---
+        authButton.addEventListener('click', e => {
+            e.preventDefault();
+            currentUser ? auth.signOut().then(() => showToast('You have been logged out.')) : openAuthModal();
         });
+
+        // --- DATA HANDLING ---
+        async function fetchAllProducts() {
+            try {
+                const snapshot = await db.collection('products').get();
+                snapshot.forEach(doc => allProductsCache.set(doc.id, { id: doc.id, ...doc.data() }));
+            } catch (error) {
+                showToast('Could not load marketplace items.', 'error');
+                if(marketGrid) marketGrid.innerHTML = '<p>Error: Could not connect to the marketplace.</p>';
+            }
+        }
+        async function fetchUserInventory() {
+            if (!currentUser) return;
+            userInventory.clear();
+            const snapshot = await db.collection('user_inventories').doc(currentUser.uid).collection('items').get();
+            snapshot.forEach(doc => userInventory.add(doc.id));
+        }
+
+        // --- UI RENDERING ---
+        function renderLoader(container) {
+            if(container) container.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+        }
+        function renderMarketplace() {
+            if (!marketGrid) return;
+            if (allProductsCache.size === 0) { marketGrid.innerHTML = '<p>The marketplace is currently empty.</p>'; return; }
+            let html = '';
+            allProductsCache.forEach(product => html += createProductCard(product));
+            marketGrid.innerHTML = html;
+        }
+        function renderInventory() {
+            if (!inventoryGrid) return;
+            renderLoader(inventoryGrid);
+            if (userInventory.size === 0) { inventoryGrid.innerHTML = "<p style='text-align: center; grid-column: 1 / -1; padding: 2rem;'>You haven't acquired any assets yet. Visit the Marketplace!</p>"; return; }
+            let html = '';
+            userInventory.forEach(productId => {
+                const product = allProductsCache.get(productId);
+                if (product) html += createProductCard(product);
+            });
+            inventoryGrid.innerHTML = html;
+        }
+        function createProductCard(product) {
+            const priceText = product.price === 0 ? 'Free' : `$${product.price.toFixed(2)}`;
+            const isOwned = userInventory.has(product.id);
+            return `<div class="market-card" onclick="openProductModal('${product.id}')">
+                        <div class="card-image"><i class="fa-solid fa-${product.icon}"></i></div>
+                        <div class="card-content">
+                            <h4 class="card-title">${product.name}</h4>
+                            <p class="card-creator">by ${product.creator}</p>
+                        </div>
+                        <div class="card-footer">
+                            <span class="card-price text-gradient">${isOwned ? 'Owned' : priceText}</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>`;
+        }
+
+        // --- NAVIGATION & UTILITIES ---
+        function updateUIForLoggedInUser() {
+            const name = currentUser.displayName || currentUser.email.split('@')[0];
+            userStatusContainer.innerHTML = `<img src="${currentUser.photoURL || 'https://i.pravatar.cc/100'}" alt="User Avatar">`;
+            authButton.textContent = 'Logout';
+            authButton.classList.remove('btn-primary');
+            authButton.classList.add('btn-secondary');
+            ctaHeaderBtn.classList.add('hidden');
+            inventoryNavLink.classList.remove('hidden');
+        }
+        function updateUIForLoggedOutUser() {
+            userStatusContainer.innerHTML = '';
+            authButton.textContent = 'Login';
+            authButton.classList.add('btn-primary');
+            authButton.classList.remove('btn-secondary');
+            ctaHeaderBtn.classList.remove('hidden');
+            inventoryNavLink.classList.add('hidden');
+            userInventory.clear();
+        }
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = `toast`;
+            toast.textContent = message;
+            document.getElementById('toast-container').appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 3000);
+        }
+        function switchToPage(pageId) {
+            document.querySelectorAll('main section').forEach(sec => sec.classList.add('hidden'));
+            const targetPage = document.getElementById(pageId);
+            if(targetPage) {
+                 targetPage.classList.remove('hidden');
+            }
+            navLinks.forEach(link => link.classList.toggle('active', link.dataset.target === pageId));
+            window.scrollTo(0, 0);
+        }
+
+        // --- EVENT LISTENERS ---
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.currentTarget.dataset.target;
+                if (targetId === 'inventory-page') renderInventory();
+                switchToPage(targetId);
+            });
+        });
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 50);
+        });
+        
+        // --- ALL HELPER FUNCTIONS (UNCHANGED) ---
+        async function handleSignup(e) { e.preventDefault(); const form = e.target, email = form.email.value, password = form.password.value, errorEl = form.querySelector('.form-error'); try { const userCredential = await auth.createUserWithEmailAndPassword(email, password); await userCredential.user.updateProfile({ displayName: email.split('@')[0] }); currentUser = auth.currentUser; closeModal(); showToast(`Welcome, ${currentUser.displayName}!`); } catch (error) { errorEl.textContent = error.message; } }
+        async function handleLogin(e) { e.preventDefault(); const form = e.target, email = form.email.value, password = form.password.value, errorEl = form.querySelector('.form-error'); try { await auth.signInWithEmailAndPassword(email, password); closeModal(); showToast(`Welcome back!`); } catch (error) { errorEl.textContent = error.message; } }
+        async function handleGoogleSignin() { const provider = new firebase.auth.GoogleAuthProvider(); try { await auth.signInWithPopup(provider); closeModal(); } catch (error) { document.querySelector('.form-error').textContent = error.message; } }
+        function openAuthModal(showSignup = false) { const loginHidden = showSignup ? 'hidden' : ''; const signupHidden = !showSignup ? 'hidden' : ''; const html = `<div class="modal-content modal-auth"><div class="modal-close" onclick="closeModal()"><i class="fa-solid fa-times"></i></div><div id="login-view" class="${loginHidden}"><h3>Login</h3><form id="login-form"><div class="form-error"></div><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%; margin-top: 0.5rem;">Login</button></form><p style="text-align:center; margin-top:1rem; font-size:0.9rem">No account? <a href="#" onclick="openAuthModal(true)" style="color:var(--color-primary)">Sign Up</a></p></div><div id="signup-view" class="${signupHidden}"><h3>Create Account</h3><form id="signup-form"><div class="form-error"></div><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password (6+ characters)" required><button type="submit" class="btn btn-primary" style="width:100%; margin-top: 0.5rem;">Create Account</button></form><p style="text-align:center; margin-top:1rem; font-size:0.9rem">Have an account? <a href="#" onclick="openAuthModal(false)" style="color:var(--color-primary)">Login</a></p></div><div style="text-align:center; color: var(--color-text-secondary); margin: 1rem 0;">OR</div><button class="btn btn-secondary" style="width:100%" onclick="handleGoogleSignin()"><i class="fab fa-google"></i> Sign In with Google</button></div>`; modalContainer.innerHTML = html; modalContainer.classList.remove('hidden'); document.getElementById('login-form')?.addEventListener('submit', handleLogin); document.getElementById('signup-form')?.addEventListener('submit', handleSignup); }
+        async function acquireItem(productId) { if (!currentUser) { showToast('Please log in to acquire items.', 'error'); return; } const acquireBtn = document.getElementById('modal-acquire-btn'); if(acquireBtn){ acquireBtn.textContent = 'Adding...'; acquireBtn.classList.add('btn-disabled'); } try { await db.collection('user_inventories').doc(currentUser.uid).collection('items').doc(productId).set({ acquiredAt: firebase.firestore.FieldValue.serverTimestamp() }); userInventory.add(productId); showToast('Item added to your inventory!'); closeModal(); renderMarketplace(); } catch (error) { showToast('Failed to add item.'); } }
+        function openProductModal(productId) { const product = allProductsCache.get(productId); if (!product) return; const isOwned = userInventory.has(product.id); const priceText = product.price === 0 ? 'Free' : `$${product.price.toFixed(2)}`; const actionButtonHtml = isOwned ? `<button class="btn btn-disabled">Owned</button>` : `<button class="btn btn-primary" id="modal-acquire-btn" onclick="acquireItem('${product.id}')">Get for ${priceText}</button>`; modalContainer.innerHTML = `<div class="modal-content modal-auth" style="max-width: 400px; text-align: center;"><div class="modal-close" onclick="closeModal()"><i class="fa-solid fa-times"></i></div><div style="font-size: 5rem; margin: 1rem 0;"><i class="fa-solid fa-${product.icon}"></i></div><h3>${product.name}</h3><p style="color: var(--color-text-secondary); margin-top:-1rem;">by ${product.creator}</p><div style="display:flex; justify-content:center; gap: 2rem; margin: 1rem 0;"><span><i class="fa-solid fa-star"></i> ${product.rating}</span><span><i class="fa-solid fa-download"></i> ${product.downloads}</span></div><p>${product.description || 'No description available.'}</p><div style="margin-top: 1.5rem;">${actionButtonHtml}</div></div>`; modalContainer.classList.remove('hidden'); }
+        function closeModal() { if(modalContainer) { modalContainer.classList.add('hidden'); modalContainer.innerHTML = ''; } }
+        window.closeModal = closeModal; window.openProductModal = openProductModal; window.openAuthModal = openAuthModal; window.acquireItem = acquireItem; window.handleGoogleSignin = handleGoogleSignin;
+
+        // START THE APP
+        initializeApp();
+    });
     </script>
 </body>
 </html>
