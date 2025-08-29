@@ -49,6 +49,14 @@
             100% { background-position: 0% 50%; }
         }
 
+        .bg-gradient {
+            display: none;
+        }
+
+        .bg-grid {
+            display: none;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { font-family: var(--font-family); background-color: var(--color-background); color: var(--color-text-primary); line-height: 1.6; -webkit-font-smoothing: antialiased; }
@@ -61,7 +69,12 @@
         h3 { font-size: 1.75rem; }
         p { color: var(--color-text-secondary); margin-bottom: 1rem; }
         .section-header { text-align: center; max-width: 700px; margin: 0 auto 60px auto; }
-        .text-gradient { background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-gradient { 
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); 
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .btn { display: inline-block; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s ease-in-out; border: none; cursor: pointer; text-align: center; }
         .btn-primary { background: var(--color-primary); color: #fff; }
         .btn-primary:hover { background: #7146e2; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(132, 94, 238, 0.3); }
@@ -598,6 +611,313 @@
         /* Satisfaction Guarantee */
         .satisfaction-guarantee {
             display: flex;
+        }
+
+        /* Profile Page Styles */
+        .profile-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .profile-sidebar {
+            background: var(--color-surface);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid var(--color-border);
+            position: sticky;
+            top: 100px;
+        }
+
+        .profile-avatar-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1rem;
+            position: relative;
+            border-radius: 50%;
+            background: var(--color-surface-light);
+            padding: 0.5rem;
+            border: 3px solid var(--color-primary);
+        }
+
+        .profile-avatar-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: contain;
+        }
+
+        .avatar-change-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .avatar-change-btn:hover {
+            background: var(--color-secondary);
+            transform: scale(1.1);
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            padding: 1rem;
+            background: var(--color-surface-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-item i {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+
+        .profile-membership {
+            text-align: center;
+        }
+
+        .membership-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+            border-radius: 20px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .profile-main {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .profile-section {
+            background: var(--color-surface);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid var(--color-border);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-edit {
+            padding: 0.5rem 1rem;
+            background: none;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            color: var(--color-text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit:hover {
+            background: var(--color-surface-light);
+            border-color: var(--color-primary);
+        }
+
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--color-text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+            background: var(--color-surface-light);
+            color: var(--color-text-primary);
+            font-size: 1rem;
+        }
+
+        .form-group input:disabled,
+        .form-group textarea:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .form-actions.hidden {
+            display: none;
+        }
+
+        .preferences-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .preference-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--color-surface-light);
+            border-radius: 8px;
+        }
+
+        .preference-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .preference-title {
+            font-weight: 500;
+            color: var(--color-text-primary);
+        }
+
+        .preference-description {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+
+        /* Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--color-border);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--color-primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .security-options {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger:hover {
+            background: #bb2d3b;
+            transform: translateY(-2px);
+        }
+        
+        .cancel-notice {
+            display: flex;
             align-items: center;
             gap: 0.5rem;
             justify-content: center;
@@ -914,6 +1234,7 @@
                     <li><a class="nav-link" data-target="marketplace-page">Marketplace</a></li>
                     <li><a class="nav-link" data-target="guildpass-page">Guild Pass</a></li>
                     <li><a class="nav-link hidden" data-target="inventory-page" id="inventory-nav-link">My Assets</a></li>
+                    <li><a class="nav-link" data-target="profile-page" id="profile-nav-link">Profile</a></li>
                 </ul>
                 <div class="auth-container">
                     <div class="user-status" id="user-status-container"></div>
@@ -1576,6 +1897,138 @@ anvil.on('message', async (msg) => {
             </div>
         </section>
 
+        <section id="profile-page" class="hidden">
+            <div class="container">
+                <div class="profile-content">
+                    <!-- Profile Sidebar -->
+                    <div class="profile-sidebar">
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar-container">
+                                <img src="" alt="User Avatar" id="userAvatar">
+                                <button class="avatar-change-btn" title="Change Avatar" onclick="openAvatarModal()">
+                                    <i class="fas fa-user-edit"></i>
+                                </button>
+                            </div>
+                            <h3 id="profileDisplayName">User Name</h3>
+                            <p id="profileEmail">user@example.com</p>
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-bolt"></i>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="totalTokens">0</span>
+                                    <span class="stat-label">Total Tokens</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-clock"></i>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="joinDate">-</span>
+                                    <span class="stat-label">Joined</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-membership">
+                            <div class="membership-badge">
+                                <i class="fas fa-crown"></i>
+                                <span id="membershipTier">Free Tier</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Main Content -->
+                    <div class="profile-main">
+                        <!-- Personal Information -->
+                        <div class="profile-section">
+                            <div class="section-header">
+                                <h3>Personal Information</h3>
+                                <button class="btn-edit" onclick="toggleEdit('personalInfo')">
+                                    <i class="fas fa-pen"></i>
+                                    Edit
+                                </button>
+                            </div>
+                            <form class="profile-form" id="personalInfoForm">
+                                <div class="form-group">
+                                    <label for="displayName">Display Name</label>
+                                    <input type="text" id="displayName" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bio">Bio</label>
+                                    <textarea id="bio" rows="3" disabled></textarea>
+                                </div>
+                                <div class="form-actions hidden">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn btn-secondary" onclick="cancelEdit('personalInfo')">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Preferences -->
+                        <div class="profile-section">
+                            <div class="section-header">
+                                <h3>Preferences</h3>
+                            </div>
+                            <div class="preferences-grid">
+                                <div class="preference-item">
+                                    <div class="preference-info">
+                                        <div class="preference-title">Theme</div>
+                                        <div class="preference-description">Switch between light and dark mode</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="themeToggle">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="preference-item">
+                                    <div class="preference-info">
+                                        <div class="preference-title">Email Notifications</div>
+                                        <div class="preference-description">Receive updates and announcements</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="emailNotifications">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security -->
+                        <div class="profile-section">
+                            <div class="section-header">
+                                <h3>Security</h3>
+                            </div>
+                            <form class="profile-form" id="securityForm">
+                                <div class="form-group">
+                                    <label for="currentPassword">Current Password</label>
+                                    <input type="password" id="currentPassword" placeholder="Enter current password" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPassword">New Password</label>
+                                    <input type="password" id="newPassword" placeholder="Enter new password" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirmPassword">Confirm New Password</label>
+                                    <input type="password" id="confirmPassword" placeholder="Confirm new password" disabled>
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                            </form>
+                            <hr style="margin: 2rem 0; border-color: var(--color-border)">
+                            <div class="security-options">
+                                <button class="btn btn-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                    Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="guildpass-page" class="hidden">
             <div class="bg-gradient"></div>
             <div class="container">
@@ -1704,6 +2157,7 @@ anvil.on('message', async (msg) => {
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <script>
     'use strict';
@@ -1732,6 +2186,9 @@ anvil.on('message', async (msg) => {
             apiKey: "AIzaSyD5unDqHi53PktvTY_GqZtA35FYqJdmzlQ",
             authDomain: "fugth-design.firebaseapp.com",
             projectId: "fugth-design",
+            storageBucket: "fugth-design.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abc123def456"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -1755,24 +2212,54 @@ anvil.on('message', async (msg) => {
         // --- INITIALIZATION ---
         async function initializeApp() {
             renderLoader(marketGrid);
-            // CORRECTED: Await the product fetch before setting up the auth listener
-            await fetchAllProducts(); 
-            
-            auth.onAuthStateChanged(async user => {
-                if (user) {
-                    currentUser = user;
-                    await fetchUserInventory();
-                    updateUIForLoggedInUser();
-                } else {
-                    currentUser = null;
-                    updateUIForLoggedOutUser();
-                }
-                // Render the marketplace AFTER we know the user's login state and inventory
-                renderMarketplace();
-            });
-            
-            // Set initial page view
-            switchToPage('hero-page');
+            try {
+                await fetchAllProducts(); 
+                
+                auth.onAuthStateChanged(async user => {
+                    if (user) {
+                        currentUser = user;
+                        
+                        // Create or update user document
+                        const userDoc = db.collection('users').doc(user.uid);
+                        const userData = await userDoc.get();
+                        
+                        if (!userData.exists) {
+                            // Initialize new user data
+                            await userDoc.set({
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                displayName: user.displayName || user.email.split('@')[0],
+                                email: user.email,
+                                bio: '',
+                                totalTokens: 1000, // Starting tokens
+                                membershipTier: 'Free Tier',
+                                preferences: {
+                                    theme: document.documentElement.getAttribute('data-theme') || 'dark',
+                                    emailNotifications: true
+                                },
+                                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        } else {
+                            // Update last login
+                            await userDoc.update({
+                                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                        
+                        await fetchUserInventory();
+                        updateUIForLoggedInUser();
+                    } else {
+                        currentUser = null;
+                        updateUIForLoggedOutUser();
+                    }
+                    renderMarketplace();
+                });
+                
+                // Set initial page view
+                switchToPage('hero-page');
+            } catch (error) {
+                console.error("Error initializing app:", error);
+                showToast("Error initializing app. Please try again.");
+            }
         }
         
         // --- AUTHENTICATION ---
@@ -1839,12 +2326,14 @@ anvil.on('message', async (msg) => {
         // --- NAVIGATION & UTILITIES ---
         function updateUIForLoggedInUser() {
             const name = currentUser.displayName || currentUser.email.split('@')[0];
-            userStatusContainer.innerHTML = `<img src="${currentUser.photoURL || 'https://i.pravatar.cc/100'}" alt="User Avatar">`;
+            const avatarUrl = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=default&backgroundColor=845EEE`;
+            userStatusContainer.innerHTML = `<img src="${avatarUrl}" alt="User Avatar"> <span>${name}</span>`;
             authButton.textContent = 'Logout';
             authButton.classList.remove('btn-primary');
             authButton.classList.add('btn-secondary');
             ctaHeaderBtn.classList.add('hidden');
             inventoryNavLink.classList.remove('hidden');
+            updateProfileUI();
         }
         function updateUIForLoggedOutUser() {
             userStatusContainer.innerHTML = '';
@@ -2036,6 +2525,232 @@ anvil.on('message', async (msg) => {
             initializeSliders();
             initializeTerminal();
             highlightCode();
+        }
+
+        // --- PROFILE PAGE FUNCTIONS ---
+        function toggleEdit(formId) {
+            const form = document.getElementById(`${formId}Form`);
+            const inputs = form.querySelectorAll('input, textarea');
+            const actions = form.querySelector('.form-actions');
+            
+            inputs.forEach(input => input.disabled = false);
+            actions.classList.remove('hidden');
+        }
+
+        function cancelEdit(formId) {
+            const form = document.getElementById(`${formId}Form`);
+            const inputs = form.querySelectorAll('input, textarea');
+            const actions = form.querySelector('.form-actions');
+            
+            inputs.forEach(input => {
+                input.disabled = true;
+                input.value = input.defaultValue;
+            });
+            actions.classList.add('hidden');
+        }
+
+        async function updateProfile(e) {
+            e.preventDefault();
+            const form = e.target;
+            const newDisplayName = form.displayName.value;
+            const newBio = form.bio.value;
+
+            try {
+                await currentUser.updateProfile({
+                    displayName: newDisplayName
+                });
+
+                await db.collection('users').doc(currentUser.uid).update({
+                    bio: newBio
+                });
+
+                showToast('Profile updated successfully');
+                form.querySelectorAll('input, textarea').forEach(input => input.disabled = true);
+                form.querySelector('.form-actions').classList.add('hidden');
+            } catch (error) {
+                showToast('Error updating profile');
+                console.error('Error updating profile:', error);
+            }
+        }
+
+        async function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                showToast('New passwords do not match');
+                return;
+            }
+
+            try {
+                const credentials = firebase.auth.EmailAuthProvider.credential(
+                    currentUser.email,
+                    currentPassword
+                );
+
+                await currentUser.reauthenticateWithCredential(credentials);
+                await currentUser.updatePassword(newPassword);
+
+                showToast('Password updated successfully');
+                document.getElementById('securityForm').reset();
+            } catch (error) {
+                showToast('Error updating password');
+                console.error('Error updating password:', error);
+            }
+        }
+
+        const avatarOptions = [
+            { id: 'wizard', icon: '🧙‍♂️', name: 'Wizard' },
+            { id: 'robot', icon: '🤖', name: 'Robot' },
+            { id: 'ninja', icon: '🥷', name: 'Ninja' },
+            { id: 'alien', icon: '👽', name: 'Alien' },
+            { id: 'ghost', icon: '👻', name: 'Ghost' },
+            { id: 'dragon', icon: '🐉', name: 'Dragon' },
+            { id: 'unicorn', icon: '🦄', name: 'Unicorn' },
+            { id: 'phoenix', icon: '🦅', name: 'Phoenix' }
+        ];
+
+        function openAvatarModal() {
+            const html = `
+                <div class="modal-content modal-auth" style="max-width: 500px;">
+                    <div class="modal-close" onclick="closeModal()">
+                        <i class="fa-solid fa-times"></i>
+                    </div>
+                    <h3>Choose Your Avatar</h3>
+                    <div class="avatar-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1.5rem 0;">
+                        ${avatarOptions.map(avatar => `
+                            <div class="avatar-option" onclick="updateAvatar('${avatar.id}')" style="cursor: pointer; text-align: center; padding: 1rem; border-radius: 8px; transition: all 0.2s; border: 1px solid var(--color-border);">
+                                <div style="font-size: 2rem;">${avatar.icon}</div>
+                                <div style="margin-top: 0.5rem; font-size: 0.9rem;">${avatar.name}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            
+            modalContainer.innerHTML = html;
+            modalContainer.classList.remove('hidden');
+        }
+
+        async function updateAvatar(avatarId) {
+            try {
+                const avatarUrl = `https://api.dicebear.com/6.x/pixel-art/svg?seed=${avatarId}&backgroundColor=845EEE`;
+                await currentUser.updateProfile({
+                    photoURL: avatarUrl
+                });
+
+                document.getElementById('userAvatar').src = avatarUrl;
+                showToast('Avatar updated successfully');
+                closeModal();
+            } catch (error) {
+                showToast('Error updating avatar');
+                console.error('Error updating avatar:', error);
+            }
+        }
+
+        async function deleteAccount() {
+            if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                await db.collection('users').doc(currentUser.uid).delete();
+                await currentUser.delete();
+                showToast('Account deleted successfully');
+                updateUIForLoggedOutUser();
+                switchToPage('hero-page');
+            } catch (error) {
+                showToast('Error deleting account');
+                console.error('Error deleting account:', error);
+            }
+        }
+
+        // Set up profile page event listeners
+        document.getElementById('personalInfoForm')?.addEventListener('submit', updateProfile);
+        document.querySelector('.btn-danger')?.addEventListener('click', deleteAccount);
+
+        // Theme toggle handler
+        document.getElementById('themeToggle')?.addEventListener('change', async (e) => {
+            const newTheme = e.target.checked ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            if (currentUser) {
+                try {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        'preferences.theme': newTheme
+                    });
+                } catch (error) {
+                    console.error('Error updating theme preference:', error);
+                }
+            }
+        });
+
+        // Email notifications toggle handler
+        document.getElementById('emailNotifications')?.addEventListener('change', async (e) => {
+            if (currentUser) {
+                try {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        'preferences.emailNotifications': e.target.checked
+                    });
+                    showToast(`Email notifications ${e.target.checked ? 'enabled' : 'disabled'}`);
+                } catch (error) {
+                    console.error('Error updating email preferences:', error);
+                    showToast('Error updating preferences');
+                }
+            }
+        });
+
+        // Update UI for profile page
+        function updateProfileUI() {
+            if (!currentUser) return;
+
+            // Update avatar and basic info
+            const avatarImg = document.getElementById('userAvatar');
+            const displayNameEl = document.getElementById('profileDisplayName');
+            const emailEl = document.getElementById('profileEmail');
+            const displayNameInput = document.getElementById('displayName');
+            const emailInput = document.getElementById('email');
+            const bioInput = document.getElementById('bio');
+
+            avatarImg.src = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=default&backgroundColor=845EEE`;
+            displayNameEl.textContent = currentUser.displayName || 'User';
+            emailEl.textContent = currentUser.email;
+            displayNameInput.value = currentUser.displayName || '';
+            emailInput.value = currentUser.email;
+
+            // Fetch additional user data
+            db.collection('users').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    
+                    // Update bio and basic info
+                    bioInput.value = userData.bio || '';
+                    document.getElementById('totalTokens').textContent = userData.totalTokens?.toLocaleString() || '0';
+                    document.getElementById('membershipTier').textContent = userData.membershipTier || 'Free Tier';
+                    
+                    // Format join date nicely
+                    const joinDate = userData.createdAt?.toDate();
+                    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+                    document.getElementById('joinDate').textContent = joinDate ? 
+                        joinDate.toLocaleDateString(undefined, dateOptions) : '-';
+                    
+                    // Update preferences
+                    if (userData.preferences) {
+                        // Theme toggle
+                        const themeToggle = document.getElementById('themeToggle');
+                        if (themeToggle) {
+                            themeToggle.checked = userData.preferences.theme === 'light';
+                        }
+                        
+                        // Email notifications toggle
+                        const emailToggle = document.getElementById('emailNotifications');
+                        if (emailToggle) {
+                            emailToggle.checked = userData.preferences.emailNotifications;
+                        }
+                    }
+                }
+            });
         }
 
         // Initialize app with all features
