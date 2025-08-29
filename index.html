@@ -149,32 +149,7 @@
             transform: translateY(-2px);
         }
 
-        .tab-content {
-            position: relative;
-        }
-
-        .tab-pane {
-            display: none;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .tab-pane.active {
-            display: block;
-        }
-
-        .feature-showcase {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        @media (max-width: 992px) {
-            .feature-showcase {
-                grid-template-columns: 1fr;
-            }
-        }
-
+        /* Demo Windows */
         /* Demo Windows */
         .demo-window, .code-window {
             background: var(--color-surface);
@@ -2270,12 +2245,32 @@ anvil.on('message', async (msg) => {
 
         // --- DATA HANDLING ---
         async function fetchAllProducts() {
+            // Robust fetch: clear cache, show loader, detailed error logging and retry UI
             try {
+                allProductsCache.clear();
+                if (marketGrid) renderLoader(marketGrid);
                 const snapshot = await db.collection('products').get();
                 snapshot.forEach(doc => allProductsCache.set(doc.id, { id: doc.id, ...doc.data() }));
             } catch (error) {
-                showToast('Could not load marketplace items.', 'error');
-                if(marketGrid) marketGrid.innerHTML = '<p>Error: Could not connect to the marketplace.</p>';
+                console.error('fetchAllProducts error:', error);
+                showToast('Could not load marketplace items. Check console for details.', 'error');
+                if (marketGrid) {
+                    marketGrid.innerHTML = `
+                        <div style="text-align:center; padding:2rem;">
+                            <p>Error: Could not connect to the marketplace.</p>
+                            <button class="btn btn-primary" id="market-retry">Retry</button>
+                        </div>`;
+                    document.getElementById('market-retry')?.addEventListener('click', async () => {
+                        try {
+                            document.getElementById('market-retry').textContent = 'Retrying...';
+                            await fetchAllProducts();
+                            renderMarketplace();
+                        } catch (e) {
+                            console.error('Retry fetch failed:', e);
+                            showToast('Retry failed. See console.');
+                        }
+                    });
+                }
             }
         }
         async function fetchUserInventory() {
@@ -2291,7 +2286,24 @@ anvil.on('message', async (msg) => {
         }
         function renderMarketplace() {
             if (!marketGrid) return;
-            if (allProductsCache.size === 0) { marketGrid.innerHTML = '<p>The marketplace is currently empty.</p>'; return; }
+            if (allProductsCache.size === 0) {
+                marketGrid.innerHTML = `
+                    <div style="text-align:center; padding:2rem;">
+                        <p>The marketplace is currently empty or could not be loaded.</p>
+                        <button class="btn btn-primary" id="market-retry-2">Reload</button>
+                    </div>`;
+                document.getElementById('market-retry-2')?.addEventListener('click', async () => {
+                    try {
+                        renderLoader(marketGrid);
+                        await fetchAllProducts();
+                        renderMarketplace();
+                    } catch (e) {
+                        console.error('Reload marketplace failed:', e);
+                        showToast('Reload failed. See console.');
+                    }
+                });
+                return;
+            }
             let html = '';
             allProductsCache.forEach(product => html += createProductCard(product));
             marketGrid.innerHTML = html;
@@ -2326,7 +2338,9 @@ anvil.on('message', async (msg) => {
         // --- NAVIGATION & UTILITIES ---
         function updateUIForLoggedInUser() {
             const name = currentUser.displayName || currentUser.email.split('@')[0];
-            const avatarUrl = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=default&backgroundColor=845EEE`;
+            // Prefer auth photoURL, otherwise generate one using DiceBear seeded by displayName so avatar matches name
+            const seed = encodeURIComponent(name || currentUser.email.split('@')[0]);
+            const avatarUrl = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=${seed}&backgroundColor=845EEE`;
             userStatusContainer.innerHTML = `<img src="${avatarUrl}" alt="User Avatar"> <span>${name}</span>`;
             authButton.textContent = 'Logout';
             authButton.classList.remove('btn-primary');
@@ -2343,6 +2357,31 @@ anvil.on('message', async (msg) => {
             ctaHeaderBtn.classList.remove('hidden');
             inventoryNavLink.classList.add('hidden');
             userInventory.clear();
+
+            // If a guest avatar preview was saved locally, apply it to header and profile
+            try {
+                const saved = localStorage.getItem('selectedAvatar');
+                const headerImg = document.querySelector('#user-status-container img');
+                const avatarImg = document.getElementById('userAvatar');
+                if (saved) {
+                    if (headerImg) headerImg.src = saved;
+                    if (avatarImg) avatarImg.src = saved;
+                    // show a default Guest name
+                    if (userStatusContainer && !userStatusContainer.textContent.trim()) {
+                        userStatusContainer.innerHTML = `${headerImg ? headerImg.outerHTML : ''} <span>Guest</span>`;
+                    }
+                } else {
+                    // ensure a sensible default avatar for guests
+                    const guestAvatar = `https://api.dicebear.com/6.x/pixel-art/svg?seed=guest&backgroundColor=845EEE`;
+                    if (headerImg) headerImg.src = guestAvatar;
+                    if (avatarImg) avatarImg.src = guestAvatar;
+                    if (userStatusContainer && !userStatusContainer.textContent.trim()) {
+                        userStatusContainer.innerHTML = `<img src="${guestAvatar}" alt="Guest Avatar"> <span>Guest</span>`;
+                    }
+                }
+            } catch (e) {
+                // localStorage may be disabled; ignore
+            }
         }
         function showToast(message) {
             const toast = document.createElement('div');
@@ -2376,8 +2415,79 @@ anvil.on('message', async (msg) => {
         });
         
         // --- ALL HELPER FUNCTIONS (UNCHANGED) ---
-        async function handleSignup(e) { e.preventDefault(); const form = e.target, email = form.email.value, password = form.password.value, errorEl = form.querySelector('.form-error'); try { const userCredential = await auth.createUserWithEmailAndPassword(email, password); await userCredential.user.updateProfile({ displayName: email.split('@')[0] }); currentUser = auth.currentUser; closeModal(); showToast(`Welcome, ${currentUser.displayName}!`); } catch (error) { errorEl.textContent = error.message; } }
-        async function handleLogin(e) { e.preventDefault(); const form = e.target, email = form.email.value, password = form.password.value, errorEl = form.querySelector('.form-error'); try { await auth.signInWithEmailAndPassword(email, password); closeModal(); showToast(`Welcome back!`); } catch (error) { errorEl.textContent = error.message; } }
+        async function handleSignup(e) {
+            e.preventDefault();
+            const form = e.target;
+            const email = form.email.value;
+            const password = form.password.value;
+            const errorEl = form.querySelector('.form-error');
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                const displayName = email.split('@')[0];
+                // Set display name on auth profile
+                await user.updateProfile({ displayName });
+                // Create user document in Firestore
+                try {
+                    await db.collection('users').doc(user.uid).set({
+                        displayName,
+                        email: user.email,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        bio: '',
+                        totalTokens: 1000,
+                        membershipTier: 'Free Tier',
+                        preferences: { theme: document.documentElement.getAttribute('data-theme') || 'dark', emailNotifications: true },
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch (e) {
+                    // non-fatal
+                }
+                currentUser = user;
+                updateUIForLoggedInUser();
+                closeModal();
+                showToast(`Welcome, ${currentUser.displayName}!`);
+            } catch (error) {
+                if (errorEl) errorEl.textContent = error.message;
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const form = e.target;
+            const email = form.email.value;
+            const password = form.password.value;
+            const errorEl = form.querySelector('.form-error');
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                currentUser = userCredential.user;
+                // Ensure user doc exists and update lastLogin
+                try {
+                    const userRef = db.collection('users').doc(currentUser.uid);
+                    const doc = await userRef.get();
+                    if (!doc.exists) {
+                        await userRef.set({
+                            displayName: currentUser.displayName || email.split('@')[0],
+                            email: currentUser.email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            bio: '',
+                            totalTokens: 1000,
+                            membershipTier: 'Free Tier',
+                            preferences: { theme: document.documentElement.getAttribute('data-theme') || 'dark', emailNotifications: true },
+                            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } else {
+                        await userRef.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
+                    }
+                } catch (e) {
+                    // non-fatal
+                }
+                updateUIForLoggedInUser();
+                closeModal();
+                showToast(`Welcome back, ${currentUser.displayName || currentUser.email.split('@')[0]}!`);
+            } catch (error) {
+                if (errorEl) errorEl.textContent = error.message;
+            }
+        }
         async function handleGoogleSignin() { const provider = new firebase.auth.GoogleAuthProvider(); try { await auth.signInWithPopup(provider); closeModal(); } catch (error) { document.querySelector('.form-error').textContent = error.message; } }
         function openAuthModal(showSignup = false) { const loginHidden = showSignup ? 'hidden' : ''; const signupHidden = !showSignup ? 'hidden' : ''; const html = `<div class="modal-content modal-auth"><div class="modal-close" onclick="closeModal()"><i class="fa-solid fa-times"></i></div><div id="login-view" class="${loginHidden}"><h3>Login</h3><form id="login-form"><div class="form-error"></div><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%; margin-top: 0.5rem;">Login</button></form><p style="text-align:center; margin-top:1rem; font-size:0.9rem">No account? <a href="#" onclick="openAuthModal(true)" style="color:var(--color-primary)">Sign Up</a></p></div><div id="signup-view" class="${signupHidden}"><h3>Create Account</h3><form id="signup-form"><div class="form-error"></div><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password (6+ characters)" required><button type="submit" class="btn btn-primary" style="width:100%; margin-top: 0.5rem;">Create Account</button></form><p style="text-align:center; margin-top:1rem; font-size:0.9rem">Have an account? <a href="#" onclick="openAuthModal(false)" style="color:var(--color-primary)">Login</a></p></div><div style="text-align:center; color: var(--color-text-secondary); margin: 1rem 0;">OR</div><button class="btn btn-secondary" style="width:100%" onclick="handleGoogleSignin()"><i class="fab fa-google"></i> Sign In with Google</button></div>`; modalContainer.innerHTML = html; modalContainer.classList.remove('hidden'); document.getElementById('login-form')?.addEventListener('submit', handleLogin); document.getElementById('signup-form')?.addEventListener('submit', handleSignup); }
         async function acquireItem(productId) { if (!currentUser) { showToast('Please log in to acquire items.', 'error'); return; } const acquireBtn = document.getElementById('modal-acquire-btn'); if(acquireBtn){ acquireBtn.textContent = 'Adding...'; acquireBtn.classList.add('btn-disabled'); } try { await db.collection('user_inventories').doc(currentUser.uid).collection('items').doc(productId).set({ acquiredAt: firebase.firestore.FieldValue.serverTimestamp() }); userInventory.add(productId); showToast('Item added to your inventory!'); closeModal(); renderMarketplace(); } catch (error) { showToast('Failed to add item.'); } }
@@ -2549,29 +2659,7 @@ anvil.on('message', async (msg) => {
             actions.classList.add('hidden');
         }
 
-        async function updateProfile(e) {
-            e.preventDefault();
-            const form = e.target;
-            const newDisplayName = form.displayName.value;
-            const newBio = form.bio.value;
-
-            try {
-                await currentUser.updateProfile({
-                    displayName: newDisplayName
-                });
-
-                await db.collection('users').doc(currentUser.uid).update({
-                    bio: newBio
-                });
-
-                showToast('Profile updated successfully');
-                form.querySelectorAll('input, textarea').forEach(input => input.disabled = true);
-                form.querySelector('.form-actions').classList.add('hidden');
-            } catch (error) {
-                showToast('Error updating profile');
-                console.error('Error updating profile:', error);
-            }
-        }
+    // (avatar functions implemented later)
 
         async function changePassword() {
             const currentPassword = document.getElementById('currentPassword').value;
@@ -2601,14 +2689,14 @@ anvil.on('message', async (msg) => {
         }
 
         const avatarOptions = [
-            { id: 'wizard', icon: '🧙‍♂️', name: 'Wizard' },
-            { id: 'robot', icon: '🤖', name: 'Robot' },
-            { id: 'ninja', icon: '🥷', name: 'Ninja' },
-            { id: 'alien', icon: '👽', name: 'Alien' },
-            { id: 'ghost', icon: '👻', name: 'Ghost' },
-            { id: 'dragon', icon: '🐉', name: 'Dragon' },
-            { id: 'unicorn', icon: '🦄', name: 'Unicorn' },
-            { id: 'phoenix', icon: '🦅', name: 'Phoenix' }
+            { id: 'wizard', icon: 'wizard', name: 'Wizard' },
+            { id: 'robot', icon: 'robot', name: 'Robot' },
+            { id: 'ninja', icon: 'ninja', name: 'Ninja' },
+            { id: 'alien', icon: 'alien', name: 'Alien' },
+            { id: 'ghost', icon: 'ghost', name: 'Ghost' },
+            { id: 'dragon', icon: 'dragon', name: 'Dragon' },
+            { id: 'unicorn', icon: 'unicorn', name: 'Unicorn' },
+            { id: 'phoenix', icon: 'phoenix', name: 'Phoenix' }
         ];
 
         function openAvatarModal() {
@@ -2620,8 +2708,8 @@ anvil.on('message', async (msg) => {
                     <h3>Choose Your Avatar</h3>
                     <div class="avatar-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1.5rem 0;">
                         ${avatarOptions.map(avatar => `
-                            <div class="avatar-option" onclick="updateAvatar('${avatar.id}')" style="cursor: pointer; text-align: center; padding: 1rem; border-radius: 8px; transition: all 0.2s; border: 1px solid var(--color-border);">
-                                <div style="font-size: 2rem;">${avatar.icon}</div>
+                            <div class="avatar-option" onclick="updateAvatar('${avatar.id}')" style="cursor: pointer; text-align: center; padding: 0.5rem; border-radius: 8px; transition: all 0.2s; border: 1px solid var(--color-border);">
+                                <img src="https://api.dicebear.com/6.x/pixel-art/svg?seed=${avatar.id}&backgroundColor=845EEE" alt="${avatar.name}" style="width:72px; height:72px; display:block; margin: 0 auto; border-radius: 8px;">
                                 <div style="margin-top: 0.5rem; font-size: 0.9rem;">${avatar.name}</div>
                             </div>
                         `).join('')}
@@ -2633,13 +2721,37 @@ anvil.on('message', async (msg) => {
         }
 
         async function updateAvatar(avatarId) {
+            const avatarUrl = `https://api.dicebear.com/6.x/pixel-art/svg?seed=${avatarId}&backgroundColor=845EEE`;
             try {
-                const avatarUrl = `https://api.dicebear.com/6.x/pixel-art/svg?seed=${avatarId}&backgroundColor=845EEE`;
-                await currentUser.updateProfile({
-                    photoURL: avatarUrl
-                });
+                // If user is not logged in, update preview locally and store selection temporarily
+                if (!currentUser) {
+                    const avatarImg = document.getElementById('userAvatar');
+                    if (avatarImg) avatarImg.src = avatarUrl;
+                    const statusImg = document.querySelector('#user-status-container img');
+                    if (statusImg) statusImg.src = avatarUrl;
+                    try { localStorage.setItem('selectedAvatar', avatarUrl); } catch (e) {}
+                    showToast('Avatar updated locally. Log in to save it to your account.');
+                    closeModal();
+                    return;
+                }
 
-                document.getElementById('userAvatar').src = avatarUrl;
+                // Update firebase user profile photoURL
+                await currentUser.updateProfile({ photoURL: avatarUrl });
+
+                // Update profile page avatar and header avatar if present
+                const avatarImg = document.getElementById('userAvatar');
+                if (avatarImg) avatarImg.src = avatarUrl;
+
+                const statusImg = document.querySelector('#user-status-container img');
+                if (statusImg) statusImg.src = avatarUrl;
+
+                // Also persist to users collection (best-effort)
+                try {
+                    await db.collection('users').doc(currentUser.uid).update({ photoURL: avatarUrl });
+                } catch (e) {
+                    // non-fatal
+                }
+
                 showToast('Avatar updated successfully');
                 closeModal();
             } catch (error) {
@@ -2648,7 +2760,11 @@ anvil.on('message', async (msg) => {
             }
         }
 
-        async function deleteAccount() {
+        // Expose functions globally so inline onclick handlers work from the HTML
+        window.openAvatarModal = openAvatarModal;
+        window.updateAvatar = updateAvatar;
+
+    async function deleteAccount() {
             if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
                 return;
             }
@@ -2752,6 +2868,26 @@ anvil.on('message', async (msg) => {
                 }
             });
         }
+
+        async function updateProfile(e) {
+            if (e) e.preventDefault();
+            if (!currentUser) { showToast('Please log in to update your profile.'); return; }
+            const displayName = document.getElementById('displayName').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            try {
+                // Update auth profile
+                await currentUser.updateProfile({ displayName });
+                // Update Firestore user doc
+                await db.collection('users').doc(currentUser.uid).set({ displayName, bio }, { merge: true });
+                showToast('Profile updated');
+                updateProfileUI();
+            } catch (err) {
+                console.error('updateProfile error', err);
+                showToast('Could not update profile');
+            }
+        }
+
+        window.updateProfile = updateProfile;
 
         // Initialize app with all features
         initializeApp();
