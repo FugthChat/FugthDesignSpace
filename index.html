@@ -13,6 +13,7 @@
 
     <style>
         :root {
+            /* Dark theme (default) */
             --color-background: #0B0F19;
             --color-surface: #111827;
             --color-surface-light: #1F2937;
@@ -23,6 +24,29 @@
             --color-text-secondary: #9CA3AF;
             --color-text-heading: #FFFFFF;
             --font-family: 'Inter', sans-serif;
+        }
+
+        /* Light theme variables */
+        :root[data-theme="light"] {
+            --color-background: #f8fafc;
+            --color-surface: #ffffff;
+            --color-surface-light: #f1f5f9;
+            --color-border: #e2e8f0;
+            --color-text-primary: #1e293b;
+            --color-text-secondary: #64748b;
+            --color-text-heading: #0f172a;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -102,15 +126,252 @@
         .loader { width: 40px; height: 40px; border: 4px solid var(--color-border); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        footer { background-color: var(--color-surface); padding: 40px 0; text-align: center; margin-top: 100px; }
-        .footer-content { max-width: 600px; margin: 0 auto; }
-        .social-links { list-style: none; display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; }
-        .social-links a { color: var(--color-text-secondary); font-size: 1.5rem; transition: color 0.2s ease; }
-        .social-links a:hover { color: var(--color-primary); }
+        /* Testimonials */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+        }
+
+        .testimonial-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-content p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--color-text-primary);
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-author img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+        }
+
+        .testimonial-author h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .testimonial-author p {
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        /* Theme Switcher */
+        .theme-switch {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-switch:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer */
+        footer { 
+            background-color: var(--color-surface); 
+            padding: 40px 0; 
+            text-align: center; 
+            margin-top: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+        .footer-content { 
+            max-width: 600px; 
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .social-links { 
+            list-style: none; 
+            display: flex; 
+            justify-content: center; 
+            gap: 2rem; 
+            margin-bottom: 1.5rem;
+        }
+        .social-links a { 
+            color: var(--color-text-secondary); 
+            font-size: 1.5rem; 
+            transition: all 0.3s ease;
+        }
+        .social-links a:hover { 
+            color: var(--color-primary);
+            transform: translateY(-3px);
+        }
         
+        /* Mobile Menu Styles */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 25px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1000;
+        }
+
+        .mobile-menu-toggle span {
+            width: 100%;
+            height: 2px;
+            background: var(--color-text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* Marketplace Search and Filter */
+        .marketplace-controls {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-bar {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 16px;
+            padding-left: 40px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            color: var(--color-text-primary);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-secondary);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 20px;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        /* Responsive Design */
         @media (max-width: 992px) {
-            h1 { font-size: 3rem; } h2 { font-size: 2rem; }
-            .nav-links { display: none; }
+            h1 { font-size: 3rem; }
+            h2 { font-size: 2rem; }
+            
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 80%;
+                max-width: 400px;
+                background: var(--color-surface);
+                flex-direction: column;
+                padding: 80px 2rem;
+                transition: right 0.3s ease;
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+                z-index: 999;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .nav-links li {
+                margin: 1rem 0;
+            }
+
+            .auth-container {
+                gap: 8px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-buttons .btn {
+                width: 100%;
+                max-width: 300px;
+            }
         }
     </style>
 </head>
@@ -122,9 +383,15 @@
         <div class="container">
             <nav>
                 <a class="logo nav-link" data-target="hero-page"><i class="fa-solid fa-bolt"></i> Anvil</a>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <ul class="nav-links">
                     <li><a class="nav-link" data-target="marketplace-page">Marketplace</a></li>
                     <li><a class="nav-link" data-target="guildpass-page">Guild Pass</a></li>
+                    <li><a class="nav-link" data-target="testimonials-page">Testimonials</a></li>
                     <li><a class="nav-link hidden" data-target="inventory-page" id="inventory-nav-link">My Assets</a></li>
                 </ul>
                 <div class="auth-container">
@@ -150,13 +417,77 @@
         </section>
         
         <section id="marketplace-page" class="hidden">
+            <div class="bg-grid"></div>
+            <div class="bg-gradient"></div>
             <div class="container">
                 <div class="section-header">
                     <h2>The <span class="text-gradient">Marketplace</span></h2>
                     <p>Discover and acquire unique personalities, skins, and tools for your AI companion, crafted by the community and our studio.</p>
                 </div>
+                <div class="marketplace-controls">
+                    <div class="search-bar">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="market-search" placeholder="Search assets...">
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="personality">Personalities</button>
+                        <button class="filter-btn" data-filter="skin">Skins</button>
+                        <button class="filter-btn" data-filter="tool">Tools</button>
+                        <button class="filter-btn" data-filter="free">Free</button>
+                    </div>
+                </div>
                 <div class="page-content">
                     <div class="grid-container" id="market-grid-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonials-page">
+            <div class="bg-grid"></div>
+            <div class="bg-gradient"></div>
+            <div class="container">
+                <div class="section-header">
+                    <h2>What Our <span class="text-gradient">Users Say</span></h2>
+                    <p>Join thousands of satisfied users who have already transformed their AI experience with Anvil.</p>
+                </div>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>"Anvil has completely changed how I interact with AI. The level of personalization is incredible!"</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="https://ui-avatars.com/api/?name=Sarah+Mitchell&background=845EEE&color=fff" alt="Sarah Mitchell">
+                            <div>
+                                <h4>Sarah Mitchell</h4>
+                                <p>Digital Artist</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>"The marketplace is a game-changer. I've found amazing personalities that perfectly suit my needs."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="https://ui-avatars.com/api/?name=David+Chen&background=00DDEB&color=fff" alt="David Chen">
+                            <div>
+                                <h4>David Chen</h4>
+                                <p>Software Developer</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            <p>"Being able to create and share my own AI personalities has opened up a whole new creative outlet."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="https://ui-avatars.com/api/?name=Emily+Turner&background=845EEE&color=fff" alt="Emily Turner">
+                            <div>
+                                <h4>Emily Turner</h4>
+                                <p>Content Creator</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -235,6 +566,24 @@
     <script>
     'use strict';
     document.addEventListener('DOMContentLoaded', () => {
+        // Theme Handling
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedTheme = localStorage.getItem('theme');
+        const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        // Add theme switch button
+        const themeSwitch = document.createElement('button');
+        themeSwitch.className = 'theme-switch';
+        themeSwitch.innerHTML = `<i class="fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}"></i>`;
+        document.body.appendChild(themeSwitch);
+
+        themeSwitch.addEventListener('click', () => {
+            const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeSwitch.innerHTML = `<i class="fas fa-${newTheme === 'dark' ? 'sun' : 'moon'}"></i>`;
+        });
 
         // --- CONFIG & STATE MANAGEMENT ---
         const firebaseConfig = {
@@ -405,7 +754,75 @@
         function closeModal() { if(modalContainer) { modalContainer.classList.add('hidden'); modalContainer.innerHTML = ''; } }
         window.closeModal = closeModal; window.openProductModal = openProductModal; window.openAuthModal = openAuthModal; window.acquireItem = acquireItem; window.handleGoogleSignin = handleGoogleSignin;
 
-        // START THE APP
+        // --- Mobile Menu Handling ---
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const navLinksContainer = document.querySelector('.nav-links');
+
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', () => {
+                mobileMenuToggle.classList.toggle('active');
+                navLinksContainer.classList.toggle('active');
+            });
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (navLinksContainer?.classList.contains('active') && 
+                !e.target.closest('.nav-links') && 
+                !e.target.closest('.mobile-menu-toggle')) {
+                mobileMenuToggle.classList.remove('active');
+                navLinksContainer.classList.remove('active');
+            }
+        });
+
+        // --- Marketplace Search and Filter ---
+        const marketSearch = document.getElementById('market-search');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        if (marketSearch) {
+            marketSearch.addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase();
+                filterAndRenderProducts();
+            });
+        }
+
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                filterAndRenderProducts();
+            });
+        });
+
+        function filterAndRenderProducts() {
+            if (!marketGrid) return;
+            
+            const filteredProducts = Array.from(allProductsCache.values()).filter(product => {
+                const matchesSearch = product.name.toLowerCase().includes(searchQuery) || 
+                                    product.creator.toLowerCase().includes(searchQuery);
+                const matchesFilter = currentFilter === 'all' || 
+                                    currentFilter === 'free' && product.price === 0 ||
+                                    product.type === currentFilter;
+                return matchesSearch && matchesFilter;
+            });
+
+            if (filteredProducts.length === 0) {
+                marketGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
+                        <i class="fa-solid fa-search" style="font-size: 3rem; color: var(--color-border); margin-bottom: 1rem;"></i>
+                        <h3>No items found</h3>
+                        <p>Try adjusting your search or filter criteria</p>
+                    </div>`;
+                return;
+            }
+
+            marketGrid.innerHTML = filteredProducts.map(createProductCard).join('');
+        }
+
+        // Initialize app with all features
         initializeApp();
     });
     </script>
