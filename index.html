@@ -100,13 +100,534 @@
         .card-creator { font-size: 0.875rem; color: var(--color-text-secondary); }
         .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 0 1rem 1rem 1rem; font-size: 1rem; font-weight: 600; }
 
-        .pricing-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 2rem; }
-        .pricing-card.highlight { border-color: var(--color-primary); box-shadow: 0 0 30px rgba(132, 94, 238, 0.2); }
-        .pricing-card .price { font-size: 3rem; font-weight: 800; }
-        .pricing-card .period { color: var(--color-text-secondary); }
-        .pricing-card ul { list-style: none; margin: 2rem 0; }
-        .pricing-card ul li { margin-bottom: 1rem; display: flex; align-items: center; }
-        .pricing-card ul li i { color: var(--color-primary); margin-right: 0.75rem; }
+        /* Features Page */
+        .features-tabs {
+            margin: 3rem 0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            color: var(--color-text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            background: var(--color-surface-light);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            position: relative;
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .feature-showcase {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        @media (max-width: 992px) {
+            .feature-showcase {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Demo Windows */
+        .demo-window, .code-window {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .window-header {
+            background: var(--color-surface-light);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .window-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--color-border);
+        }
+
+        .window-dots span:nth-child(1) { background: #ff5f57; }
+        .window-dots span:nth-child(2) { background: #febc2e; }
+        .window-dots span:nth-child(3) { background: #28c840; }
+
+        .window-title {
+            margin-left: 1rem;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Terminal Content */
+        .terminal-content {
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .terminal-content span {
+            display: block;
+        }
+
+        .terminal-content .command {
+            color: var(--color-primary);
+        }
+
+        .terminal-content .response {
+            color: var(--color-text-secondary);
+        }
+
+        .terminal-content .blink::after {
+            content: '_';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Code Window */
+        .code-content {
+            padding: 1rem;
+            margin: 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--color-text-primary);
+        }
+
+        /* Personality Forge */
+        .personality-forge {
+            padding: 1.5rem;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+        }
+
+        .personality-sliders {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .slider-group label {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+        }
+
+        .slider {
+            height: 8px;
+            background: var(--color-surface-light);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .slider::before {
+            content: '';
+            position: absolute;
+            height: 100%;
+            background: var(--color-primary);
+            border-radius: 4px;
+            animation: slideIn 1s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { width: 0; }
+            to { width: var(--width, 100%); }
+        }
+
+        .personality-preview {
+            padding: 1rem;
+            background: var(--color-surface-light);
+            border-radius: 8px;
+        }
+
+        .chat-bubble {
+            background: var(--color-primary);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            border-top-left-radius: 0;
+            max-width: 80%;
+            margin-left: 1rem;
+            position: relative;
+            animation: bubbleIn 0.5s ease-out;
+        }
+
+        @keyframes bubbleIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Security Dashboard */
+        .security-dashboard {
+            padding: 2rem;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+        }
+
+        .security-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--color-surface-light);
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+        }
+
+        .status-item i {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .feature-demo {
+            margin-top: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--color-surface-light);
+            padding: 1rem;
+        }
+
+        .chat-demo {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chat-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .chat-message img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .chat-message .message {
+            background: var(--color-surface);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            border-top-left-radius: 4px;
+            max-width: 80%;
+        }
+
+        .chat-message.ai .message {
+            background: var(--color-primary);
+            color: white;
+            border-top-right-radius: 4px;
+            border-top-left-radius: 12px;
+        }
+
+        .typing::after {
+            content: '...';
+            animation: typing 1.5s infinite;
+        }
+
+        @keyframes typing {
+            0%, 20% { content: '.'; }
+            40%, 60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        /* Pricing Cards */
+        .pricing-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .pricing-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card.highlight {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 30px rgba(132, 94, 238, 0.2);
+            transform: translateY(-10px);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .price-container {
+            margin-top: 1rem;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: var(--color-text-secondary);
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+
+        .period {
+            color: var(--color-text-secondary);
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        .value-props {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .value-prop {
+            text-align: center;
+        }
+
+        .value-prop i {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .feature-list li:hover {
+            background: var(--color-surface-light);
+        }
+
+        .feature-list li i {
+            color: var(--color-primary);
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-list li.premium i {
+            color: gold;
+        }
+
+        .feature-list li.disabled {
+            color: var(--color-text-secondary);
+        }
+
+        .btn-large {
+            padding: 16px 24px;
+            font-size: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .btn-main {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn-sub {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .cancel-notice {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .cancel-notice i {
+            margin-right: 0.5rem;
+        }
+
+        /* Special Offer Badge */
+        .special-offer-badge {
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Satisfaction Guarantee */
+        .satisfaction-guarantee {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Pulse Animation */
+        .pulse-button {
+            position: relative;
+        }
+
+        .pulse-button::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: inherit;
+            border-radius: inherit;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
         .modal-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .modal-content { background: var(--color-surface); border-radius: 12px; border: 1px solid var(--color-border); width: 90%; max-width: 450px; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
@@ -389,9 +910,9 @@
                     <span></span>
                 </button>
                 <ul class="nav-links">
+                    <li><a class="nav-link" data-target="features-page">Features</a></li>
                     <li><a class="nav-link" data-target="marketplace-page">Marketplace</a></li>
                     <li><a class="nav-link" data-target="guildpass-page">Guild Pass</a></li>
-                    <li><a class="nav-link" data-target="testimonials-page">Testimonials</a></li>
                     <li><a class="nav-link hidden" data-target="inventory-page" id="inventory-nav-link">My Assets</a></li>
                 </ul>
                 <div class="auth-container">
@@ -405,12 +926,363 @@
 
     <main>
         <section id="hero-page">
+            <div class="bg-gradient"></div>
             <div class="container">
                 <div class="hero-content">
+                    <div class="special-offer-badge">
+                        <i class="fas fa-star-half-alt"></i>
+                        <span>Special Offer: Get Guild Pass for $19.99/3 months</span>
+                    </div>
                     <h1>Your Personal <span class="text-gradient">AI Companion</span>, Forged by You.</h1>
                     <p class="subtitle">Anvil is a powerful desktop application that lets you build, customize, and interact with a truly personal AI. Go beyond assistants—create a personality.</p>
                     <div class="hero-buttons">
-                        <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary" style="padding: 16px 32px; font-size: 1.1rem;">Purchase Anvil - $99.99</a>
+                        <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary pulse-button" style="padding: 16px 32px; font-size: 1.1rem;">
+                            <span class="main-text">Get Anvil - $99.99</span>
+                            <span class="sub-text">One-time payment • Lifetime access</span>
+                        </a>
+                        <div class="satisfaction-guarantee">
+                            <i class="fas fa-shield-check"></i>
+                            30-Day Money-Back Guarantee
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features-page" class="hidden">
+            <div class="bg-grid"></div>
+            <div class="bg-gradient"></div>
+            <div class="container">
+                <div class="section-header">
+                    <h2>Powerful <span class="text-gradient">Features</span></h2>
+                    <p>Discover all the ways Anvil revolutionizes AI interaction</p>
+                </div>
+
+                <div class="features-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="ai-core">AI Core</button>
+                        <button class="tab-btn" data-tab="personality">Personality</button>
+                        <button class="tab-btn" data-tab="integration">Integration</button>
+                        <button class="tab-btn" data-tab="security">Security</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="ai-core">
+                            <div class="feature-showcase">
+                                <div class="feature-demo">
+                                    <div class="demo-window">
+                                        <div class="window-header">
+                                            <div class="window-dots">
+                                                <span></span><span></span><span></span>
+                                            </div>
+                                            <div class="window-title">Anvil AI Core</div>
+                                        </div>
+                                        <div class="window-content">
+                                            <div class="terminal-content">
+                                                <span class="command">» Loading Advanced AI Models...</span>
+                                                <span class="response">✓ Local LLM initialized</span>
+                                                <span class="response">✓ Neural processing ready</span>
+                                                <span class="command">» Activating context awareness...</span>
+                                                <span class="response blink">AI Core active and learning...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="feature-details">
+                                    <h3>Advanced AI Core</h3>
+                                    <ul class="feature-list">
+                                        <li>
+                                            <i class="fas fa-microchip"></i>
+                                            <div>
+                                                <h4>Local Processing Power</h4>
+                                                <p>Run powerful AI models directly on your device, ensuring privacy and speed.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-brain"></i>
+                                            <div>
+                                                <h4>Neural Learning</h4>
+                                                <p>Adaptive learning system that evolves with your interactions.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-sync-alt"></i>
+                                            <div>
+                                                <h4>Real-time Processing</h4>
+                                                <p>Lightning-fast response times with local processing.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-network-wired"></i>
+                                            <div>
+                                                <h4>Hybrid Architecture</h4>
+                                                <p>Seamlessly switch between local and cloud processing.</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="personality">
+                            <div class="feature-showcase">
+                                <div class="feature-demo personality-forge">
+                                    <div class="forge-interface">
+                                        <div class="personality-sliders">
+                                            <div class="slider-group">
+                                                <label>Empathy Level</label>
+                                                <div class="slider active" style="width: 80%;"></div>
+                                            </div>
+                                            <div class="slider-group">
+                                                <label>Technical Knowledge</label>
+                                                <div class="slider" style="width: 90%;"></div>
+                                            </div>
+                                            <div class="slider-group">
+                                                <label>Creativity</label>
+                                                <div class="slider" style="width: 75%;"></div>
+                                            </div>
+                                            <div class="slider-group">
+                                                <label>Humor Style</label>
+                                                <div class="slider" style="width: 60%;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="personality-preview">
+                                            <div class="preview-chat">
+                                                <div class="chat-bubble">Hey! I've adjusted my responses to match your preferences. Want to test my new personality?</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="feature-details">
+                                    <h3>Personality Forge</h3>
+                                    <ul class="feature-list">
+                                        <li>
+                                            <i class="fas fa-sliders-h"></i>
+                                            <div>
+                                                <h4>Complete Customization</h4>
+                                                <p>Fine-tune every aspect of your AI's personality.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-user-edit"></i>
+                                            <div>
+                                                <h4>Behavioral Training</h4>
+                                                <p>Train your AI through natural conversations and feedback.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-theater-masks"></i>
+                                            <div>
+                                                <h4>Multiple Personas</h4>
+                                                <p>Create and switch between different AI personalities.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-memory"></i>
+                                            <div>
+                                                <h4>Memory System</h4>
+                                                <p>AI remembers past interactions and learns from them.</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="integration">
+                            <div class="feature-showcase">
+                                <div class="feature-demo">
+                                    <div class="code-window">
+                                        <div class="window-header">
+                                            <div class="window-dots">
+                                                <span></span><span></span><span></span>
+                                            </div>
+                                            <div class="window-title">integration.js</div>
+                                        </div>
+                                        <pre class="code-content"><code>// Initialize Anvil AI with custom settings
+const anvil = new AnvilAI({
+  personality: 'custom',
+  mode: 'hybrid',
+  apiKey: 'your_key'
+});
+
+// Connect to your application
+anvil.connect({
+  app: 'myApp',
+  features: ['chat', 'analysis']
+});
+
+// Example: AI-powered chat interface
+anvil.on('message', async (msg) => {
+  const response = await anvil.process(msg);
+  ui.updateChat(response);
+});</code></pre>
+                                    </div>
+                                </div>
+                                <div class="feature-details">
+                                    <h3>Easy Integration</h3>
+                                    <ul class="feature-list">
+                                        <li>
+                                            <i class="fas fa-plug"></i>
+                                            <div>
+                                                <h4>API Access</h4>
+                                                <p>Comprehensive API for seamless integration with your applications.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-code"></i>
+                                            <div>
+                                                <h4>SDK Support</h4>
+                                                <p>SDKs available for major programming languages.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-boxes"></i>
+                                            <div>
+                                                <h4>Modular Design</h4>
+                                                <p>Use only the features you need in your projects.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-book"></i>
+                                            <div>
+                                                <h4>Documentation</h4>
+                                                <p>Extensive documentation and code examples.</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="security">
+                            <div class="feature-showcase">
+                                <div class="feature-demo">
+                                    <div class="security-dashboard">
+                                        <div class="security-status">
+                                            <div class="status-item">
+                                                <i class="fas fa-shield-alt"></i>
+                                                <span>Encryption: Active</span>
+                                            </div>
+                                            <div class="status-item">
+                                                <i class="fas fa-user-shield"></i>
+                                                <span>Privacy Mode: Enabled</span>
+                                            </div>
+                                            <div class="status-item">
+                                                <i class="fas fa-lock"></i>
+                                                <span>Data Protection: Secure</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="feature-details">
+                                    <h3>Security & Privacy</h3>
+                                    <ul class="feature-list">
+                                        <li>
+                                            <i class="fas fa-shield-alt"></i>
+                                            <div>
+                                                <h4>End-to-End Encryption</h4>
+                                                <p>Military-grade encryption for all your data.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-user-shield"></i>
+                                            <div>
+                                                <h4>Privacy First</h4>
+                                                <p>Local processing ensures your data stays on your device.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-key"></i>
+                                            <div>
+                                                <h4>Access Control</h4>
+                                                <p>Fine-grained control over AI permissions and access.</p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-file-contract"></i>
+                                            <div>
+                                                <h4>Compliance</h4>
+                                                <p>Meets global data protection standards.</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features-showcase">
+            <div class="bg-grid"></div>
+            <div class="container">
+                <div class="section-header">
+                    <h2>Why Choose <span class="text-gradient">Anvil</span>?</h2>
+                    <p>Experience the next generation of AI interaction with our powerful features</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card" data-aos="fade-up">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Advanced AI Models</h3>
+                        <p>Run powerful local AI models that respect your privacy and work offline.</p>
+                        <div class="feature-demo">
+                            <video autoplay loop muted playsinline>
+                                <source src="https://your-cdn.com/demos/ai-models-demo.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="feature-icon">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <h3>Personality Forge</h3>
+                        <p>Create and customize your AI's personality, voice, and behavior patterns.</p>
+                        <div class="feature-demo">
+                            <div class="chat-demo">
+                                <div class="chat-message">
+                                    <img src="https://ui-avatars.com/api/?name=User&background=845EEE&color=fff" alt="User">
+                                    <div class="message">How would you handle this situation?</div>
+                                </div>
+                                <div class="chat-message ai">
+                                    <img src="https://ui-avatars.com/api/?name=AI&background=00DDEB&color=fff" alt="AI">
+                                    <div class="message typing">Let me think about that from my unique perspective...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="feature-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3>Developer API</h3>
+                        <p>Integrate Anvil with your applications using our comprehensive API.</p>
+                        <div class="feature-demo">
+                            <pre class="code-preview">
+<code>const anvil = new AnvilAI({
+  personality: "custom",
+  model: "advanced-local"
+});</code>
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="cta-container">
+                    <div class="feature-comparison">
+                        <div class="comparison-header">
+                            <h3>What's Included</h3>
+                        </div>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Lifetime Access to Anvil Software</li>
+                            <li><i class="fas fa-check"></i> Local AI Model Support</li>
+                            <li><i class="fas fa-check"></i> Personality Creation Tools</li>
+                            <li><i class="fas fa-check"></i> Community Marketplace Access</li>
+                            <li><i class="fas fa-check"></i> Regular Updates & Support</li>
+                            <li class="premium"><i class="fas fa-crown"></i> Optional Guild Pass for Premium Features</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -443,48 +1315,126 @@
             </div>
         </section>
 
-        <section id="testimonials-page">
+        <section id="testimonials-page" class="hidden">
             <div class="bg-grid"></div>
             <div class="bg-gradient"></div>
             <div class="container">
                 <div class="section-header">
+                    <div class="stats-banner">
+                        <div class="stat-item">
+                            <span class="stat-number">50K+</span>
+                            <span class="stat-label">Active Users</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">4.9</span>
+                            <span class="stat-label">Average Rating</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">1M+</span>
+                            <span class="stat-label">AI Interactions</span>
+                        </div>
+                    </div>
                     <h2>What Our <span class="text-gradient">Users Say</span></h2>
-                    <p>Join thousands of satisfied users who have already transformed their AI experience with Anvil.</p>
+                    <p>Real stories from professionals who have transformed their work with Anvil AI</p>
                 </div>
-                <div class="testimonials-grid">
-                    <div class="testimonial-card">
-                        <div class="testimonial-content">
-                            <p>"Anvil has completely changed how I interact with AI. The level of personalization is incredible!"</p>
+
+                <div class="testimonials-carousel">
+                    <div class="testimonials-grid">
+                        <div class="testimonial-card featured">
+                            <div class="testimonial-badge">Featured Story</div>
+                            <div class="testimonial-media">
+                                <video class="demo-video" autoplay loop muted>
+                                    <source src="https://your-cdn.com/ai-demo.mp4" type="video/mp4">
+                                </video>
+                            </div>
+                            <div class="testimonial-content">
+                                <div class="rating">★★★★★</div>
+                                <blockquote>
+                                    "As a game developer, Anvil has revolutionized our NPC interactions. The personalities we've created using Anvil are so realistic that players often can't tell they're talking to AI characters!"
+                                </blockquote>
+                                <div class="testimonial-author">
+                                    <img src="https://ui-avatars.com/api/?name=Alex+Rivera&background=845EEE&color=fff" alt="Alex Rivera">
+                                    <div>
+                                        <h4>Alex Rivera</h4>
+                                        <p>Lead Game Developer at Quantum Studios</p>
+                                        <div class="verified-badge">
+                                            <i class="fas fa-check-circle"></i> Verified Customer
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="testimonial-author">
-                            <img src="https://ui-avatars.com/api/?name=Sarah+Mitchell&background=845EEE&color=fff" alt="Sarah Mitchell">
-                            <div>
-                                <h4>Sarah Mitchell</h4>
-                                <p>Digital Artist</p>
+
+                        <div class="testimonial-group">
+                            <div class="testimonial-card">
+                                <div class="testimonial-content">
+                                    <div class="rating">★★★★★</div>
+                                    <blockquote>
+                                        "I use Anvil to manage my content creation workflow. The AI understands my style perfectly and helps me brainstorm ideas that truly resonate with my audience."
+                                    </blockquote>
+                                    <div class="results-tag">
+                                        <i class="fas fa-chart-line"></i> 300% Content Output Increase
+                                    </div>
+                                </div>
+                                <div class="testimonial-author">
+                                    <img src="https://ui-avatars.com/api/?name=Sarah+Mitchell&background=845EEE&color=fff" alt="Sarah Mitchell">
+                                    <div>
+                                        <h4>Sarah Mitchell</h4>
+                                        <p>Content Creator, 2M+ Followers</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="testimonial-card">
+                                <div class="testimonial-content">
+                                    <div class="rating">★★★★★</div>
+                                    <blockquote>
+                                        "The Guild Pass exclusive features are worth every penny. The cloud AI models and monthly content drops keep my AI assistant evolving and improving."
+                                    </blockquote>
+                                    <div class="usage-stats">
+                                        <span>Guild Pass Member: 8 months</span>
+                                    </div>
+                                </div>
+                                <div class="testimonial-author">
+                                    <img src="https://ui-avatars.com/api/?name=David+Chen&background=00DDEB&color=fff" alt="David Chen">
+                                    <div>
+                                        <h4>David Chen</h4>
+                                        <p>Software Architect</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="testimonial-card">
+                                <div class="testimonial-content">
+                                    <div class="rating">★★★★★</div>
+                                    <blockquote>
+                                        "I've tried other AI assistants, but Anvil's personality customization is unmatched. My AI now perfectly matches my teaching style and helps me create engaging educational content."
+                                    </blockquote>
+                                </div>
+                                <div class="testimonial-author">
+                                    <img src="https://ui-avatars.com/api/?name=Emily+Turner&background=845EEE&color=fff" alt="Emily Turner">
+                                    <div>
+                                        <h4>Prof. Emily Turner</h4>
+                                        <p>Educational Technology Specialist</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="testimonial-card">
-                        <div class="testimonial-content">
-                            <p>"The marketplace is a game-changer. I've found amazing personalities that perfectly suit my needs."</p>
-                        </div>
-                        <div class="testimonial-author">
-                            <img src="https://ui-avatars.com/api/?name=David+Chen&background=00DDEB&color=fff" alt="David Chen">
-                            <div>
-                                <h4>David Chen</h4>
-                                <p>Software Developer</p>
+
+                    <div class="reviews-summary">
+                        <div class="review-platform">
+                            <img src="path-to-trustpilot.png" alt="Trustpilot">
+                            <div class="platform-stats">
+                                <div class="platform-rating">4.9</div>
+                                <div class="review-count">2,403 reviews</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="testimonial-content">
-                            <p>"Being able to create and share my own AI personalities has opened up a whole new creative outlet."</p>
-                        </div>
-                        <div class="testimonial-author">
-                            <img src="https://ui-avatars.com/api/?name=Emily+Turner&background=845EEE&color=fff" alt="Emily Turner">
-                            <div>
-                                <h4>Emily Turner</h4>
-                                <p>Content Creator</p>
+                        <div class="review-platform">
+                            <img src="path-to-g2crowd.png" alt="G2 Crowd">
+                            <div class="platform-stats">
+                                <div class="platform-rating">4.8</div>
+                                <div class="review-count">1,892 reviews</div>
                             </div>
                         </div>
                     </div>
@@ -504,41 +1454,233 @@
             </div>
         </section>
         
-        <section id="guildpass-page" class="hidden">
+        <section id="showcase-page" class="hidden">
+            <div class="bg-grid"></div>
+            <div class="bg-gradient"></div>
             <div class="container">
                 <div class="section-header">
-                    <h2>Join the <span class="text-gradient">Anvil Guild</span></h2>
-                    <p>The core Anvil app is a one-time purchase. The optional Guild Pass subscription unlocks exclusive content and our most powerful cloud features.</p>
+                    <h2>Anvil in <span class="text-gradient">Action</span></h2>
+                    <p>Discover how professionals across industries are using Anvil to transform their work</p>
                 </div>
-                <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
-                     <div class="pricing-card">
-                        <h3>Anvil Application</h3>
-                        <div>
-                            <span class="price">$99.99</span>
-                            <span class="period">One-Time Purchase</span>
+
+                <div class="showcase-categories">
+                    <button class="category-btn active" data-category="all">All Cases</button>
+                    <button class="category-btn" data-category="creative">Creative</button>
+                    <button class="category-btn" data-category="business">Business</button>
+                    <button class="category-btn" data-category="education">Education</button>
+                    <button class="category-btn" data-category="gaming">Gaming</button>
+                </div>
+
+                <div class="showcase-grid">
+                    <div class="showcase-card" data-category="creative">
+                        <div class="showcase-preview">
+                            <video autoplay loop muted>
+                                <source src="path-to-creative-demo.mp4" type="video/mp4">
+                            </video>
                         </div>
-                        <ul>
+                        <div class="showcase-content">
+                            <h3>AI-Powered Content Creation</h3>
+                            <p>See how content creators use Anvil to generate ideas, write scripts, and create engaging content faster than ever.</p>
+                            <div class="showcase-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">3x</span>
+                                    <span class="metric-label">Faster Production</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">80%</span>
+                                    <span class="metric-label">More Ideas</span>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-secondary">View Case Study</a>
+                        </div>
+                    </div>
+
+                    <div class="showcase-card" data-category="business">
+                        <div class="showcase-preview">
+                            <div class="demo-chat">
+                                <div class="chat-interaction">
+                                    <div class="chat-message user">
+                                        Analyze Q2 sales performance and suggest improvements.
+                                    </div>
+                                    <div class="chat-message ai">
+                                        Based on the Q2 data, I notice three key trends...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="showcase-content">
+                            <h3>Business Intelligence Assistant</h3>
+                            <p>Experience how Anvil helps businesses analyze data, generate reports, and make data-driven decisions.</p>
+                            <div class="showcase-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">45%</span>
+                                    <span class="metric-label">Time Saved</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">90%</span>
+                                    <span class="metric-label">Accuracy</span>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-secondary">View Case Study</a>
+                        </div>
+                    </div>
+
+                    <div class="showcase-card" data-category="gaming">
+                        <div class="showcase-preview">
+                            <div class="game-demo">
+                                <div class="character-interaction">
+                                    Dynamic NPC Responses Demo
+                                </div>
+                            </div>
+                        </div>
+                        <div class="showcase-content">
+                            <h3>Gaming NPC Enhancement</h3>
+                            <p>See how game developers use Anvil to create dynamic, intelligent NPCs that adapt to player interactions.</p>
+                            <div class="showcase-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">100+</span>
+                                    <span class="metric-label">Unique Responses</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">95%</span>
+                                    <span class="metric-label">Player Satisfaction</span>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-secondary">View Case Study</a>
+                        </div>
+                    </div>
+
+                    <div class="showcase-card" data-category="education">
+                        <div class="showcase-preview">
+                            <div class="education-demo">
+                                Interactive Learning Session
+                            </div>
+                        </div>
+                        <div class="showcase-content">
+                            <h3>Personalized Learning</h3>
+                            <p>Discover how educators use Anvil to create adaptive learning experiences that cater to individual student needs.</p>
+                            <div class="showcase-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">87%</span>
+                                    <span class="metric-label">Engagement</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">92%</span>
+                                    <span class="metric-label">Success Rate</span>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-secondary">View Case Study</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="guildpass-page" class="hidden">
+            <div class="bg-gradient"></div>
+            <div class="container">
+                <div class="section-header">
+                    <div class="guild-badge">
+                        <i class="fas fa-crown"></i>
+                        <span class="badge-text">Premium Access</span>
+                    </div>
+                    <h2>Join the <span class="text-gradient">Anvil Guild</span></h2>
+                    <p>Elevate your AI experience with premium features and exclusive content.</p>
+                </div>
+
+                <div class="pricing-comparison">
+                    <div class="pricing-card">
+                        <div class="card-header">
+                            <h3>Anvil Application</h3>
+                            <div class="price-container">
+                                <span class="price">$99.99</span>
+                                <span class="period">One-Time Purchase</span>
+                            </div>
+                        </div>
+                        <div class="value-props">
+                            <div class="value-prop">
+                                <i class="fas fa-infinity"></i>
+                                <span>Lifetime Access</span>
+                            </div>
+                            <div class="value-prop">
+                                <i class="fas fa-brain"></i>
+                                <span>Local AI Models</span>
+                            </div>
+                        </div>
+                        <ul class="feature-list">
                             <li><i class="fa-solid fa-check-circle"></i> Full Anvil Forge Software</li>
-                            <li><i class="fa-solid fa-check-circle"></i> Marketplace Access (Buy/Acquire)</li>
-                            <li><i class="fa-solid fa-check-circle"></i> Run powerful local AI models</li>
-                            <li><i class="fa-solid fa-check-circle"></i> Community asset publishing</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Marketplace Access</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Personality Creation Tools</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Community Asset Publishing</li>
+                            <li class="disabled"><i class="fa-solid fa-lock"></i> Premium Cloud Models</li>
+                            <li class="disabled"><i class="fa-solid fa-lock"></i> Exclusive Monthly Content</li>
                         </ul>
-                        <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-secondary" style="width: 100%;">Purchase Application</a>
-                     </div>
-                     <div class="pricing-card highlight">
-                        <h3>Guild Pass</h3>
-                        <div>
-                            <span class="price">$7.99</span>
-                            <span class="period">/ month</span>
+                        <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-secondary btn-large">
+                            <span class="btn-main">Purchase Anvil</span>
+                            <span class="btn-sub">30-day money-back guarantee</span>
+                        </a>
+                    </div>
+
+                    <div class="pricing-card highlight">
+                        <div class="popular-badge">MOST POPULAR</div>
+                        <div class="card-header">
+                            <h3>Guild Pass Bundle</h3>
+                            <div class="price-container">
+                                <div class="price-info">
+                                    <span class="original-price">$107.98</span>
+                                    <span class="price">$99.99 + $7.99</span>
+                                </div>
+                                <span class="period">App + First Month Free</span>
+                            </div>
                         </div>
-                        <ul>
-                            <li><i class="fa-solid fa-check-circle"></i> All standard features, plus:</li>
-                            <li><i class="fa-solid fa-check-circle"></i> Monthly Exclusive Item Drops</li>
-                            <li><i class="fa-solid fa-check-circle"></i> Access to Premium Cloud AI Models</li>
-                            <li><i class="fa-solid fa-check-circle"></i> Beta Access to New Features</li>
+                        <div class="value-props">
+                            <div class="value-prop">
+                                <i class="fas fa-gift"></i>
+                                <span>3 Months Guild Pass Free</span>
+                            </div>
+                            <div class="value-prop">
+                                <i class="fas fa-cloud"></i>
+                                <span>Premium Cloud AI</span>
+                            </div>
+                        </div>
+                        <ul class="feature-list">
+                            <li><i class="fa-solid fa-check-circle"></i> Everything in Anvil App</li>
+                            <li class="premium"><i class="fa-solid fa-crown"></i> Premium Cloud AI Models</li>
+                            <li class="premium"><i class="fa-solid fa-crown"></i> Monthly Exclusive Items</li>
+                            <li class="premium"><i class="fa-solid fa-crown"></i> Early Access to Features</li>
+                            <li class="premium"><i class="fa-solid fa-crown"></i> Priority Support</li>
+                            <li class="premium"><i class="fa-solid fa-crown"></i> Advanced Customization</li>
                         </ul>
-                        <a href="https://buy.stripe.com/8x228rbz23YA9OzbYEgrS0b" target="_blank" class="btn btn-primary" style="width: 100%;">Subscribe to Guild Pass</a>
-                     </div>
+                        <a href="https://buy.stripe.com/8x228rbz23YA9OzbYEgrS0b" target="_blank" class="btn btn-primary btn-large pulse-button">
+                            <span class="btn-main">Get Bundle Deal</span>
+                            <span class="btn-sub">Save 25% on Guild Pass</span>
+                        </a>
+                        <div class="cancel-notice">
+                            <i class="fas fa-clock"></i>
+                            Cancel Guild Pass anytime
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guild-benefits">
+                    <h3>Guild Pass Exclusive Benefits</h3>
+                    <div class="benefits-grid">
+                        <div class="benefit-card" data-aos="fade-up">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h4>Cloud AI Models</h4>
+                            <p>Access our most powerful cloud-based AI models for enhanced capabilities.</p>
+                        </div>
+                        <div class="benefit-card" data-aos="fade-up" data-aos-delay="100">
+                            <i class="fas fa-gift"></i>
+                            <h4>Monthly Drops</h4>
+                            <p>Receive exclusive personality templates and skins every month.</p>
+                        </div>
+                        <div class="benefit-card" data-aos="fade-up" data-aos-delay="200">
+                            <i class="fas fa-star"></i>
+                            <h4>Priority Features</h4>
+                            <p>Be the first to try new features and shape the future of Anvil.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -822,8 +1964,83 @@
             marketGrid.innerHTML = filteredProducts.map(createProductCard).join('');
         }
 
+        // Features Tab Handling
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.dataset.tab;
+                
+                // Update active states
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+                
+                button.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+                
+                // Trigger animations
+                document.getElementById(targetTab).querySelectorAll('[data-aos]').forEach(el => {
+                    el.classList.remove('aos-animate');
+                    setTimeout(() => el.classList.add('aos-animate'), 100);
+                });
+            });
+        });
+
+        // Personality Forge Sliders Animation
+        function initializeSliders() {
+            document.querySelectorAll('.slider').forEach(slider => {
+                const width = slider.style.width;
+                slider.style.setProperty('--width', width);
+            });
+        }
+
+        // Terminal Animation
+        function initializeTerminal() {
+            const commands = document.querySelectorAll('.terminal-content .command');
+            let delay = 0;
+            
+            commands.forEach((cmd, index) => {
+                setTimeout(() => {
+                    cmd.style.opacity = '1';
+                    const response = cmd.nextElementSibling;
+                    if (response) {
+                        setTimeout(() => {
+                            response.style.opacity = '1';
+                        }, 500);
+                    }
+                }, delay);
+                delay += 1000;
+            });
+        }
+
+        // Code Syntax Highlighting
+        function highlightCode() {
+            document.querySelectorAll('pre code').forEach(block => {
+                block.innerHTML = block.innerHTML.replace(
+                    /(\/\/.*)|(\b(?:const|let|var|function|new|async|await)\b)|(\b\w+(?=\())|(['"`].*['"`])/g,
+                    match => {
+                        if (match.startsWith('//')) return `<span style="color: #6b7280">${match}</span>`;
+                        if (/\b(?:const|let|var|function|new|async|await)\b/.test(match)) 
+                            return `<span style="color: #7c3aed">${match}</span>`;
+                        if (/\b\w+(?=\()/.test(match)) return `<span style="color: #60a5fa">${match}</span>`;
+                        if (/['"`].*['"`]/.test(match)) return `<span style="color: #34d399">${match}</span>`;
+                        return match;
+                    }
+                );
+            });
+        }
+
+        // Initialize features when tab is shown
+        function initializeFeatures() {
+            initializeSliders();
+            initializeTerminal();
+            highlightCode();
+        }
+
         // Initialize app with all features
         initializeApp();
+        initializeFeatures();
     });
     </script>
 </body>
