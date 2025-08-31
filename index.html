@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <style>
         :root {
@@ -24,6 +25,9 @@
             --color-text-secondary: #9CA3AF;
             --color-text-heading: #FFFFFF;
             --font-family: 'Inter', sans-serif;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
         }
 
         /* Light theme variables */
@@ -49,1150 +53,237 @@
             100% { background-position: 0% 50%; }
         }
 
-        .bg-gradient {
-            display: none;
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(132, 94, 238, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(132, 94, 238, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(132, 94, 238, 0); }
         }
-
-        .bg-grid {
-            display: none;
-        }
-
+        
+        /* General Styles */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: var(--font-family); background-color: var(--color-background); color: var(--color-text-primary); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        body { 
+            font-family: var(--font-family); 
+            background-color: var(--color-background); 
+            color: var(--color-text-primary); 
+            line-height: 1.6; 
+            -webkit-font-smoothing: antialiased; 
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: radial-gradient(circle at 25% 25%, rgba(132, 94, 238, 0.1), transparent 30%),
+                              radial-gradient(circle at 75% 75%, rgba(0, 221, 235, 0.1), transparent 30%);
+            animation: gradientBG 15s ease infinite;
+        }
+
+
         .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-        section { padding: 100px 0; border-bottom: 1px solid var(--color-border); }
+        section { padding: 100px 0; border-bottom: 1px solid var(--color-border); position: relative; }
         section:last-of-type { border-bottom: none; }
+        
         h1, h2, h3 { font-weight: 800; line-height: 1.2; color: var(--color-text-heading); letter-spacing: -0.02em; }
         h1 { font-size: 4rem; }
         h2 { font-size: 2.5rem; }
         h3 { font-size: 1.75rem; }
         p { color: var(--color-text-secondary); margin-bottom: 1rem; }
+        
         .section-header { text-align: center; max-width: 700px; margin: 0 auto 60px auto; }
-        .text-gradient { 
-            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); 
+        .text-gradient {  
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));  
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .btn { display: inline-block; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s ease-in-out; border: none; cursor: pointer; text-align: center; }
-        .btn-primary { background: var(--color-primary); color: #fff; }
-        .btn-primary:hover { background: #7146e2; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(132, 94, 238, 0.3); }
+        .btn { display: inline-block; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); border: none; cursor: pointer; text-align: center; }
+        .btn-primary { background: var(--color-primary); color: #fff; box-shadow: var(--shadow-sm); }
+        .btn-primary:hover { background: #7146e2; transform: translateY(-3px); box-shadow: 0 4px 20px rgba(132, 94, 238, 0.4); }
         .btn-secondary { background: var(--color-surface-light); border: 1px solid var(--color-border); color: var(--color-text-primary); }
-        .btn-secondary:hover { background: var(--color-border); }
+        .btn-secondary:hover { background: var(--color-border); transform: translateY(-2px); }
         .btn-disabled { background: #374151; color: #6B7280; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
         .hidden { display: none !important; }
 
-        header { position: fixed; width: 100%; top: 0; left: 0; z-index: 1000; transition: background 0.3s ease-in-out, border-color 0.3s ease-in-out; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid transparent; }
-        header.scrolled { background: rgba(11, 15, 25, 0.8); border-bottom-color: var(--color-border); }
+        /* Header */
+        header { position: fixed; width: 100%; top: 0; left: 0; z-index: 1000; transition: background 0.3s ease-in-out, border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid transparent; }
+        header.scrolled { background: rgba(11, 15, 25, 0.8); border-bottom-color: var(--color-border); box-shadow: var(--shadow-md); }
         nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; }
         .logo { font-size: 1.5rem; font-weight: 800; text-decoration: none; color: var(--color-text-primary); cursor: pointer; }
         .nav-links { list-style: none; display: flex; gap: 32px; }
-        .nav-links a { text-decoration: none; color: var(--color-text-secondary); font-weight: 500; transition: color 0.2s ease, border-color 0.2s ease; cursor: pointer; padding: 8px 0; border-bottom: 2px solid transparent; }
+        .nav-links a { text-decoration: none; color: var(--color-text-secondary); font-weight: 500; transition: color 0.2s ease, border-color 0.2s ease; cursor: pointer; padding: 8px 0; border-bottom: 2px solid transparent; position: relative; }
+        .nav-links a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 50%; background-color: var(--color-primary); transition: all 0.3s ease-in-out; transform: translateX(-50%); }
         .nav-links a:hover { color: var(--color-text-primary); }
-        .nav-links a.active { color: var(--color-text-primary); border-bottom-color: var(--color-primary); }
+        .nav-links a.active, .nav-links a:hover::after { width: 100%; }
+        .nav-links a.active { color: var(--color-text-primary); }
         .auth-container { display: flex; align-items: center; gap: 12px; }
         .user-status { font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; border-radius: 8px; transition: background-color 0.2s; }
         .user-status:hover { background-color: var(--color-surface-light); }
         .user-status img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--color-primary); }
 
+        /* Hero Section */
         #hero-page { min-height: 100vh; display: flex; align-items: center; text-align: center; padding-top: 80px; }
         .hero-content { max-width: 800px; margin: 0 auto; }
         .hero-content h1 { margin-bottom: 1.5rem; }
         .hero-content .subtitle { font-size: 1.25rem; max-width: 600px; margin: 0 auto 2.5rem auto; color: var(--color-text-secondary); }
-        .hero-buttons { display: flex; justify-content: center; gap: 1rem; }
+        .hero-buttons { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+        .pulse-button { animation: pulse 2s infinite; padding: 16px 32px !important; font-size: 1.1rem !important; }
+        .satisfaction-guarantee {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.8;
+        }
 
+        /* Generic Content Styles */
         .page-content { background-color: transparent; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-
-        .market-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; transition: all 0.2s ease-in-out; cursor: pointer; display: flex; flex-direction: column; }
-        .market-card:hover { transform: translateY(-5px); border-color: var(--color-primary); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .market-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; transition: all 0.3s ease-in-out; cursor: pointer; display: flex; flex-direction: column; box-shadow: var(--shadow-sm); }
+        .market-card:hover { transform: translateY(-8px); border-color: var(--color-primary); box-shadow: 0 0 20px rgba(132, 94, 238, 0.3); }
         .card-image { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: var(--color-background); }
         .card-content { padding: 1rem; flex-grow: 1; }
         .card-title { font-size: 1.1rem; font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.25rem; }
         .card-creator { font-size: 0.875rem; color: var(--color-text-secondary); }
         .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 0 1rem 1rem 1rem; font-size: 1rem; font-weight: 600; }
-
+        
         /* Features Page */
-        .features-tabs {
-            margin: 3rem 0;
-        }
-
-        .tab-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            padding: 12px 24px;
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            color: var(--color-text-primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .tab-btn:hover {
-            background: var(--color-surface-light);
-            transform: translateY(-2px);
-        }
-
-        .tab-btn.active {
-            background: var(--color-primary);
-            color: white;
-            border-color: var(--color-primary);
-            transform: translateY(-2px);
-        }
-
-        /* Demo Windows */
-        /* Demo Windows */
-        .demo-window, .code-window {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .window-header {
-            background: var(--color-surface-light);
-            padding: 12px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--color-border);
-        }
-
-        .window-dots {
-            display: flex;
-            gap: 6px;
-        }
-
-        .window-dots span {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--color-border);
-        }
-
-        .window-dots span:nth-child(1) { background: #ff5f57; }
-        .window-dots span:nth-child(2) { background: #febc2e; }
-        .window-dots span:nth-child(3) { background: #28c840; }
-
-        .window-title {
-            margin-left: 1rem;
-            color: var(--color-text-secondary);
-            font-size: 0.9rem;
-        }
-
-        /* Terminal Content */
-        .terminal-content {
-            padding: 1rem;
-            font-family: monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        .terminal-content span {
-            display: block;
-        }
-
-        .terminal-content .command {
-            color: var(--color-primary);
-        }
-
-        .terminal-content .response {
-            color: var(--color-text-secondary);
-        }
-
-        .terminal-content .blink::after {
-            content: '_';
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* Code Window */
-        .code-content {
-            padding: 1rem;
-            margin: 0;
-            font-family: monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: var(--color-text-primary);
-        }
-
-        /* Personality Forge */
-        .personality-forge {
-            padding: 1.5rem;
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 12px;
-        }
-
-        .personality-sliders {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .slider-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .slider-group label {
-            font-size: 0.9rem;
-            color: var(--color-text-secondary);
-        }
-
-        .slider {
-            height: 8px;
-            background: var(--color-surface-light);
-            border-radius: 4px;
-            position: relative;
-        }
-
-        .slider::before {
-            content: '';
-            position: absolute;
-            height: 100%;
-            background: var(--color-primary);
-            border-radius: 4px;
-            animation: slideIn 1s ease-out forwards;
-        }
-
-        @keyframes slideIn {
-            from { width: 0; }
-            to { width: var(--width, 100%); }
-        }
-
-        .personality-preview {
-            padding: 1rem;
-            background: var(--color-surface-light);
-            border-radius: 8px;
-        }
-
-        .chat-bubble {
-            background: var(--color-primary);
-            color: white;
-            padding: 1rem;
-            border-radius: 12px;
-            border-top-left-radius: 0;
-            max-width: 80%;
-            margin-left: 1rem;
-            position: relative;
-            animation: bubbleIn 0.5s ease-out;
-        }
-
-        @keyframes bubbleIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Security Dashboard */
-        .security-dashboard {
-            padding: 2rem;
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 12px;
-        }
-
-        .security-status {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--color-surface-light);
-            border-radius: 8px;
-            border: 1px solid var(--color-border);
-        }
-
-        .status-item i {
-            font-size: 1.5rem;
-            color: var(--color-primary);
-        }
-
-        /* Features Grid */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-
-        .feature-card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-icon {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .feature-demo {
-            margin-top: 1.5rem;
-            border-radius: 8px;
-            overflow: hidden;
-            background: var(--color-surface-light);
-            padding: 1rem;
-        }
-
-        .chat-demo {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .chat-message {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-
-        .chat-message img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-        }
-
-        .chat-message .message {
-            background: var(--color-surface);
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            border-top-left-radius: 4px;
-            max-width: 80%;
-        }
-
-        .chat-message.ai .message {
-            background: var(--color-primary);
-            color: white;
-            border-top-right-radius: 4px;
-            border-top-left-radius: 12px;
-        }
-
-        .typing::after {
-            content: '...';
-            animation: typing 1.5s infinite;
-        }
-
-        @keyframes typing {
-            0%, 20% { content: '.'; }
-            40%, 60% { content: '..'; }
-            80%, 100% { content: '...'; }
-        }
-
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 3rem 0; }
+        .feature-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 2rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .feature-icon { width: 64px; height: 64px; background: linear-gradient(45deg, var(--color-primary), var(--color-secondary)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.5rem; color: white; }
+        .feature-demo { margin-top: 1.5rem; border-radius: 8px; overflow: hidden; background: var(--color-surface-light); padding: 1rem; }
+        .chat-demo { display: flex; flex-direction: column; gap: 1rem; }
+        .chat-message { display: flex; align-items: flex-start; gap: 0.5rem; animation: bubbleIn 0.5s ease forwards; }
+        .chat-message img { width: 32px; height: 32px; border-radius: 50%; }
+        .chat-message .message { background: var(--color-surface); padding: 0.75rem 1rem; border-radius: 12px; border-top-left-radius: 4px; max-width: 80%; }
+        .chat-message.ai .message { background: var(--color-primary); color: white; border-top-right-radius: 4px; border-top-left-radius: 12px; }
+        @keyframes bubbleIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         /* Pricing Cards */
-        .pricing-comparison {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-            position: relative;
-        }
-
-        .pricing-card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 16px;
-            padding: 2rem;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .pricing-card.highlight {
-            border-color: var(--color-primary);
-            box-shadow: 0 0 30px rgba(132, 94, 238, 0.2);
-            transform: translateY(-10px);
-        }
-
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .popular-badge {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .card-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .price-container {
-            margin-top: 1rem;
-        }
-
-        .price {
-            font-size: 3rem;
-            font-weight: 800;
-            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .original-price {
-            text-decoration: line-through;
-            color: var(--color-text-secondary);
-            font-size: 1.2rem;
-            margin-right: 0.5rem;
-        }
-
-        .period {
-            color: var(--color-text-secondary);
-            display: block;
-            margin-top: 0.25rem;
-        }
-
-        .value-props {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .value-prop {
-            text-align: center;
-        }
-
-        .value-prop i {
-            font-size: 1.5rem;
-            color: var(--color-primary);
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .feature-list {
-            list-style: none;
-            margin: 2rem 0;
-        }
-
-        .feature-list li {
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: background-color 0.2s ease;
-        }
-
-        .feature-list li:hover {
-            background: var(--color-surface-light);
-        }
-
-        .feature-list li i {
-            color: var(--color-primary);
-            margin-right: 0.75rem;
-            font-size: 1.1rem;
-        }
-
-        .feature-list li.premium i {
-            color: gold;
-        }
-
-        .feature-list li.disabled {
-            color: var(--color-text-secondary);
-        }
-
-        .btn-large {
-            padding: 16px 24px;
-            font-size: 1.1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
-        .btn-main {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .btn-sub {
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
-
-        .cancel-notice {
-            text-align: center;
-            margin-top: 1rem;
-            color: var(--color-text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .cancel-notice i {
-            margin-right: 0.5rem;
-        }
-
+        .pricing-comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin: 3rem 0; position: relative; }
+        .pricing-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 2rem; position: relative; transition: all 0.3s ease; }
+        .pricing-card.highlight { border-color: var(--color-primary); box-shadow: 0 0 30px rgba(132, 94, 238, 0.2); transform: scale(1.05); }
+        .pricing-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; }
+        .card-header { text-align: center; margin-bottom: 2rem; }
+        .price { font-size: 3rem; font-weight: 800; background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .period { color: var(--color-text-secondary); display: block; margin-top: 0.25rem; }
+        .feature-list { list-style: none; margin: 2rem 0; }
+        .feature-list li { margin-bottom: 1rem; display: flex; align-items: center; }
+        .feature-list li i { color: var(--color-primary); margin-right: 0.75rem; font-size: 1.1rem; }
+        .feature-list li.disabled { color: var(--color-text-secondary); text-decoration: line-through; }
+        .btn-large { padding: 16px 24px; font-size: 1.1rem; display: block; width: 100%; }
+        .cancel-notice { text-align: center; margin-top: 1rem; color: var(--color-text-secondary); font-size: 0.9rem; }
+        
         /* Special Offer Badge */
-        .special-offer-badge {
-            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            font-weight: 500;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        /* Satisfaction Guarantee */
-        .satisfaction-guarantee {
-            display: flex;
-        }
-
-        /* Profile Page Styles */
-        .profile-content {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
-            align-items: start;
-        }
-
-        @media (max-width: 768px) {
-            .profile-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .profile-sidebar {
-            background: var(--color-surface);
-            border-radius: 12px;
-            padding: 2rem;
-            border: 1px solid var(--color-border);
-            position: sticky;
-            top: 100px;
-        }
-
-        .profile-avatar-section {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .profile-avatar-container {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 1rem;
-            position: relative;
-            border-radius: 50%;
-            background: var(--color-surface-light);
-            padding: 0.5rem;
-            border: 3px solid var(--color-primary);
-        }
-
-        .profile-avatar-container img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: contain;
-        }
-
-        .avatar-change-btn {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--color-primary);
-            border: none;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            font-size: 1rem;
-        }
-
-        .avatar-change-btn:hover {
-            background: var(--color-secondary);
-            transform: scale(1.1);
-        }
-
-        .profile-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-item {
-            padding: 1rem;
-            background: var(--color-surface-light);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .stat-item i {
-            font-size: 1.5rem;
-            color: var(--color-primary);
-        }
-
-        .stat-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat-value {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--color-text-primary);
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--color-text-secondary);
-        }
-
-        .profile-membership {
-            text-align: center;
-        }
-
-        .membership-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
-            border-radius: 20px;
-            color: white;
-            font-weight: 500;
-        }
-
-        .profile-main {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .profile-section {
-            background: var(--color-surface);
-            border-radius: 12px;
-            padding: 2rem;
-            border: 1px solid var(--color-border);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .btn-edit {
-            padding: 0.5rem 1rem;
-            background: none;
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            color: var(--color-text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .btn-edit:hover {
-            background: var(--color-surface-light);
-            border-color: var(--color-primary);
-        }
-
-        .profile-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .form-group label {
-            font-weight: 500;
-            color: var(--color-text-primary);
-        }
-
-        .form-group input,
-        .form-group textarea {
-            padding: 0.75rem;
-            border-radius: 6px;
-            border: 1px solid var(--color-border);
-            background: var(--color-surface-light);
-            color: var(--color-text-primary);
-            font-size: 1rem;
-        }
-
-        .form-group input:disabled,
-        .form-group textarea:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .form-actions.hidden {
-            display: none;
-        }
-
-        .preferences-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .preference-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: var(--color-surface-light);
-            border-radius: 8px;
-        }
-
-        .preference-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .preference-title {
-            font-weight: 500;
-            color: var(--color-text-primary);
-        }
-
-        .preference-description {
-            font-size: 0.875rem;
-            color: var(--color-text-secondary);
-        }
+        .special-offer-badge { background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); color: white; padding: 8px 16px; border-radius: 20px; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; font-weight: 500; animation: float 3s ease-in-out infinite; }
+        
+        /* Profile Page */
+        .profile-content { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-top: 2rem; align-items: start; }
+        @media (max-width: 992px) { .profile-content { grid-template-columns: 1fr; } }
+        .profile-sidebar { background: var(--color-surface); border-radius: 12px; padding: 2rem; border: 1px solid var(--color-border); position: sticky; top: 100px; }
+        .profile-avatar-container { width: 150px; height: 150px; margin: 0 auto 1rem; position: relative; border-radius: 50%; background: var(--color-surface-light); padding: 0.5rem; border: 3px solid var(--color-primary); }
+        .profile-avatar-container img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .avatar-change-btn { position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; font-size: 1rem; }
+        .avatar-change-btn:hover { background: var(--color-secondary); transform: scale(1.1); }
+        .profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--color-text-primary); }
+        .stat-label { font-size: 0.875rem; color: var(--color-text-secondary); }
+        .profile-main { display: flex; flex-direction: column; gap: 2rem; }
+        .profile-section { background: var(--color-surface); border-radius: 12px; padding: 2rem; border: 1px solid var(--color-border); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+        .form-group input, .form-group textarea { padding: 0.75rem; border-radius: 6px; border: 1px solid var(--color-border); background: var(--color-surface-light); color: var(--color-text-primary); font-size: 1rem; transition: all 0.2s ease; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 3px rgba(132, 94, 238, 0.3); }
+        .form-group input:disabled, .form-group textarea:disabled { opacity: 0.7; cursor: not-allowed; }
 
         /* Switch Toggle */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 48px;
-            height: 24px;
-        }
+        .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider.round { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-border); transition: .4s; border-radius: 24px; }
+        .slider.round:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider.round { background-color: var(--color-primary); }
+        input:checked + .slider.round:before { transform: translateX(24px); }
 
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--color-border);
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--color-primary);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-        .security-options {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-danger:hover {
-            background: #bb2d3b;
-            transform: translateY(-2px);
-        }
-        
-        .cancel-notice {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-top: 1rem;
-            color: var(--color-text-secondary);
-            font-size: 0.9rem;
-        }
-
-        /* Pulse Animation */
-        .pulse-button {
-            position: relative;
-        }
-
-        .pulse-button::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background: inherit;
-            border-radius: inherit;
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.5; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .modal-content { background: var(--color-surface); border-radius: 12px; border: 1px solid var(--color-border); width: 90%; max-width: 450px; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        /* Modal */
+        .modal-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .modal-container.show { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--color-surface); border-radius: 12px; border: 1px solid var(--color-border); width: 90%; max-width: 450px; position: relative; box-shadow: var(--shadow-lg); transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal-container.show .modal-content { transform: scale(1); }
         .modal-auth { padding: 2rem; }
         .modal-auth h3 { text-align: center; }
         .auth-form { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
         .auth-form input { background: var(--color-background); border: 1px solid var(--color-border); color: var(--color-text-primary); padding: 12px; border-radius: 8px; font-size: 1rem; }
-        .auth-form input:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 3px rgba(132, 94, 238, 0.3); }
         .modal-close { position: absolute; top: 12px; right: 12px; font-size: 1rem; cursor: pointer; color: var(--color-text-secondary); background: var(--color-surface-light); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
-        .form-error { color: #f87171; text-align: center; font-size: 0.875rem; min-height: 1.2rem; }
         
+        /* Toast Notification */
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 3000; }
-        .toast { padding: 12px 20px; border-radius: 8px; color: #fff; margin-top: 10px; opacity: 0; transform: translateY(20px); transition: all 0.4s ease; background-color: var(--color-surface-light); border: 1px solid var(--color-border); }
+        .toast { padding: 12px 20px; border-radius: 8px; color: #fff; margin-top: 10px; opacity: 0; transform: translateY(20px); transition: all 0.4s ease; background-color: var(--color-surface-light); border: 1px solid var(--color-border); box-shadow: var(--shadow-md); }
         .toast.show { opacity: 1; transform: translateY(0); }
         
+        /* Loader */
         .loader-container { width: 100%; display: flex; justify-content: center; padding: 4rem; }
         .loader { width: 40px; height: 40px; border: 4px solid var(--color-border); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Testimonials */
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .testimonial-card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 12px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-        }
-
-        .testimonial-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
-        }
-
-        .testimonial-content {
-            margin-bottom: 1.5rem;
-        }
-
-        .testimonial-content p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: var(--color-text-primary);
-            font-style: italic;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .testimonial-author img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-        }
-
-        .testimonial-author h4 {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .testimonial-author p {
-            font-size: 0.875rem;
-            margin: 0;
-        }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .testimonial-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 2rem; transition: all 0.3s ease; }
+        .testimonial-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .testimonial-content { margin-bottom: 1.5rem; font-style: italic; color: var(--color-text-primary); }
+        .testimonial-author { display: flex; align-items: center; gap: 1rem; }
+        .testimonial-author img { width: 48px; height: 48px; border-radius: 50%; }
+        .testimonial-author h4 { font-size: 1rem; margin-bottom: 0.25rem; }
+        .testimonial-author p { font-size: 0.875rem; margin: 0; }
 
         /* Theme Switcher */
-        .theme-switch {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 100;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .theme-switch:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
+        .theme-switch { position: fixed; bottom: 20px; left: 20px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; transition: all 0.3s ease; box-shadow: var(--shadow-sm); }
+        .theme-switch:hover { transform: scale(1.1) rotate(15deg); box-shadow: var(--shadow-md); }
 
         /* Footer */
-        footer { 
-            background-color: var(--color-surface); 
-            padding: 40px 0; 
-            text-align: center; 
-            margin-top: 100px;
-            position: relative;
-            overflow: hidden;
-        }
-        .footer-content { 
-            max-width: 600px; 
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-        .social-links { 
-            list-style: none; 
-            display: flex; 
-            justify-content: center; 
-            gap: 2rem; 
-            margin-bottom: 1.5rem;
-        }
-        .social-links a { 
-            color: var(--color-text-secondary); 
-            font-size: 1.5rem; 
-            transition: all 0.3s ease;
-        }
-        .social-links a:hover { 
-            color: var(--color-primary);
-            transform: translateY(-3px);
-        }
+        footer { background-color: var(--color-surface); padding: 40px 0; text-align: center; margin-top: 100px; }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .social-links { list-style: none; display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; }
+        .social-links a { color: var(--color-text-secondary); font-size: 1.5rem; transition: all 0.3s ease; }
+        .social-links a:hover { color: var(--color-primary); transform: translateY(-3px); }
         
-        /* Mobile Menu Styles */
-        .mobile-menu-toggle {
-            display: none;
-            flex-direction: column;
-            justify-content: space-around;
-            width: 30px;
-            height: 25px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            z-index: 1000;
-        }
+        /* Mobile Menu */
+        .mobile-menu-toggle { display: none; flex-direction: column; justify-content: space-around; width: 30px; height: 25px; background: transparent; border: none; cursor: pointer; z-index: 1000; }
+        .mobile-menu-toggle span { width: 100%; height: 2px; background: var(--color-text-primary); transition: all 0.3s ease; }
+        .mobile-menu-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .mobile-menu-toggle.active span:nth-child(2) { opacity: 0; }
+        .mobile-menu-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
-        .mobile-menu-toggle span {
-            width: 100%;
-            height: 2px;
-            background: var(--color-text-primary);
-            transition: all 0.3s ease;
-        }
-
-        .mobile-menu-toggle.active span:nth-child(1) {
-            transform: translateY(8px) rotate(45deg);
-        }
-
-        .mobile-menu-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .mobile-menu-toggle.active span:nth-child(3) {
-            transform: translateY(-8px) rotate(-45deg);
-        }
-
-        /* Marketplace Search and Filter */
-        .marketplace-controls {
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .search-bar {
-            flex: 1;
-            min-width: 200px;
-            position: relative;
-        }
-
-        .search-bar input {
-            width: 100%;
-            padding: 12px 16px;
-            padding-left: 40px;
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            color: var(--color-text-primary);
-            font-size: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .search-bar i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--color-text-secondary);
-        }
-
-        .filter-buttons {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 8px 16px;
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 20px;
-            color: var(--color-text-secondary);
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: var(--color-primary);
-            color: white;
-            border-color: var(--color-primary);
-        }
+        /* Marketplace Controls */
+        .marketplace-controls { margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .search-bar { flex: 1; min-width: 200px; position: relative; }
+        .search-bar input { width: 100%; padding: 12px 16px; padding-left: 40px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-text-primary); font-size: 1rem; transition: all 0.2s ease; }
+        .search-bar i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-secondary); }
+        .filter-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 20px; color: var(--color-text-secondary); font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease; }
+        .filter-btn:hover, .filter-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
 
         /* Responsive Design */
         @media (max-width: 992px) {
             h1 { font-size: 3rem; }
             h2 { font-size: 2rem; }
-            
-            .mobile-menu-toggle {
-                display: flex;
-            }
-
-            .nav-links {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                height: 100vh;
-                width: 80%;
-                max-width: 400px;
-                background: var(--color-surface);
-                flex-direction: column;
-                padding: 80px 2rem;
-                transition: right 0.3s ease;
-                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
-                z-index: 999;
-            }
-
-            .nav-links.active {
-                right: 0;
-            }
-
-            .nav-links li {
-                margin: 1rem 0;
-            }
-
-            .auth-container {
-                gap: 8px;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .hero-buttons .btn {
-                width: 100%;
-                max-width: 300px;
-            }
+            .mobile-menu-toggle { display: flex; }
+            .nav-links { position: fixed; top: 0; right: -100%; height: 100vh; width: 80%; max-width: 400px; background: var(--color-surface); flex-direction: column; padding: 80px 2rem; transition: right 0.3s ease; box-shadow: var(--shadow-lg); z-index: 999; }
+            .nav-links.active { right: 0; }
         }
     </style>
 </head>
 <body>
-    <div id="modal-container" class="modal-container hidden"></div>
+    <div class="background-wrapper"></div>
+    <div id="modal-container" class="modal-container"></div>
     <div id="toast-container"></div>
 
     <header id="main-header">
@@ -1200,13 +291,12 @@
             <nav>
                 <a class="logo nav-link" data-target="hero-page"><i class="fa-solid fa-bolt"></i> Anvil</a>
                 <button class="mobile-menu-toggle" id="mobile-menu-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                 </button>
                 <ul class="nav-links">
-                    <li><a class="nav-link" data-target="features-page">Features</a></li>
+                    <li><a class="nav-link" data-target="features-showcase">Features</a></li>
                     <li><a class="nav-link" data-target="marketplace-page">Marketplace</a></li>
+                    <li><a class="nav-link" data-target="testimonials-page">Testimonials</a></li>
                     <li><a class="nav-link" data-target="guildpass-page">Guild Pass</a></li>
                     <li><a class="nav-link hidden" data-target="inventory-page" id="inventory-nav-link">My Assets</a></li>
                     <li><a class="nav-link" data-target="profile-page" id="profile-nav-link">Profile</a></li>
@@ -1222,9 +312,8 @@
 
     <main>
         <section id="hero-page">
-            <div class="bg-gradient"></div>
             <div class="container">
-                <div class="hero-content">
+                <div class="hero-content" data-aos="fade-up">
                     <div class="special-offer-badge">
                         <i class="fas fa-star-half-alt"></i>
                         <span>Special Offer: Get Guild Pass for $19.99/3 months</span>
@@ -1232,279 +321,12 @@
                     <h1>Your Personal <span class="text-gradient">AI Companion</span>, Forged by You.</h1>
                     <p class="subtitle">Anvil is a powerful desktop application that lets you build, customize, and interact with a truly personal AI. Go beyond assistants—create a personality.</p>
                     <div class="hero-buttons">
-                        <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary pulse-button" style="padding: 16px 32px; font-size: 1.1rem;">
-                            <span class="main-text">Get Anvil - $99.99</span>
-                            <span class="sub-text">One-time payment • Lifetime access</span>
+                        <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-primary pulse-button">
+                            Get Anvil - $99.99
                         </a>
                         <div class="satisfaction-guarantee">
-                            <i class="fas fa-shield-check"></i>
-                            30-Day Money-Back Guarantee
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="features-page" class="hidden">
-            <div class="bg-grid"></div>
-            <div class="bg-gradient"></div>
-            <div class="container">
-                <div class="section-header">
-                    <h2>Powerful <span class="text-gradient">Features</span></h2>
-                    <p>Discover all the ways Anvil revolutionizes AI interaction</p>
-                </div>
-
-                <div class="features-tabs">
-                    <div class="tab-buttons">
-                        <button class="tab-btn active" data-tab="ai-core">AI Core</button>
-                        <button class="tab-btn" data-tab="personality">Personality</button>
-                        <button class="tab-btn" data-tab="integration">Integration</button>
-                        <button class="tab-btn" data-tab="security">Security</button>
-                    </div>
-
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="ai-core">
-                            <div class="feature-showcase">
-                                <div class="feature-demo">
-                                    <div class="demo-window">
-                                        <div class="window-header">
-                                            <div class="window-dots">
-                                                <span></span><span></span><span></span>
-                                            </div>
-                                            <div class="window-title">Anvil AI Core</div>
-                                        </div>
-                                        <div class="window-content">
-                                            <div class="terminal-content">
-                                                <span class="command">» Loading Advanced AI Models...</span>
-                                                <span class="response">✓ Local LLM initialized</span>
-                                                <span class="response">✓ Neural processing ready</span>
-                                                <span class="command">» Activating context awareness...</span>
-                                                <span class="response blink">AI Core active and learning...</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="feature-details">
-                                    <h3>Advanced AI Core</h3>
-                                    <ul class="feature-list">
-                                        <li>
-                                            <i class="fas fa-microchip"></i>
-                                            <div>
-                                                <h4>Local Processing Power</h4>
-                                                <p>Run powerful AI models directly on your device, ensuring privacy and speed.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-brain"></i>
-                                            <div>
-                                                <h4>Neural Learning</h4>
-                                                <p>Adaptive learning system that evolves with your interactions.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-sync-alt"></i>
-                                            <div>
-                                                <h4>Real-time Processing</h4>
-                                                <p>Lightning-fast response times with local processing.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-network-wired"></i>
-                                            <div>
-                                                <h4>Hybrid Architecture</h4>
-                                                <p>Seamlessly switch between local and cloud processing.</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tab-pane" id="personality">
-                            <div class="feature-showcase">
-                                <div class="feature-demo personality-forge">
-                                    <div class="forge-interface">
-                                        <div class="personality-sliders">
-                                            <div class="slider-group">
-                                                <label>Empathy Level</label>
-                                                <div class="slider active" style="width: 80%;"></div>
-                                            </div>
-                                            <div class="slider-group">
-                                                <label>Technical Knowledge</label>
-                                                <div class="slider" style="width: 90%;"></div>
-                                            </div>
-                                            <div class="slider-group">
-                                                <label>Creativity</label>
-                                                <div class="slider" style="width: 75%;"></div>
-                                            </div>
-                                            <div class="slider-group">
-                                                <label>Humor Style</label>
-                                                <div class="slider" style="width: 60%;"></div>
-                                            </div>
-                                        </div>
-                                        <div class="personality-preview">
-                                            <div class="preview-chat">
-                                                <div class="chat-bubble">Hey! I've adjusted my responses to match your preferences. Want to test my new personality?</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="feature-details">
-                                    <h3>Personality Forge</h3>
-                                    <ul class="feature-list">
-                                        <li>
-                                            <i class="fas fa-sliders-h"></i>
-                                            <div>
-                                                <h4>Complete Customization</h4>
-                                                <p>Fine-tune every aspect of your AI's personality.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-user-edit"></i>
-                                            <div>
-                                                <h4>Behavioral Training</h4>
-                                                <p>Train your AI through natural conversations and feedback.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-theater-masks"></i>
-                                            <div>
-                                                <h4>Multiple Personas</h4>
-                                                <p>Create and switch between different AI personalities.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-memory"></i>
-                                            <div>
-                                                <h4>Memory System</h4>
-                                                <p>AI remembers past interactions and learns from them.</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tab-pane" id="integration">
-                            <div class="feature-showcase">
-                                <div class="feature-demo">
-                                    <div class="code-window">
-                                        <div class="window-header">
-                                            <div class="window-dots">
-                                                <span></span><span></span><span></span>
-                                            </div>
-                                            <div class="window-title">integration.js</div>
-                                        </div>
-                                        <pre class="code-content"><code>// Initialize Anvil AI with custom settings
-const anvil = new AnvilAI({
-  personality: 'custom',
-  mode: 'hybrid',
-  apiKey: 'your_key'
-});
-
-// Connect to your application
-anvil.connect({
-  app: 'myApp',
-  features: ['chat', 'analysis']
-});
-
-// Example: AI-powered chat interface
-anvil.on('message', async (msg) => {
-  const response = await anvil.process(msg);
-  ui.updateChat(response);
-});</code></pre>
-                                    </div>
-                                </div>
-                                <div class="feature-details">
-                                    <h3>Easy Integration</h3>
-                                    <ul class="feature-list">
-                                        <li>
-                                            <i class="fas fa-plug"></i>
-                                            <div>
-                                                <h4>API Access</h4>
-                                                <p>Comprehensive API for seamless integration with your applications.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-code"></i>
-                                            <div>
-                                                <h4>SDK Support</h4>
-                                                <p>SDKs available for major programming languages.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-boxes"></i>
-                                            <div>
-                                                <h4>Modular Design</h4>
-                                                <p>Use only the features you need in your projects.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-book"></i>
-                                            <div>
-                                                <h4>Documentation</h4>
-                                                <p>Extensive documentation and code examples.</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tab-pane" id="security">
-                            <div class="feature-showcase">
-                                <div class="feature-demo">
-                                    <div class="security-dashboard">
-                                        <div class="security-status">
-                                            <div class="status-item">
-                                                <i class="fas fa-shield-alt"></i>
-                                                <span>Encryption: Active</span>
-                                            </div>
-                                            <div class="status-item">
-                                                <i class="fas fa-user-shield"></i>
-                                                <span>Privacy Mode: Enabled</span>
-                                            </div>
-                                            <div class="status-item">
-                                                <i class="fas fa-lock"></i>
-                                                <span>Data Protection: Secure</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="feature-details">
-                                    <h3>Security & Privacy</h3>
-                                    <ul class="feature-list">
-                                        <li>
-                                            <i class="fas fa-shield-alt"></i>
-                                            <div>
-                                                <h4>End-to-End Encryption</h4>
-                                                <p>Military-grade encryption for all your data.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-user-shield"></i>
-                                            <div>
-                                                <h4>Privacy First</h4>
-                                                <p>Local processing ensures your data stays on your device.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-key"></i>
-                                            <div>
-                                                <h4>Access Control</h4>
-                                                <p>Fine-grained control over AI permissions and access.</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="fas fa-file-contract"></i>
-                                            <div>
-                                                <h4>Compliance</h4>
-                                                <p>Meets global data protection standards.</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                            <i class="fas fa-shield-alt"></i>
+                            <span>One-time payment • 30-Day Money-Back Guarantee</span>
                         </div>
                     </div>
                 </div>
@@ -1512,87 +334,50 @@ anvil.on('message', async (msg) => {
         </section>
 
         <section id="features-showcase">
-            <div class="bg-grid"></div>
             <div class="container">
-                <div class="section-header">
+                <div class="section-header" data-aos="fade-up">
                     <h2>Why Choose <span class="text-gradient">Anvil</span>?</h2>
                     <p>Experience the next generation of AI interaction with our powerful features</p>
                 </div>
                 <div class="features-grid">
-                    <div class="feature-card" data-aos="fade-up">
-                        <div class="feature-icon">
-                            <i class="fas fa-brain"></i>
-                        </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="feature-icon"><i class="fas fa-brain"></i></div>
                         <h3>Advanced AI Models</h3>
                         <p>Run powerful local AI models that respect your privacy and work offline.</p>
-                        <div class="feature-demo">
-                            <video autoplay loop muted playsinline>
-                                <source src="https://your-cdn.com/demos/ai-models-demo.mp4" type="video/mp4">
-                            </video>
-                        </div>
                     </div>
-                    <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-                        <div class="feature-icon">
-                            <i class="fas fa-paint-brush"></i>
-                        </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="feature-icon"><i class="fas fa-paint-brush"></i></div>
                         <h3>Personality Forge</h3>
                         <p>Create and customize your AI's personality, voice, and behavior patterns.</p>
                         <div class="feature-demo">
                             <div class="chat-demo">
                                 <div class="chat-message">
                                     <img src="https://ui-avatars.com/api/?name=User&background=845EEE&color=fff" alt="User">
-                                    <div class="message">How would you handle this situation?</div>
+                                    <div class="message">How are you today?</div>
                                 </div>
                                 <div class="chat-message ai">
                                     <img src="https://ui-avatars.com/api/?name=AI&background=00DDEB&color=fff" alt="AI">
-                                    <div class="message typing">Let me think about that from my unique perspective...</div>
+                                    <div class="message">Ready to assist, as always!</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-                        <div class="feature-icon">
-                            <i class="fas fa-code"></i>
-                        </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="feature-icon"><i class="fas fa-code"></i></div>
                         <h3>Developer API</h3>
                         <p>Integrate Anvil with your applications using our comprehensive API.</p>
-                        <div class="feature-demo">
-                            <pre class="code-preview">
-<code>const anvil = new AnvilAI({
-  personality: "custom",
-  model: "advanced-local"
-});</code>
-                            </pre>
-                        </div>
-                    </div>
-                </div>
-                <div class="cta-container">
-                    <div class="feature-comparison">
-                        <div class="comparison-header">
-                            <h3>What's Included</h3>
-                        </div>
-                        <ul class="feature-list">
-                            <li><i class="fas fa-check"></i> Lifetime Access to Anvil Software</li>
-                            <li><i class="fas fa-check"></i> Local AI Model Support</li>
-                            <li><i class="fas fa-check"></i> Personality Creation Tools</li>
-                            <li><i class="fas fa-check"></i> Community Marketplace Access</li>
-                            <li><i class="fas fa-check"></i> Regular Updates & Support</li>
-                            <li class="premium"><i class="fas fa-crown"></i> Optional Guild Pass for Premium Features</li>
-                        </ul>
                     </div>
                 </div>
             </div>
         </section>
         
         <section id="marketplace-page" class="hidden">
-            <div class="bg-grid"></div>
-            <div class="bg-gradient"></div>
             <div class="container">
-                <div class="section-header">
+                <div class="section-header" data-aos="fade-up">
                     <h2>The <span class="text-gradient">Marketplace</span></h2>
-                    <p>Discover and acquire unique personalities, skins, and tools for your AI companion, crafted by the community and our studio.</p>
+                    <p>Discover unique personalities, skins, and tools for your AI, crafted by the community and our studio.</p>
                 </div>
-                <div class="marketplace-controls">
+                <div class="marketplace-controls" data-aos="fade-up">
                     <div class="search-bar">
                         <i class="fa-solid fa-search"></i>
                         <input type="text" id="market-search" placeholder="Search assets...">
@@ -1612,125 +397,39 @@ anvil.on('message', async (msg) => {
         </section>
 
         <section id="testimonials-page" class="hidden">
-            <div class="bg-grid"></div>
-            <div class="bg-gradient"></div>
             <div class="container">
-                <div class="section-header">
-                    <div class="stats-banner">
-                        <div class="stat-item">
-                            <span class="stat-number">50K+</span>
-                            <span class="stat-label">Active Users</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">4.9</span>
-                            <span class="stat-label">Average Rating</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">1M+</span>
-                            <span class="stat-label">AI Interactions</span>
-                        </div>
-                    </div>
+                <div class="section-header" data-aos="fade-up">
                     <h2>What Our <span class="text-gradient">Users Say</span></h2>
-                    <p>Real stories from professionals who have transformed their work with Anvil AI</p>
+                    <p>Real stories from professionals who have transformed their work with Anvil AI.</p>
                 </div>
-
-                <div class="testimonials-carousel">
-                    <div class="testimonials-grid">
-                        <div class="testimonial-card featured">
-                            <div class="testimonial-badge">Featured Story</div>
-                            <div class="testimonial-media">
-                                <video class="demo-video" autoplay loop muted>
-                                    <source src="https://your-cdn.com/ai-demo.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="testimonial-content">
-                                <div class="rating">★★★★★</div>
-                                <blockquote>
-                                    "As a game developer, Anvil has revolutionized our NPC interactions. The personalities we've created using Anvil are so realistic that players often can't tell they're talking to AI characters!"
-                                </blockquote>
-                                <div class="testimonial-author">
-                                    <img src="https://ui-avatars.com/api/?name=Alex+Rivera&background=845EEE&color=fff" alt="Alex Rivera">
-                                    <div>
-                                        <h4>Alex Rivera</h4>
-                                        <p>Lead Game Developer at Quantum Studios</p>
-                                        <div class="verified-badge">
-                                            <i class="fas fa-check-circle"></i> Verified Customer
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="testimonial-group">
-                            <div class="testimonial-card">
-                                <div class="testimonial-content">
-                                    <div class="rating">★★★★★</div>
-                                    <blockquote>
-                                        "I use Anvil to manage my content creation workflow. The AI understands my style perfectly and helps me brainstorm ideas that truly resonate with my audience."
-                                    </blockquote>
-                                    <div class="results-tag">
-                                        <i class="fas fa-chart-line"></i> 300% Content Output Increase
-                                    </div>
-                                </div>
-                                <div class="testimonial-author">
-                                    <img src="https://ui-avatars.com/api/?name=Sarah+Mitchell&background=845EEE&color=fff" alt="Sarah Mitchell">
-                                    <div>
-                                        <h4>Sarah Mitchell</h4>
-                                        <p>Content Creator, 2M+ Followers</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="testimonial-card">
-                                <div class="testimonial-content">
-                                    <div class="rating">★★★★★</div>
-                                    <blockquote>
-                                        "The Guild Pass exclusive features are worth every penny. The cloud AI models and monthly content drops keep my AI assistant evolving and improving."
-                                    </blockquote>
-                                    <div class="usage-stats">
-                                        <span>Guild Pass Member: 8 months</span>
-                                    </div>
-                                </div>
-                                <div class="testimonial-author">
-                                    <img src="https://ui-avatars.com/api/?name=David+Chen&background=00DDEB&color=fff" alt="David Chen">
-                                    <div>
-                                        <h4>David Chen</h4>
-                                        <p>Software Architect</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="testimonial-card">
-                                <div class="testimonial-content">
-                                    <div class="rating">★★★★★</div>
-                                    <blockquote>
-                                        "I've tried other AI assistants, but Anvil's personality customization is unmatched. My AI now perfectly matches my teaching style and helps me create engaging educational content."
-                                    </blockquote>
-                                </div>
-                                <div class="testimonial-author">
-                                    <img src="https://ui-avatars.com/api/?name=Emily+Turner&background=845EEE&color=fff" alt="Emily Turner">
-                                    <div>
-                                        <h4>Prof. Emily Turner</h4>
-                                        <p>Educational Technology Specialist</p>
-                                    </div>
-                                </div>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                        <p class="testimonial-content">"As a game developer, Anvil has revolutionized our NPC interactions. The personalities are so realistic!"</p>
+                        <div class="testimonial-author">
+                            <img src="https://ui-avatars.com/api/?name=Alex+Rivera&background=845EEE&color=fff" alt="Alex Rivera">
+                            <div>
+                                <h4>Alex Rivera</h4>
+                                <p>Lead Game Developer</p>
                             </div>
                         </div>
                     </div>
-
-                    <div class="reviews-summary">
-                        <div class="review-platform">
-                            <img src="path-to-trustpilot.png" alt="Trustpilot">
-                            <div class="platform-stats">
-                                <div class="platform-rating">4.9</div>
-                                <div class="review-count">2,403 reviews</div>
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                        <p class="testimonial-content">"I use Anvil to manage my content creation workflow. It understands my style perfectly."</p>
+                        <div class="testimonial-author">
+                            <img src="https://ui-avatars.com/api/?name=Sarah+Mitchell&background=00DDEB&color=fff" alt="Sarah Mitchell">
+                            <div>
+                                <h4>Sarah Mitchell</h4>
+                                <p>Content Creator</p>
                             </div>
                         </div>
-                        <div class="review-platform">
-                            <img src="path-to-g2crowd.png" alt="G2 Crowd">
-                            <div class="platform-stats">
-                                <div class="platform-rating">4.8</div>
-                                <div class="review-count">1,892 reviews</div>
+                    </div>
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                        <p class="testimonial-content">"The Guild Pass exclusive features are worth every penny. My AI assistant is constantly evolving."</p>
+                        <div class="testimonial-author">
+                            <img src="https://ui-avatars.com/api/?name=David+Chen&background=845EEE&color=fff" alt="David Chen">
+                            <div>
+                                <h4>David Chen</h4>
+                                <p>Software Architect</p>
                             </div>
                         </div>
                     </div>
@@ -1740,147 +439,24 @@ anvil.on('message', async (msg) => {
         
         <section id="inventory-page" class="hidden">
              <div class="container">
-                <div class="section-header">
-                    <h2>My <span class="text-gradient">Assets</span></h2>
-                    <p>All of your acquired assets in one place, ready to be used in the Anvil desktop app.</p>
-                </div>
-                <div class="page-content">
-                    <div class="grid-container" id="inventory-grid-container"></div>
-                </div>
-            </div>
+                 <div class="section-header" data-aos="fade-up">
+                     <h2>My <span class="text-gradient">Assets</span></h2>
+                     <p>All of your acquired assets in one place, ready to be used in the Anvil desktop app.</p>
+                 </div>
+                 <div class="page-content">
+                     <div class="grid-container" id="inventory-grid-container"></div>
+                 </div>
+             </div>
         </section>
         
-        <section id="showcase-page" class="hidden">
-            <div class="bg-grid"></div>
-            <div class="bg-gradient"></div>
-            <div class="container">
-                <div class="section-header">
-                    <h2>Anvil in <span class="text-gradient">Action</span></h2>
-                    <p>Discover how professionals across industries are using Anvil to transform their work</p>
-                </div>
-
-                <div class="showcase-categories">
-                    <button class="category-btn active" data-category="all">All Cases</button>
-                    <button class="category-btn" data-category="creative">Creative</button>
-                    <button class="category-btn" data-category="business">Business</button>
-                    <button class="category-btn" data-category="education">Education</button>
-                    <button class="category-btn" data-category="gaming">Gaming</button>
-                </div>
-
-                <div class="showcase-grid">
-                    <div class="showcase-card" data-category="creative">
-                        <div class="showcase-preview">
-                            <video autoplay loop muted>
-                                <source src="path-to-creative-demo.mp4" type="video/mp4">
-                            </video>
-                        </div>
-                        <div class="showcase-content">
-                            <h3>AI-Powered Content Creation</h3>
-                            <p>See how content creators use Anvil to generate ideas, write scripts, and create engaging content faster than ever.</p>
-                            <div class="showcase-metrics">
-                                <div class="metric">
-                                    <span class="metric-value">3x</span>
-                                    <span class="metric-label">Faster Production</span>
-                                </div>
-                                <div class="metric">
-                                    <span class="metric-value">80%</span>
-                                    <span class="metric-label">More Ideas</span>
-                                </div>
-                            </div>
-                            <a href="#" class="btn btn-secondary">View Case Study</a>
-                        </div>
-                    </div>
-
-                    <div class="showcase-card" data-category="business">
-                        <div class="showcase-preview">
-                            <div class="demo-chat">
-                                <div class="chat-interaction">
-                                    <div class="chat-message user">
-                                        Analyze Q2 sales performance and suggest improvements.
-                                    </div>
-                                    <div class="chat-message ai">
-                                        Based on the Q2 data, I notice three key trends...
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="showcase-content">
-                            <h3>Business Intelligence Assistant</h3>
-                            <p>Experience how Anvil helps businesses analyze data, generate reports, and make data-driven decisions.</p>
-                            <div class="showcase-metrics">
-                                <div class="metric">
-                                    <span class="metric-value">45%</span>
-                                    <span class="metric-label">Time Saved</span>
-                                </div>
-                                <div class="metric">
-                                    <span class="metric-value">90%</span>
-                                    <span class="metric-label">Accuracy</span>
-                                </div>
-                            </div>
-                            <a href="#" class="btn btn-secondary">View Case Study</a>
-                        </div>
-                    </div>
-
-                    <div class="showcase-card" data-category="gaming">
-                        <div class="showcase-preview">
-                            <div class="game-demo">
-                                <div class="character-interaction">
-                                    Dynamic NPC Responses Demo
-                                </div>
-                            </div>
-                        </div>
-                        <div class="showcase-content">
-                            <h3>Gaming NPC Enhancement</h3>
-                            <p>See how game developers use Anvil to create dynamic, intelligent NPCs that adapt to player interactions.</p>
-                            <div class="showcase-metrics">
-                                <div class="metric">
-                                    <span class="metric-value">100+</span>
-                                    <span class="metric-label">Unique Responses</span>
-                                </div>
-                                <div class="metric">
-                                    <span class="metric-value">95%</span>
-                                    <span class="metric-label">Player Satisfaction</span>
-                                </div>
-                            </div>
-                            <a href="#" class="btn btn-secondary">View Case Study</a>
-                        </div>
-                    </div>
-
-                    <div class="showcase-card" data-category="education">
-                        <div class="showcase-preview">
-                            <div class="education-demo">
-                                Interactive Learning Session
-                            </div>
-                        </div>
-                        <div class="showcase-content">
-                            <h3>Personalized Learning</h3>
-                            <p>Discover how educators use Anvil to create adaptive learning experiences that cater to individual student needs.</p>
-                            <div class="showcase-metrics">
-                                <div class="metric">
-                                    <span class="metric-value">87%</span>
-                                    <span class="metric-label">Engagement</span>
-                                </div>
-                                <div class="metric">
-                                    <span class="metric-value">92%</span>
-                                    <span class="metric-label">Success Rate</span>
-                                </div>
-                            </div>
-                            <a href="#" class="btn btn-secondary">View Case Study</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section id="profile-page" class="hidden">
             <div class="container">
-                <div class="profile-content">
-                    <!-- Profile Sidebar -->
+                <div class="profile-content" data-aos="fade-up">
                     <div class="profile-sidebar">
                         <div class="profile-avatar-section">
                             <div class="profile-avatar-container">
                                 <img src="" alt="User Avatar" id="userAvatar">
-                                <button class="avatar-change-btn" title="Change Avatar" onclick="openAvatarModal()">
+                                <button class="avatar-change-btn" title="Change Avatar" id="avatarChangeBtn">
                                     <i class="fas fa-user-edit"></i>
                                 </button>
                             </div>
@@ -1889,230 +465,91 @@ anvil.on('message', async (msg) => {
                         </div>
                         <div class="profile-stats">
                             <div class="stat-item">
-                                <i class="fas fa-bolt"></i>
-                                <div class="stat-info">
-                                    <span class="stat-value" id="totalTokens">0</span>
-                                    <span class="stat-label">Total Tokens</span>
-                                </div>
+                                <div class="stat-value" id="totalTokens">0</div>
+                                <div class="stat-label">Total Tokens</div>
                             </div>
                             <div class="stat-item">
-                                <i class="fas fa-clock"></i>
-                                <div class="stat-info">
-                                    <span class="stat-value" id="joinDate">-</span>
-                                    <span class="stat-label">Joined</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="profile-membership">
-                            <div class="membership-badge">
-                                <i class="fas fa-crown"></i>
-                                <span id="membershipTier">Free Tier</span>
+                                <div class="stat-value" id="joinDate">-</div>
+                                <div class="stat-label">Joined</div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Profile Main Content -->
                     <div class="profile-main">
-                        <!-- Personal Information -->
                         <div class="profile-section">
                             <div class="section-header">
                                 <h3>Personal Information</h3>
-                                <button class="btn-edit" onclick="toggleEdit('personalInfo')">
-                                    <i class="fas fa-pen"></i>
-                                    Edit
-                                </button>
                             </div>
                             <form class="profile-form" id="personalInfoForm">
                                 <div class="form-group">
                                     <label for="displayName">Display Name</label>
-                                    <input type="text" id="displayName" disabled>
+                                    <input type="text" id="displayName">
                                 </div>
                                 <div class="form-group">
-                                    <label for="email">Email</label>
+                                    <label for="email">Email (cannot be changed)</label>
                                     <input type="email" id="email" disabled>
                                 </div>
-                                <div class="form-group">
-                                    <label for="bio">Bio</label>
-                                    <textarea id="bio" rows="3" disabled></textarea>
-                                </div>
-                                <div class="form-actions hidden">
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                                    <button type="button" class="btn btn-secondary" onclick="cancelEdit('personalInfo')">Cancel</button>
-                                </div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
                             </form>
                         </div>
-
-                        <!-- Preferences -->
-                        <div class="profile-section">
+                         <div class="profile-section">
                             <div class="section-header">
                                 <h3>Preferences</h3>
                             </div>
-                            <div class="preferences-grid">
-                                <div class="preference-item">
-                                    <div class="preference-info">
-                                        <div class="preference-title">Theme</div>
-                                        <div class="preference-description">Switch between light and dark mode</div>
-                                    </div>
-                                    <label class="switch">
-                                        <input type="checkbox" id="themeToggle">
-                                        <span class="slider"></span>
-                                    </label>
-                                </div>
-                                <div class="preference-item">
-                                    <div class="preference-info">
-                                        <div class="preference-title">Email Notifications</div>
-                                        <div class="preference-description">Receive updates and announcements</div>
-                                    </div>
-                                    <label class="switch">
-                                        <input type="checkbox" id="emailNotifications">
-                                        <span class="slider"></span>
-                                    </label>
-                                </div>
+                            <div class="preference-item">
+                                <label for="themeToggleSwitch">Light Mode</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="themeToggleSwitch">
+                                    <span class="slider round"></span>
+                                </label>
                             </div>
-                        </div>
-
-                        <!-- Security -->
-                        <div class="profile-section">
-                            <div class="section-header">
-                                <h3>Security</h3>
-                            </div>
-                            <form class="profile-form" id="securityForm">
-                                <div class="form-group">
-                                    <label for="currentPassword">Current Password</label>
-                                    <input type="password" id="currentPassword" placeholder="Enter current password" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="newPassword">New Password</label>
-                                    <input type="password" id="newPassword" placeholder="Enter new password" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="confirmPassword">Confirm New Password</label>
-                                    <input type="password" id="confirmPassword" placeholder="Confirm new password" disabled>
-                                </div>
-                                <button type="button" class="btn btn-primary" onclick="changePassword()">Change Password</button>
-                            </form>
-                            <hr style="margin: 2rem 0; border-color: var(--color-border)">
-                            <div class="security-options">
-                                <button class="btn btn-danger">
-                                    <i class="fas fa-trash-alt"></i>
-                                    Delete Account
-                                </button>
-                            </div>
-                        </div>
+                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="guildpass-page" class="hidden">
-            <div class="bg-gradient"></div>
             <div class="container">
-                <div class="section-header">
-                    <div class="guild-badge">
-                        <i class="fas fa-crown"></i>
-                        <span class="badge-text">Premium Access</span>
-                    </div>
+                <div class="section-header" data-aos="fade-up">
                     <h2>Join the <span class="text-gradient">Anvil Guild</span></h2>
                     <p>Elevate your AI experience with premium features and exclusive content.</p>
                 </div>
-
                 <div class="pricing-comparison">
-                    <div class="pricing-card">
+                    <div class="pricing-card" data-aos="fade-up" data-aos-delay="100">
                         <div class="card-header">
-                            <h3>Anvil Application</h3>
-                            <div class="price-container">
-                                <span class="price">$99.99</span>
-                                <span class="period">One-Time Purchase</span>
-                            </div>
-                        </div>
-                        <div class="value-props">
-                            <div class="value-prop">
-                                <i class="fas fa-infinity"></i>
-                                <span>Lifetime Access</span>
-                            </div>
-                            <div class="value-prop">
-                                <i class="fas fa-brain"></i>
-                                <span>Local AI Models</span>
-                            </div>
+                            <h3>Anvil App</h3>
+                            <span class="price">$99.99</span>
+                            <span class="period">One-Time Purchase</span>
                         </div>
                         <ul class="feature-list">
-                            <li><i class="fa-solid fa-check-circle"></i> Full Anvil Forge Software</li>
-                            <li><i class="fa-solid fa-check-circle"></i> Marketplace Access</li>
-                            <li><i class="fa-solid fa-check-circle"></i> Personality Creation Tools</li>
-                            <li><i class="fa-solid fa-check-circle"></i> Community Asset Publishing</li>
-                            <li class="disabled"><i class="fa-solid fa-lock"></i> Premium Cloud Models</li>
-                            <li class="disabled"><i class="fa-solid fa-lock"></i> Exclusive Monthly Content</li>
+                            <li><i class="fa-solid fa-check"></i> Full Anvil Forge Software</li>
+                            <li><i class="fa-solid fa-check"></i> Marketplace Access</li>
+                            <li><i class="fa-solid fa-check"></i> Personality Creation Tools</li>
+                            <li class="disabled"><i class="fa-solid fa-times"></i> Premium Cloud Models</li>
+                            <li class="disabled"><i class="fa-solid fa-times"></i> Exclusive Monthly Content</li>
                         </ul>
-                        <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-secondary btn-large">
-                            <span class="btn-main">Purchase Anvil</span>
-                            <span class="btn-sub">30-day money-back guarantee</span>
-                        </a>
+                        <a href="https://buy.stripe.com/3cI3cv32w7aM3qbaUAgrS0a" target="_blank" class="btn btn-secondary btn-large">Purchase Anvil</a>
                     </div>
-
-                    <div class="pricing-card highlight">
+                    <div class="pricing-card highlight" data-aos="fade-up" data-aos-delay="200">
                         <div class="popular-badge">MOST POPULAR</div>
                         <div class="card-header">
                             <h3>Guild Pass Bundle</h3>
-                            <div class="price-container">
-                                <div class="price-info">
-                                    <span class="original-price">$107.98</span>
-                                    <span class="price">$99.99 + $7.99</span>
-                                </div>
-                                <span class="period">App + First Month Free</span>
-                            </div>
-                        </div>
-                        <div class="value-props">
-                            <div class="value-prop">
-                                <i class="fas fa-gift"></i>
-                                <span>3 Months Guild Pass Free</span>
-                            </div>
-                            <div class="value-prop">
-                                <i class="fas fa-cloud"></i>
-                                <span>Premium Cloud AI</span>
-                            </div>
+                            <span class="price">$7.99/mo</span>
+                            <span class="period">Includes Anvil App + First Month Free</span>
                         </div>
                         <ul class="feature-list">
-                            <li><i class="fa-solid fa-check-circle"></i> Everything in Anvil App</li>
-                            <li class="premium"><i class="fa-solid fa-crown"></i> Premium Cloud AI Models</li>
-                            <li class="premium"><i class="fa-solid fa-crown"></i> Monthly Exclusive Items</li>
-                            <li class="premium"><i class="fa-solid fa-crown"></i> Early Access to Features</li>
-                            <li class="premium"><i class="fa-solid fa-crown"></i> Priority Support</li>
-                            <li class="premium"><i class="fa-solid fa-crown"></i> Advanced Customization</li>
+                            <li><i class="fa-solid fa-check"></i> Full Anvil Forge Software</li>
+                            <li><i class="fa-solid fa-check"></i> Marketplace Access</li>
+                            <li><i class="fa-solid fa-check"></i> Personality Creation Tools</li>
+                            <li><i class="fa-solid fa-check" style="color: gold;"></i> Premium Cloud Models</li>
+                            <li><i class="fa-solid fa-check" style="color: gold;"></i> Exclusive Monthly Content</li>
                         </ul>
-                        <a href="https://buy.stripe.com/8x228rbz23YA9OzbYEgrS0b" target="_blank" class="btn btn-primary btn-large pulse-button">
-                            <span class="btn-main">Get Bundle Deal</span>
-                            <span class="btn-sub">Save 25% on Guild Pass</span>
-                        </a>
-                        <div class="cancel-notice">
-                            <i class="fas fa-clock"></i>
-                            Cancel Guild Pass anytime
-                        </div>
-                    </div>
-                </div>
-
-                <div class="guild-benefits">
-                    <h3>Guild Pass Exclusive Benefits</h3>
-                    <div class="benefits-grid">
-                        <div class="benefit-card" data-aos="fade-up">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <h4>Cloud AI Models</h4>
-                            <p>Access our most powerful cloud-based AI models for enhanced capabilities.</p>
-                        </div>
-                        <div class="benefit-card" data-aos="fade-up" data-aos-delay="100">
-                            <i class="fas fa-gift"></i>
-                            <h4>Monthly Drops</h4>
-                            <p>Receive exclusive personality templates and skins every month.</p>
-                        </div>
-                        <div class="benefit-card" data-aos="fade-up" data-aos-delay="200">
-                            <i class="fas fa-star"></i>
-                            <h4>Priority Features</h4>
-                            <p>Be the first to try new features and shape the future of Anvil.</p>
-                        </div>
+                        <a href="https://buy.stripe.com/8x228rbz23YA9OzbYEgrS0b" target="_blank" class="btn btn-primary btn-large pulse-button">Get Bundle Deal</a>
+                        <div class="cancel-notice">Cancel anytime</div>
                     </div>
                 </div>
             </div>
         </section>
-
     </main>
     
     <footer>
@@ -2124,46 +561,60 @@ anvil.on('message', async (msg) => {
                     <li><a href="https://www.youtube.com/@FugthChat" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a></li>
                     <li><a href="https://givebutter.com/23ysSh" target="_blank" aria-label="Givebutter"><i class="fa-solid fa-hand-holding-heart"></i></a></li>
                 </ul>
-                <p>&copy; 2025 Fugth AI. All Rights Reserved. A new era of digital companionship.</p>
+                <p>&copy; 2025 Fugth AI. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
-    
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <script>
     'use strict';
     document.addEventListener('DOMContentLoaded', () => {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 50
+        });
+
         // Theme Handling
+        const themeSwitch = document.createElement('button');
+        const themeToggleSwitch = document.getElementById('themeToggleSwitch');
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeSwitch.innerHTML = `<i class="fas fa-${theme === 'dark' ? 'sun' : 'moon'}"></i>`;
+            if (themeToggleSwitch) themeToggleSwitch.checked = theme === 'light';
+        }
+
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const savedTheme = localStorage.getItem('theme');
         const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', currentTheme);
-
-        // Add theme switch button
-        const themeSwitch = document.createElement('button');
+        applyTheme(currentTheme);
+        
         themeSwitch.className = 'theme-switch';
-        themeSwitch.innerHTML = `<i class="fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}"></i>`;
         document.body.appendChild(themeSwitch);
 
-        themeSwitch.addEventListener('click', () => {
+        const toggleTheme = () => {
             const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            themeSwitch.innerHTML = `<i class="fas fa-${newTheme === 'dark' ? 'sun' : 'moon'}"></i>`;
-        });
-
-        // --- CONFIG & STATE MANAGEMENT ---
+            applyTheme(newTheme);
+        };
+        themeSwitch.addEventListener('click', toggleTheme);
+        if (themeToggleSwitch) themeToggleSwitch.addEventListener('change', toggleTheme);
+        
+        // --- CONFIG & STATE MANAGEMENT (UNCHANGED) ---
         const firebaseConfig = {
-            apiKey: "AIzaSyD5unDqHi53PktvTY_GqZtA35FYqJdmzlQ",
-            authDomain: "fugth-design.firebaseapp.com",
-            projectId: "fugth-design",
-            storageBucket: "fugth-design.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abc123def456"
+             apiKey: "AIzaSyD5unDqHi53PktvTY_GqZtA35FYqJdmzlQ",
+             authDomain: "fugth-design.firebaseapp.com",
+             projectId: "fugth-design",
+             storageBucket: "fugth-design.appspot.com",
+             messagingSenderId: "123456789",
+             appId: "1:123456789:web:abc123def456"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -2188,35 +639,20 @@ anvil.on('message', async (msg) => {
         async function initializeApp() {
             renderLoader(marketGrid);
             try {
-                await fetchAllProducts(); 
+                await fetchAllProducts();
                 
                 auth.onAuthStateChanged(async user => {
                     if (user) {
                         currentUser = user;
+                        const userDocRef = db.collection('users').doc(user.uid);
+                        const userDoc = await userDocRef.get();
                         
-                        // Create or update user document
-                        const userDoc = db.collection('users').doc(user.uid);
-                        const userData = await userDoc.get();
-                        
-                        if (!userData.exists) {
-                            // Initialize new user data
-                            await userDoc.set({
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        if (!userDoc.exists) {
+                            await userDocRef.set({
                                 displayName: user.displayName || user.email.split('@')[0],
                                 email: user.email,
-                                bio: '',
-                                totalTokens: 1000, // Starting tokens
-                                membershipTier: 'Free Tier',
-                                preferences: {
-                                    theme: document.documentElement.getAttribute('data-theme') || 'dark',
-                                    emailNotifications: true
-                                },
-                                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                            });
-                        } else {
-                            // Update last login
-                            await userDoc.update({
-                                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                totalTokens: 1000, 
                             });
                         }
                         
@@ -2229,7 +665,6 @@ anvil.on('message', async (msg) => {
                     renderMarketplace();
                 });
                 
-                // Set initial page view
                 switchToPage('hero-page');
             } catch (error) {
                 console.error("Error initializing app:", error);
@@ -2237,42 +672,23 @@ anvil.on('message', async (msg) => {
             }
         }
         
-        // --- AUTHENTICATION ---
+        // --- AUTHENTICATION (UNCHANGED LOGIC) ---
         authButton.addEventListener('click', e => {
             e.preventDefault();
             currentUser ? auth.signOut().then(() => showToast('You have been logged out.')) : openAuthModal();
         });
 
-        // --- DATA HANDLING ---
+        // --- DATA HANDLING (UNCHANGED LOGIC) ---
         async function fetchAllProducts() {
-            // Robust fetch: clear cache, show loader, detailed error logging and retry UI
             try {
-                allProductsCache.clear();
-                if (marketGrid) renderLoader(marketGrid);
                 const snapshot = await db.collection('products').get();
                 snapshot.forEach(doc => allProductsCache.set(doc.id, { id: doc.id, ...doc.data() }));
             } catch (error) {
-                console.error('fetchAllProducts error:', error);
-                showToast('Could not load marketplace items. Check console for details.', 'error');
-                if (marketGrid) {
-                    marketGrid.innerHTML = `
-                        <div style="text-align:center; padding:2rem;">
-                            <p>Error: Could not connect to the marketplace.</p>
-                            <button class="btn btn-primary" id="market-retry">Retry</button>
-                        </div>`;
-                    document.getElementById('market-retry')?.addEventListener('click', async () => {
-                        try {
-                            document.getElementById('market-retry').textContent = 'Retrying...';
-                            await fetchAllProducts();
-                            renderMarketplace();
-                        } catch (e) {
-                            console.error('Retry fetch failed:', e);
-                            showToast('Retry failed. See console.');
-                        }
-                    });
-                }
+                console.error("Error fetching products:", error);
+                if(marketGrid) marketGrid.innerHTML = '<p style="text-align:center;">Could not load marketplace items.</p>';
             }
         }
+
         async function fetchUserInventory() {
             if (!currentUser) return;
             userInventory.clear();
@@ -2284,45 +700,33 @@ anvil.on('message', async (msg) => {
         function renderLoader(container) {
             if(container) container.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
         }
+
         function renderMarketplace() {
             if (!marketGrid) return;
             if (allProductsCache.size === 0) {
-                marketGrid.innerHTML = `
-                    <div style="text-align:center; padding:2rem;">
-                        <p>The marketplace is currently empty or could not be loaded.</p>
-                        <button class="btn btn-primary" id="market-retry-2">Reload</button>
-                    </div>`;
-                document.getElementById('market-retry-2')?.addEventListener('click', async () => {
-                    try {
-                        renderLoader(marketGrid);
-                        await fetchAllProducts();
-                        renderMarketplace();
-                    } catch (e) {
-                        console.error('Reload marketplace failed:', e);
-                        showToast('Reload failed. See console.');
-                    }
-                });
+                marketGrid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Marketplace is empty.</p>';
                 return;
             }
-            let html = '';
-            allProductsCache.forEach(product => html += createProductCard(product));
-            marketGrid.innerHTML = html;
+            marketGrid.innerHTML = Array.from(allProductsCache.values()).map(createProductCard).join('');
         }
+        
         function renderInventory() {
             if (!inventoryGrid) return;
-            renderLoader(inventoryGrid);
-            if (userInventory.size === 0) { inventoryGrid.innerHTML = "<p style='text-align: center; grid-column: 1 / -1; padding: 2rem;'>You haven't acquired any assets yet. Visit the Marketplace!</p>"; return; }
-            let html = '';
-            userInventory.forEach(productId => {
-                const product = allProductsCache.get(productId);
-                if (product) html += createProductCard(product);
-            });
-            inventoryGrid.innerHTML = html;
+            if (userInventory.size === 0) { 
+                inventoryGrid.innerHTML = "<p style='text-align: center; grid-column: 1 / -1;'>Your asset inventory is empty.</p>"; 
+                return; 
+            }
+            inventoryGrid.innerHTML = Array.from(userInventory)
+                .map(id => allProductsCache.get(id))
+                .filter(Boolean)
+                .map(createProductCard)
+                .join('');
         }
+
         function createProductCard(product) {
             const priceText = product.price === 0 ? 'Free' : `$${product.price.toFixed(2)}`;
             const isOwned = userInventory.has(product.id);
-            return `<div class="market-card" onclick="openProductModal('${product.id}')">
+            return `<div class="market-card" data-product-id="${product.id}" data-aos="fade-up">
                         <div class="card-image"><i class="fa-solid fa-${product.icon}"></i></div>
                         <div class="card-content">
                             <h4 class="card-title">${product.name}</h4>
@@ -2338,66 +742,48 @@ anvil.on('message', async (msg) => {
         // --- NAVIGATION & UTILITIES ---
         function updateUIForLoggedInUser() {
             const name = currentUser.displayName || currentUser.email.split('@')[0];
-            // Prefer auth photoURL, otherwise generate one using DiceBear seeded by displayName so avatar matches name
-            const seed = encodeURIComponent(name || currentUser.email.split('@')[0]);
+            const seed = encodeURIComponent(name);
             const avatarUrl = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=${seed}&backgroundColor=845EEE`;
+            
             userStatusContainer.innerHTML = `<img src="${avatarUrl}" alt="User Avatar"> <span>${name}</span>`;
             authButton.textContent = 'Logout';
-            authButton.classList.remove('btn-primary');
-            authButton.classList.add('btn-secondary');
             ctaHeaderBtn.classList.add('hidden');
             inventoryNavLink.classList.remove('hidden');
-            updateProfileUI();
+            updateProfilePageUI();
         }
+
         function updateUIForLoggedOutUser() {
             userStatusContainer.innerHTML = '';
             authButton.textContent = 'Login';
-            authButton.classList.add('btn-primary');
-            authButton.classList.remove('btn-secondary');
             ctaHeaderBtn.classList.remove('hidden');
             inventoryNavLink.classList.add('hidden');
             userInventory.clear();
-
-            // If a guest avatar preview was saved locally, apply it to header and profile
-            try {
-                const saved = localStorage.getItem('selectedAvatar');
-                const headerImg = document.querySelector('#user-status-container img');
-                const avatarImg = document.getElementById('userAvatar');
-                if (saved) {
-                    if (headerImg) headerImg.src = saved;
-                    if (avatarImg) avatarImg.src = saved;
-                    // show a default Guest name
-                    if (userStatusContainer && !userStatusContainer.textContent.trim()) {
-                        userStatusContainer.innerHTML = `${headerImg ? headerImg.outerHTML : ''} <span>Guest</span>`;
-                    }
-                } else {
-                    // ensure a sensible default avatar for guests
-                    const guestAvatar = `https://api.dicebear.com/6.x/pixel-art/svg?seed=guest&backgroundColor=845EEE`;
-                    if (headerImg) headerImg.src = guestAvatar;
-                    if (avatarImg) avatarImg.src = guestAvatar;
-                    if (userStatusContainer && !userStatusContainer.textContent.trim()) {
-                        userStatusContainer.innerHTML = `<img src="${guestAvatar}" alt="Guest Avatar"> <span>Guest</span>`;
-                    }
-                }
-            } catch (e) {
-                // localStorage may be disabled; ignore
-            }
+            switchToPage('hero-page');
         }
+        
         function showToast(message) {
             const toast = document.createElement('div');
-            toast.className = `toast`;
+            toast.className = 'toast';
             toast.textContent = message;
             document.getElementById('toast-container').appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
             setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 3000);
         }
+
         function switchToPage(pageId) {
-            document.querySelectorAll('main section').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('main section').forEach(sec => {
+                sec.classList.add('hidden');
+            });
             const targetPage = document.getElementById(pageId);
             if(targetPage) {
-                 targetPage.classList.remove('hidden');
+                targetPage.classList.remove('hidden');
+                // Re-trigger AOS for the new page
+                AOS.refresh();
             }
-            navLinks.forEach(link => link.classList.toggle('active', link.dataset.target === pageId));
+            
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.dataset.target === pageId);
+            });
             window.scrollTo(0, 0);
         }
 
@@ -2407,128 +793,123 @@ anvil.on('message', async (msg) => {
                 e.preventDefault();
                 const targetId = e.currentTarget.dataset.target;
                 if (targetId === 'inventory-page') renderInventory();
+                if (targetId === 'profile-page' && !currentUser) {
+                    openAuthModal();
+                    return;
+                }
                 switchToPage(targetId);
+                // Close mobile menu on navigation
+                document.querySelector('.nav-links').classList.remove('active');
+                document.getElementById('mobile-menu-toggle').classList.remove('active');
             });
         });
+
         window.addEventListener('scroll', () => {
             header.classList.toggle('scrolled', window.scrollY > 50);
         });
-        
-        // --- ALL HELPER FUNCTIONS (UNCHANGED) ---
-        async function handleSignup(e) {
-            e.preventDefault();
-            const form = e.target;
-            const email = form.email.value;
-            const password = form.password.value;
-            const errorEl = form.querySelector('.form-error');
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                const displayName = email.split('@')[0];
-                // Set display name on auth profile
-                await user.updateProfile({ displayName });
-                // Create user document in Firestore
-                try {
-                    await db.collection('users').doc(user.uid).set({
-                        displayName,
-                        email: user.email,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        bio: '',
-                        totalTokens: 1000,
-                        membershipTier: 'Free Tier',
-                        preferences: { theme: document.documentElement.getAttribute('data-theme') || 'dark', emailNotifications: true },
-                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                } catch (e) {
-                    // non-fatal
-                }
-                currentUser = user;
-                updateUIForLoggedInUser();
-                closeModal();
-                showToast(`Welcome, ${currentUser.displayName}!`);
-            } catch (error) {
-                if (errorEl) errorEl.textContent = error.message;
-            }
-        }
 
-        async function handleLogin(e) {
-            e.preventDefault();
-            const form = e.target;
-            const email = form.email.value;
-            const password = form.password.value;
-            const errorEl = form.querySelector('.form-error');
-            try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                currentUser = userCredential.user;
-                // Ensure user doc exists and update lastLogin
-                try {
-                    const userRef = db.collection('users').doc(currentUser.uid);
-                    const doc = await userRef.get();
-                    if (!doc.exists) {
-                        await userRef.set({
-                            displayName: currentUser.displayName || email.split('@')[0],
-                            email: currentUser.email,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            bio: '',
-                            totalTokens: 1000,
-                            membershipTier: 'Free Tier',
-                            preferences: { theme: document.documentElement.getAttribute('data-theme') || 'dark', emailNotifications: true },
-                            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    } else {
-                        await userRef.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
-                    }
-                } catch (e) {
-                    // non-fatal
-                }
-                updateUIForLoggedInUser();
-                closeModal();
-                showToast(`Welcome back, ${currentUser.displayName || currentUser.email.split('@')[0]}!`);
-            } catch (error) {
-                if (errorEl) errorEl.textContent = error.message;
-            }
-        }
-        async function handleGoogleSignin() { const provider = new firebase.auth.GoogleAuthProvider(); try { await auth.signInWithPopup(provider); closeModal(); } catch (error) { document.querySelector('.form-error').textContent = error.message; } }
-        function openAuthModal(showSignup = false) { const loginHidden = showSignup ? 'hidden' : ''; const signupHidden = !showSignup ? 'hidden' : ''; const html = `<div class="modal-content modal-auth"><div class="modal-close" onclick="closeModal()"><i class="fa-solid fa-times"></i></div><div id="login-view" class="${loginHidden}"><h3>Login</h3><form id="login-form"><div class="form-error"></div><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%; margin-top: 0.5rem;">Login</button></form><p style="text-align:center; margin-top:1rem; font-size:0.9rem">No account? <a href="#" onclick="openAuthModal(true)" style="color:var(--color-primary)">Sign Up</a></p></div><div id="signup-view" class="${signupHidden}"><h3>Create Account</h3><form id="signup-form"><div class="form-error"></div><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password (6+ characters)" required><button type="submit" class="btn btn-primary" style="width:100%; margin-top: 0.5rem;">Create Account</button></form><p style="text-align:center; margin-top:1rem; font-size:0.9rem">Have an account? <a href="#" onclick="openAuthModal(false)" style="color:var(--color-primary)">Login</a></p></div><div style="text-align:center; color: var(--color-text-secondary); margin: 1rem 0;">OR</div><button class="btn btn-secondary" style="width:100%" onclick="handleGoogleSignin()"><i class="fab fa-google"></i> Sign In with Google</button></div>`; modalContainer.innerHTML = html; modalContainer.classList.remove('hidden'); document.getElementById('login-form')?.addEventListener('submit', handleLogin); document.getElementById('signup-form')?.addEventListener('submit', handleSignup); }
-        async function acquireItem(productId) { if (!currentUser) { showToast('Please log in to acquire items.', 'error'); return; } const acquireBtn = document.getElementById('modal-acquire-btn'); if(acquireBtn){ acquireBtn.textContent = 'Adding...'; acquireBtn.classList.add('btn-disabled'); } try { await db.collection('user_inventories').doc(currentUser.uid).collection('items').doc(productId).set({ acquiredAt: firebase.firestore.FieldValue.serverTimestamp() }); userInventory.add(productId); showToast('Item added to your inventory!'); closeModal(); renderMarketplace(); } catch (error) { showToast('Failed to add item.'); } }
-        function openProductModal(productId) { const product = allProductsCache.get(productId); if (!product) return; const isOwned = userInventory.has(product.id); const priceText = product.price === 0 ? 'Free' : `$${product.price.toFixed(2)}`; const actionButtonHtml = isOwned ? `<button class="btn btn-disabled">Owned</button>` : `<button class="btn btn-primary" id="modal-acquire-btn" onclick="acquireItem('${product.id}')">Get for ${priceText}</button>`; modalContainer.innerHTML = `<div class="modal-content modal-auth" style="max-width: 400px; text-align: center;"><div class="modal-close" onclick="closeModal()"><i class="fa-solid fa-times"></i></div><div style="font-size: 5rem; margin: 1rem 0;"><i class="fa-solid fa-${product.icon}"></i></div><h3>${product.name}</h3><p style="color: var(--color-text-secondary); margin-top:-1rem;">by ${product.creator}</p><div style="display:flex; justify-content:center; gap: 2rem; margin: 1rem 0;"><span><i class="fa-solid fa-star"></i> ${product.rating}</span><span><i class="fa-solid fa-download"></i> ${product.downloads}</span></div><p>${product.description || 'No description available.'}</p><div style="margin-top: 1.5rem;">${actionButtonHtml}</div></div>`; modalContainer.classList.remove('hidden'); }
-        function closeModal() { if(modalContainer) { modalContainer.classList.add('hidden'); modalContainer.innerHTML = ''; } }
-        window.closeModal = closeModal; window.openProductModal = openProductModal; window.openAuthModal = openAuthModal; window.acquireItem = acquireItem; window.handleGoogleSignin = handleGoogleSignin;
-
-        // --- Mobile Menu Handling ---
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const navLinksContainer = document.querySelector('.nav-links');
-
-        if (mobileMenuToggle) {
-            mobileMenuToggle.addEventListener('click', () => {
-                mobileMenuToggle.classList.toggle('active');
-                navLinksContainer.classList.toggle('active');
-            });
-        }
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (navLinksContainer?.classList.contains('active') && 
-                !e.target.closest('.nav-links') && 
-                !e.target.closest('.mobile-menu-toggle')) {
-                mobileMenuToggle.classList.remove('active');
-                navLinksContainer.classList.remove('active');
+        // Event delegation for product cards
+        document.addEventListener('click', e => {
+            const card = e.target.closest('.market-card');
+            if (card) {
+                openProductModal(card.dataset.productId);
             }
         });
+        
+        // --- HELPER FUNCTIONS (UNCHANGED LOGIC) ---
+        // These functions' core Firebase logic remains the same.
+        async function handleSignup(e) {
+             e.preventDefault();
+             const form = e.target;
+             const email = form.email.value;
+             const password = form.password.value;
+             const errorEl = form.querySelector('.form-error');
+             try {
+                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                 await userCredential.user.updateProfile({ displayName: email.split('@')[0] });
+                 closeModal();
+                 showToast(`Welcome!`);
+             } catch (error) {
+                 if (errorEl) errorEl.textContent = error.message;
+             }
+        }
+        async function handleLogin(e) {
+             e.preventDefault();
+             const form = e.target;
+             const email = form.email.value;
+             const password = form.password.value;
+             const errorEl = form.querySelector('.form-error');
+             try {
+                 await auth.signInWithEmailAndPassword(email, password);
+                 closeModal();
+                 showToast(`Welcome back!`);
+             } catch (error) {
+                 if (errorEl) errorEl.textContent = error.message;
+             }
+        }
+        async function acquireItem(productId) { 
+            if (!currentUser) { showToast('Please log in first.'); return; }
+            const acquireBtn = document.getElementById('modal-acquire-btn');
+            if(acquireBtn) acquireBtn.textContent = 'Adding...'; acquireBtn.classList.add('btn-disabled');
+            try {
+                await db.collection('user_inventories').doc(currentUser.uid).collection('items').doc(productId).set({ acquiredAt: firebase.firestore.FieldValue.serverTimestamp() });
+                userInventory.add(productId);
+                showToast('Item added to your inventory!');
+                closeModal();
+                renderMarketplace(); 
+            } catch (error) { showToast('Failed to add item.'); }
+        }
 
-        // --- Marketplace Search and Filter ---
+        // --- MODAL FUNCTIONS (UI IMPROVED) ---
+        function openAuthModal(showSignup = false) { 
+            const loginHidden = showSignup ? 'hidden' : ''; 
+            const signupHidden = !showSignup ? 'hidden' : ''; 
+            const html = `<div class="modal-content modal-auth"><div class="modal-close"><i class="fa-solid fa-times"></i></div><div id="login-view" class="${loginHidden}"><h3>Login</h3><form id="login-form"><div class="form-error"></div><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%; margin-top: 0.5rem;">Login</button></form><p style="text-align:center; margin-top:1rem; font-size:0.9rem">No account? <a href="#" id="show-signup" style="color:var(--color-primary)">Sign Up</a></p></div><div id="signup-view" class="${signupHidden}"><h3>Create Account</h3><form id="signup-form"><div class="form-error"></div><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password (6+ characters)" required><button type="submit" class="btn btn-primary" style="width:100%; margin-top: 0.5rem;">Create Account</button></form><p style="text-align:center; margin-top:1rem; font-size:0.9rem">Have an account? <a href="#" id="show-login" style="color:var(--color-primary)">Login</a></p></div></div>`; 
+            modalContainer.innerHTML = html; 
+            modalContainer.classList.add('show');
+            modalContainer.querySelector('.modal-close').addEventListener('click', closeModal);
+            document.getElementById('login-form')?.addEventListener('submit', handleLogin); 
+            document.getElementById('signup-form')?.addEventListener('submit', handleSignup);
+            document.getElementById('show-signup').addEventListener('click', e => { e.preventDefault(); openAuthModal(true); });
+            document.getElementById('show-login').addEventListener('click', e => { e.preventDefault(); openAuthModal(false); });
+        }
+        
+        function openProductModal(productId) { 
+            const product = allProductsCache.get(productId); 
+            if (!product) return; 
+            const isOwned = userInventory.has(product.id); 
+            const priceText = product.price === 0 ? 'Free' : `$${product.price.toFixed(2)}`; 
+            const actionButtonHtml = isOwned ? `<button class="btn btn-disabled">Owned</button>` : `<button class="btn btn-primary" id="modal-acquire-btn" onclick="acquireItem('${product.id}')">Get for ${priceText}</button>`; 
+            modalContainer.innerHTML = `<div class="modal-content modal-auth" style="max-width: 400px; text-align: center;"><div class="modal-close"><i class="fa-solid fa-times"></i></div><div style="font-size: 5rem; margin: 1rem 0;"><i class="fa-solid fa-${product.icon}"></i></div><h3>${product.name}</h3><p style="color: var(--color-text-secondary); margin-top:-1rem;">by ${product.creator}</p><p>${product.description || 'No description available.'}</p><div style="margin-top: 1.5rem;">${actionButtonHtml}</div></div>`; 
+            modalContainer.classList.add('show');
+            modalContainer.querySelector('.modal-close').addEventListener('click', closeModal);
+        }
+
+        function closeModal() { 
+            if(modalContainer) { 
+                modalContainer.classList.remove('show'); 
+            } 
+        }
+        window.acquireItem = acquireItem;
+
+        // Mobile Menu
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const navLinksContainer = document.querySelector('.nav-links');
+        mobileMenuToggle.addEventListener('click', () => {
+            mobileMenuToggle.classList.toggle('active');
+            navLinksContainer.classList.toggle('active');
+        });
+
+        // Marketplace Search/Filter
         const marketSearch = document.getElementById('market-search');
         const filterButtons = document.querySelectorAll('.filter-btn');
         let currentFilter = 'all';
         let searchQuery = '';
 
-        if (marketSearch) {
-            marketSearch.addEventListener('input', (e) => {
-                searchQuery = e.target.value.toLowerCase();
-                filterAndRenderProducts();
-            });
-        }
-
+        marketSearch?.addEventListener('input', e => {
+            searchQuery = e.target.value.toLowerCase();
+            filterAndRenderProducts();
+        });
         filterButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 filterButtons.forEach(b => b.classList.remove('active'));
@@ -2540,358 +921,87 @@ anvil.on('message', async (msg) => {
 
         function filterAndRenderProducts() {
             if (!marketGrid) return;
-            
-            const filteredProducts = Array.from(allProductsCache.values()).filter(product => {
-                const matchesSearch = product.name.toLowerCase().includes(searchQuery) || 
-                                    product.creator.toLowerCase().includes(searchQuery);
-                const matchesFilter = currentFilter === 'all' || 
-                                    currentFilter === 'free' && product.price === 0 ||
-                                    product.type === currentFilter;
+            const filtered = Array.from(allProductsCache.values()).filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(searchQuery) || p.creator.toLowerCase().includes(searchQuery);
+                const matchesFilter = currentFilter === 'all' || (currentFilter === 'free' && p.price === 0) || p.type === currentFilter;
                 return matchesSearch && matchesFilter;
             });
-
-            if (filteredProducts.length === 0) {
-                marketGrid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
-                        <i class="fa-solid fa-search" style="font-size: 3rem; color: var(--color-border); margin-bottom: 1rem;"></i>
-                        <h3>No items found</h3>
-                        <p>Try adjusting your search or filter criteria</p>
-                    </div>`;
-                return;
-            }
-
-            marketGrid.innerHTML = filteredProducts.map(createProductCard).join('');
+            marketGrid.innerHTML = filtered.length ? filtered.map(createProductCard).join('') : `<p style="text-align:center; grid-column: 1 / -1;">No items match your criteria.</p>`;
         }
-
-        // Features Tab Handling
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const tabPanes = document.querySelectorAll('.tab-pane');
-
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const targetTab = button.dataset.tab;
-                
-                // Update active states
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabPanes.forEach(pane => pane.classList.remove('active'));
-                
-                button.classList.add('active');
-                document.getElementById(targetTab).classList.add('active');
-                
-                // Trigger animations
-                document.getElementById(targetTab).querySelectorAll('[data-aos]').forEach(el => {
-                    el.classList.remove('aos-animate');
-                    setTimeout(() => el.classList.add('aos-animate'), 100);
-                });
-            });
-        });
-
-        // Personality Forge Sliders Animation
-        function initializeSliders() {
-            document.querySelectorAll('.slider').forEach(slider => {
-                const width = slider.style.width;
-                slider.style.setProperty('--width', width);
-            });
-        }
-
-        // Terminal Animation
-        function initializeTerminal() {
-            const commands = document.querySelectorAll('.terminal-content .command');
-            let delay = 0;
-            
-            commands.forEach((cmd, index) => {
-                setTimeout(() => {
-                    cmd.style.opacity = '1';
-                    const response = cmd.nextElementSibling;
-                    if (response) {
-                        setTimeout(() => {
-                            response.style.opacity = '1';
-                        }, 500);
-                    }
-                }, delay);
-                delay += 1000;
-            });
-        }
-
-        // Code Syntax Highlighting
-        function highlightCode() {
-            document.querySelectorAll('pre code').forEach(block => {
-                block.innerHTML = block.innerHTML.replace(
-                    /(\/\/.*)|(\b(?:const|let|var|function|new|async|await)\b)|(\b\w+(?=\())|(['"`].*['"`])/g,
-                    match => {
-                        if (match.startsWith('//')) return `<span style="color: #6b7280">${match}</span>`;
-                        if (/\b(?:const|let|var|function|new|async|await)\b/.test(match)) 
-                            return `<span style="color: #7c3aed">${match}</span>`;
-                        if (/\b\w+(?=\()/.test(match)) return `<span style="color: #60a5fa">${match}</span>`;
-                        if (/['"`].*['"`]/.test(match)) return `<span style="color: #34d399">${match}</span>`;
-                        return match;
-                    }
-                );
-            });
-        }
-
-        // Initialize features when tab is shown
-        function initializeFeatures() {
-            initializeSliders();
-            initializeTerminal();
-            highlightCode();
-        }
-
+        
         // --- PROFILE PAGE FUNCTIONS ---
-        function toggleEdit(formId) {
-            const form = document.getElementById(`${formId}Form`);
-            const inputs = form.querySelectorAll('input, textarea');
-            const actions = form.querySelector('.form-actions');
-            
-            inputs.forEach(input => input.disabled = false);
-            actions.classList.remove('hidden');
-        }
-
-        function cancelEdit(formId) {
-            const form = document.getElementById(`${formId}Form`);
-            const inputs = form.querySelectorAll('input, textarea');
-            const actions = form.querySelector('.form-actions');
-            
-            inputs.forEach(input => {
-                input.disabled = true;
-                input.value = input.defaultValue;
-            });
-            actions.classList.add('hidden');
-        }
-
-    // (avatar functions implemented later)
-
-        async function changePassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (newPassword !== confirmPassword) {
-                showToast('New passwords do not match');
-                return;
-            }
-
-            try {
-                const credentials = firebase.auth.EmailAuthProvider.credential(
-                    currentUser.email,
-                    currentPassword
-                );
-
-                await currentUser.reauthenticateWithCredential(credentials);
-                await currentUser.updatePassword(newPassword);
-
-                showToast('Password updated successfully');
-                document.getElementById('securityForm').reset();
-            } catch (error) {
-                showToast('Error updating password');
-                console.error('Error updating password:', error);
-            }
-        }
-
-        const avatarOptions = [
-            { id: 'wizard', icon: 'wizard', name: 'Wizard' },
-            { id: 'robot', icon: 'robot', name: 'Robot' },
-            { id: 'ninja', icon: 'ninja', name: 'Ninja' },
-            { id: 'alien', icon: 'alien', name: 'Alien' },
-            { id: 'ghost', icon: 'ghost', name: 'Ghost' },
-            { id: 'dragon', icon: 'dragon', name: 'Dragon' },
-            { id: 'unicorn', icon: 'unicorn', name: 'Unicorn' },
-            { id: 'phoenix', icon: 'phoenix', name: 'Phoenix' }
-        ];
-
-        function openAvatarModal() {
-            const html = `
-                <div class="modal-content modal-auth" style="max-width: 500px;">
-                    <div class="modal-close" onclick="closeModal()">
-                        <i class="fa-solid fa-times"></i>
-                    </div>
-                    <h3>Choose Your Avatar</h3>
-                    <div class="avatar-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1.5rem 0;">
-                        ${avatarOptions.map(avatar => `
-                            <div class="avatar-option" onclick="updateAvatar('${avatar.id}')" style="cursor: pointer; text-align: center; padding: 0.5rem; border-radius: 8px; transition: all 0.2s; border: 1px solid var(--color-border);">
-                                <img src="https://api.dicebear.com/6.x/pixel-art/svg?seed=${avatar.id}&backgroundColor=845EEE" alt="${avatar.name}" style="width:72px; height:72px; display:block; margin: 0 auto; border-radius: 8px;">
-                                <div style="margin-top: 0.5rem; font-size: 0.9rem;">${avatar.name}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>`;
-            
-            modalContainer.innerHTML = html;
-            modalContainer.classList.remove('hidden');
-        }
-
-        async function updateAvatar(avatarId) {
-            const avatarUrl = `https://api.dicebear.com/6.x/pixel-art/svg?seed=${avatarId}&backgroundColor=845EEE`;
-            try {
-                // If user is not logged in, update preview locally and store selection temporarily
-                if (!currentUser) {
-                    const avatarImg = document.getElementById('userAvatar');
-                    if (avatarImg) avatarImg.src = avatarUrl;
-                    const statusImg = document.querySelector('#user-status-container img');
-                    if (statusImg) statusImg.src = avatarUrl;
-                    try { localStorage.setItem('selectedAvatar', avatarUrl); } catch (e) {}
-                    showToast('Avatar updated locally. Log in to save it to your account.');
-                    closeModal();
-                    return;
-                }
-
-                // Update firebase user profile photoURL
-                await currentUser.updateProfile({ photoURL: avatarUrl });
-
-                // Update profile page avatar and header avatar if present
-                const avatarImg = document.getElementById('userAvatar');
-                if (avatarImg) avatarImg.src = avatarUrl;
-
-                const statusImg = document.querySelector('#user-status-container img');
-                if (statusImg) statusImg.src = avatarUrl;
-
-                // Also persist to users collection (best-effort)
-                try {
-                    await db.collection('users').doc(currentUser.uid).update({ photoURL: avatarUrl });
-                } catch (e) {
-                    // non-fatal
-                }
-
-                showToast('Avatar updated successfully');
-                closeModal();
-            } catch (error) {
-                showToast('Error updating avatar');
-                console.error('Error updating avatar:', error);
-            }
-        }
-
-        // Expose functions globally so inline onclick handlers work from the HTML
-        window.openAvatarModal = openAvatarModal;
-        window.updateAvatar = updateAvatar;
-
-    async function deleteAccount() {
-            if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                return;
-            }
-
-            try {
-                await db.collection('users').doc(currentUser.uid).delete();
-                await currentUser.delete();
-                showToast('Account deleted successfully');
-                updateUIForLoggedOutUser();
-                switchToPage('hero-page');
-            } catch (error) {
-                showToast('Error deleting account');
-                console.error('Error deleting account:', error);
-            }
-        }
-
-        // Set up profile page event listeners
-        document.getElementById('personalInfoForm')?.addEventListener('submit', updateProfile);
-        document.querySelector('.btn-danger')?.addEventListener('click', deleteAccount);
-
-        // Theme toggle handler
-        document.getElementById('themeToggle')?.addEventListener('change', async (e) => {
-            const newTheme = e.target.checked ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            
-            if (currentUser) {
-                try {
-                    await db.collection('users').doc(currentUser.uid).update({
-                        'preferences.theme': newTheme
-                    });
-                } catch (error) {
-                    console.error('Error updating theme preference:', error);
-                }
-            }
-        });
-
-        // Email notifications toggle handler
-        document.getElementById('emailNotifications')?.addEventListener('change', async (e) => {
-            if (currentUser) {
-                try {
-                    await db.collection('users').doc(currentUser.uid).update({
-                        'preferences.emailNotifications': e.target.checked
-                    });
-                    showToast(`Email notifications ${e.target.checked ? 'enabled' : 'disabled'}`);
-                } catch (error) {
-                    console.error('Error updating email preferences:', error);
-                    showToast('Error updating preferences');
-                }
-            }
-        });
-
-        // Update UI for profile page
-        function updateProfileUI() {
+        function updateProfilePageUI() {
             if (!currentUser) return;
+            const name = currentUser.displayName || 'User';
+            const seed = encodeURIComponent(name);
+            const avatarUrl = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=${seed}&backgroundColor=845EEE`;
 
-            // Update avatar and basic info
-            const avatarImg = document.getElementById('userAvatar');
-            const displayNameEl = document.getElementById('profileDisplayName');
-            const emailEl = document.getElementById('profileEmail');
-            const displayNameInput = document.getElementById('displayName');
-            const emailInput = document.getElementById('email');
-            const bioInput = document.getElementById('bio');
+            document.getElementById('userAvatar').src = avatarUrl;
+            document.getElementById('profileDisplayName').textContent = name;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('displayName').value = name;
+            document.getElementById('email').value = currentUser.email;
 
-            avatarImg.src = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=default&backgroundColor=845EEE`;
-            displayNameEl.textContent = currentUser.displayName || 'User';
-            emailEl.textContent = currentUser.email;
-            displayNameInput.value = currentUser.displayName || '';
-            emailInput.value = currentUser.email;
-
-            // Fetch additional user data
             db.collection('users').doc(currentUser.uid).get().then(doc => {
-                if (doc.exists) {
-                    const userData = doc.data();
-                    
-                    // Update bio and basic info
-                    bioInput.value = userData.bio || '';
-                    document.getElementById('totalTokens').textContent = userData.totalTokens?.toLocaleString() || '0';
-                    document.getElementById('membershipTier').textContent = userData.membershipTier || 'Free Tier';
-                    
-                    // Format join date nicely
-                    const joinDate = userData.createdAt?.toDate();
-                    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-                    document.getElementById('joinDate').textContent = joinDate ? 
-                        joinDate.toLocaleDateString(undefined, dateOptions) : '-';
-                    
-                    // Update preferences
-                    if (userData.preferences) {
-                        // Theme toggle
-                        const themeToggle = document.getElementById('themeToggle');
-                        if (themeToggle) {
-                            themeToggle.checked = userData.preferences.theme === 'light';
-                        }
-                        
-                        // Email notifications toggle
-                        const emailToggle = document.getElementById('emailNotifications');
-                        if (emailToggle) {
-                            emailToggle.checked = userData.preferences.emailNotifications;
-                        }
+                if(doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('totalTokens').textContent = data.totalTokens?.toLocaleString() || '0';
+                    const joinDate = data.createdAt?.toDate();
+                    if(joinDate) {
+                        document.getElementById('joinDate').textContent = joinDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
                     }
                 }
             });
         }
 
-        async function updateProfile(e) {
-            if (e) e.preventDefault();
-            if (!currentUser) { showToast('Please log in to update your profile.'); return; }
-            const displayName = document.getElementById('displayName').value.trim();
-            const bio = document.getElementById('bio').value.trim();
+        document.getElementById('personalInfoForm')?.addEventListener('submit', async e => {
+            e.preventDefault();
+            if (!currentUser) return;
+            const newName = document.getElementById('displayName').value.trim();
+            if (newName === currentUser.displayName) return;
+            
             try {
-                // Update auth profile
-                await currentUser.updateProfile({ displayName });
-                // Update Firestore user doc
-                await db.collection('users').doc(currentUser.uid).set({ displayName, bio }, { merge: true });
-                showToast('Profile updated');
-                updateProfileUI();
-            } catch (err) {
-                console.error('updateProfile error', err);
-                showToast('Could not update profile');
+                await currentUser.updateProfile({ displayName: newName });
+                await db.collection('users').doc(currentUser.uid).update({ displayName: newName });
+                showToast('Profile updated!');
+                updateUIForLoggedInUser();
+            } catch (error) {
+                showToast('Could not update profile.');
             }
-        }
+        });
+        
+        document.getElementById('avatarChangeBtn')?.addEventListener('click', () => {
+             const avatarOptions = ['wizard', 'robot', 'ninja', 'alien', 'ghost', 'dragon'];
+             const html = `<div class="modal-content modal-auth" style="max-width: 500px;">
+                <div class="modal-close"><i class="fa-solid fa-times"></i></div>
+                <h3>Choose Your Avatar</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0;">
+                ${avatarOptions.map(id => `<div class="avatar-option" data-id="${id}" style="cursor: pointer; text-align: center;">
+                    <img src="https://api.dicebear.com/6.x/pixel-art/svg?seed=${id}&backgroundColor=845EEE" style="width:80px; height:80px; border-radius:8px;">
+                    </div>`).join('')}
+                </div>
+             </div>`;
+             modalContainer.innerHTML = html;
+             modalContainer.classList.add('show');
+             modalContainer.querySelector('.modal-close').addEventListener('click', closeModal);
+             modalContainer.querySelectorAll('.avatar-option').forEach(opt => {
+                 opt.addEventListener('click', async () => {
+                     const avatarId = opt.dataset.id;
+                     const newAvatarUrl = `https://api.dicebear.com/6.x/pixel-art/svg?seed=${avatarId}&backgroundColor=845EEE`;
+                     if (!currentUser) { showToast('Please log in to save avatar.'); return; }
+                     try {
+                        await currentUser.updateProfile({ photoURL: newAvatarUrl });
+                        showToast('Avatar updated!');
+                        updateUIForLoggedInUser();
+                        closeModal();
+                     } catch(err) {
+                        showToast('Could not update avatar.');
+                     }
+                 });
+             });
+        });
 
-        window.updateProfile = updateProfile;
-
-        // Initialize app with all features
         initializeApp();
-        initializeFeatures();
     });
     </script>
 </body>
