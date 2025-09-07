@@ -24,6 +24,7 @@
             --color-text-primary: #F9FAFB;
             --color-text-secondary: #9CA3AF;
             --color-text-heading: #FFFFFF;
+            --color-favorite: #facc15; /* Yellow for favorite star */
             --font-family: 'Inter', sans-serif;
             --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
@@ -65,7 +66,7 @@
         
         @keyframes breathe {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.02); }
         }
 
         /* General Styles */
@@ -133,7 +134,16 @@
         .auth-container { display: flex; align-items: center; gap: 12px; }
         .user-status { font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; border-radius: 8px; transition: background-color 0.2s; }
         .user-status:hover { background-color: var(--color-surface-light); }
-        .user-status img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--color-primary); }
+        
+        /* User Avatar Display */
+        .avatar-display { width: 32px; height: 32px; position: relative; }
+        .avatar-display .avatar-base { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: var(--color-surface-light); border: 2px solid var(--color-primary); }
+        .avatar-display .avatar-base img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-display .avatar-base i { font-size: 1.2rem; color: white; }
+        .avatar-accessories { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .avatar-accessories i { position: absolute; color: white; text-shadow: 0 0 3px black; }
+        .accessory-fa-sun { font-size: 0.8rem; top: -15%; left: 50%; transform: translateX(-50%); }
+        .accessory-fa-feather-winged { font-size: 1rem; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.7; }
 
         /* Hero Section */
         #hero-page { min-height: 100vh; display: flex; align-items: center; text-align: center; padding-top: 80px; }
@@ -154,26 +164,29 @@
         /* Generic Content Styles */
         .page-content { background-color: transparent; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-        .market-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; transition: all 0.3s ease-in-out; cursor: pointer; display: flex; flex-direction: column; box-shadow: var(--shadow-sm); }
+        .market-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; transition: all 0.3s ease-in-out; display: flex; flex-direction: column; box-shadow: var(--shadow-sm); position: relative; }
         .market-card:hover { transform: translateY(-8px); border-color: var(--color-primary); box-shadow: 0 0 20px rgba(132, 94, 238, 0.3); }
+        .market-card.equipped { border-color: var(--color-secondary); box-shadow: 0 0 15px rgba(0, 221, 235, 0.4); }
         .card-image { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: var(--color-background); }
         .card-content { padding: 1rem; flex-grow: 1; }
         .card-title { font-size: 1.1rem; font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.25rem; }
         .card-creator { font-size: 0.875rem; color: var(--color-text-secondary); }
         .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 0 1rem 1rem 1rem; font-size: 1rem; font-weight: 600; }
-        
+        .market-card .card-footer .fa-arrow-right { cursor: pointer; }
+        .inventory-card-actions { display: flex; gap: 0.5rem; }
+        .equip-btn { font-size: 0.9rem; padding: 8px 12px; }
+        .favorite-btn { font-size: 1.2rem; color: var(--color-text-secondary); cursor: pointer; transition: color 0.2s, transform 0.2s; position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 50%; }
+        .favorite-btn:hover { color: var(--color-favorite); transform: scale(1.1); }
+        .favorite-btn.favorited { color: var(--color-favorite); }
+
         /* Features Page */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 3rem 0; }
         .feature-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 2rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
         .feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
         .feature-icon { width: 64px; height: 64px; background: linear-gradient(45deg, var(--color-primary), var(--color-secondary)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.5rem; color: white; }
         .feature-demo { margin-top: 1.5rem; border-radius: 8px; overflow: hidden; background: var(--color-surface-light); padding: 1rem; }
-        .chat-demo { display: flex; flex-direction: column; gap: 1rem; }
-        .chat-message { display: flex; align-items: flex-start; gap: 0.5rem; animation: bubbleIn 0.5s ease forwards; }
-        .chat-message img { width: 32px; height: 32px; border-radius: 50%; }
-        .chat-message .message { background: var(--color-surface); padding: 0.75rem 1rem; border-radius: 12px; border-top-left-radius: 4px; max-width: 80%; }
-        .chat-message.ai .message { background: var(--color-primary); color: white; border-top-right-radius: 4px; border-top-left-radius: 12px; }
-        @keyframes bubbleIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .feature-demo-controls { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+        .feature-demo-controls div { display: flex; gap: 0.5rem; }
         
         /* Pricing Cards */
         .pricing-comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin: 3rem 0; position: relative; }
@@ -198,8 +211,11 @@
         .profile-content { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-top: 2rem; align-items: start; }
         @media (max-width: 992px) { .profile-content { grid-template-columns: 1fr; } }
         .profile-sidebar { background: var(--color-surface); border-radius: 12px; padding: 2rem; border: 1px solid var(--color-border); position: sticky; top: 100px; }
-        .profile-avatar-container { width: 150px; height: 150px; margin: 0 auto 1rem; position: relative; border-radius: 50%; background: var(--color-surface-light); padding: 0.5rem; border: 3px solid var(--color-primary); }
-        .profile-avatar-container img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        #profile-avatar-wrapper { width: 150px; height: 150px; margin: 0 auto 1rem; position: relative; }
+        #profile-avatar-wrapper .avatar-display { width: 100%; height: 100%; position: relative; }
+        #profile-avatar-wrapper .avatar-display .avatar-base { font-size: 6rem; }
+        #profile-avatar-wrapper .avatar-display .accessory-fa-sun { font-size: 3rem; }
+        #profile-avatar-wrapper .avatar-display .accessory-fa-feather-winged { font-size: 4rem; }
         .avatar-change-btn { position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; font-size: 1rem; }
         .avatar-change-btn:hover { background: var(--color-secondary); transform: scale(1.1); }
         .profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; }
@@ -291,7 +307,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: breathe 4s ease-in-out infinite;
+            animation: breathe 3s ease-in-out infinite;
         }
         #floating-ai-container:active {
             cursor: grabbing;
@@ -306,20 +322,50 @@
             box-shadow: inset 0 -5px 15px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.3);
             position: relative;
             transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-face {
+            width: 60%;
+            height: 60%;
+            position: relative;
         }
         .ai-eye {
             position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60%;
-            height: 30%;
+            top: 20%;
+            width: 12px;
+            height: 12px;
             background: var(--ai-eye-color);
             border-radius: 50%;
-            transition: background 0.3s ease;
-            overflow: hidden;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
         }
+        .ai-eye-left { left: 15%; }
+        .ai-eye-right { right: 15%; }
+        .ai-mouth {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 10px;
+            border: 2px solid var(--ai-eye-color);
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            transition: all 0.2s ease;
+        }
+
+        /* AI Expressions */
+        .ai-face.happy .ai-mouth {
+            height: 15px;
+            border-radius: 0 0 15px 15px;
+        }
+        .ai-face.blinking .ai-eye {
+            transform: scaleY(0.1);
+            height: 8px; /* Make it flatter when blinking */
+        }
+        
         #radial-menu-container {
             position: fixed;
             z-index: 1002;
@@ -390,7 +436,7 @@
                     <li><a class="nav-link" data-target="marketplace-page">Marketplace</a></li>
                     <li><a class="nav-link" data-target="testimonials-page">Testimonials</a></li>
                     <li><a class="nav-link" data-target="guildpass-page">Guild Pass</a></li>
-                    <li><a class="nav-link hidden" data-target="inventory-page" id="inventory-nav-link">My Assets</a></li>
+                    <li><a class="nav-link hidden" data-target="inventory-page" id="inventory-nav-link">My Inventory</a></li>
                     <li><a class="nav-link hidden" data-target="profile-page" id="profile-nav-link">Profile</a></li>
                 </ul>
                 <div class="auth-container">
@@ -445,11 +491,19 @@
                     <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
                         <div class="feature-icon"><i class="fas fa-palette"></i></div>
                         <h3>Live Customization Demo</h3>
-                        <p>Try out skins and personalities right here on the website by interacting with our floating AI helper.</p>
-                        <div class="feature-demo" style="display: flex; gap: 1rem; justify-content: center;">
-                           <button id="demo-skin-purple" class="btn btn-secondary" style="background: #845EEE;">Purple</button>
-                           <button id="demo-skin-cyan" class="btn btn-secondary" style="background: #00DDEB;">Cyan</button>
-                           <button id="demo-skin-orange" class="btn btn-secondary" style="background: #f97316;">Orange</button>
+                        <p>Try out skins and expressions right here on the website by interacting with our floating AI helper.</p>
+                        <div class="feature-demo">
+                           <div class="feature-demo-controls">
+                                <div>
+                                    <button class="btn btn-secondary demo-skin-btn" style="background: #845EEE;" data-color="#845EEE">Purple</button>
+                                    <button class="btn btn-secondary demo-skin-btn" style="background: #00DDEB;" data-color="#00DDEB">Cyan</button>
+                                    <button class="btn btn-secondary demo-skin-btn" style="background: #f97316;" data-color="#f97316">Orange</button>
+                                </div>
+                                <div>
+                                    <button class="btn btn-secondary face-change-btn" data-face="neutral">Neutral</button>
+                                    <button class="btn btn-secondary face-change-btn" data-face="happy">Happy</button>
+                                </div>
+                           </div>
                         </div>
                     </div>
                 </div>
@@ -465,12 +519,13 @@
                 <div class="marketplace-controls" data-aos="fade-up">
                     <div class="search-bar">
                         <i class="fa-solid fa-search"></i>
-                        <input type="text" id="market-search" placeholder="Search assets...">
+                        <input type="text" id="market-search" placeholder="Search items...">
                     </div>
                     <div class="filter-buttons">
                         <button class="filter-btn active" data-filter="all">All</button>
                         <button class="filter-btn" data-filter="personality">Personalities</button>
                         <button class="filter-btn" data-filter="skin">Skins</button>
+                        <button class="filter-btn" data-filter="accessory">Accessories</button>
                         <button class="filter-btn" data-filter="tool">Tools</button>
                         <button class="filter-btn" data-filter="free">Free</button>
                     </div>
@@ -525,8 +580,8 @@
         <section id="inventory-page" class="hidden">
              <div class="container">
                   <div class="section-header" data-aos="fade-up">
-                        <h2>My <span class="text-gradient">Assets</span></h2>
-                        <p>All of your acquired assets in one place, ready to be used in the Anvil desktop app.</p>
+                        <h2>My <span class="text-gradient">Inventory</span></h2>
+                        <p>All of your acquired items in one place. Equip skins and accessories to customize your AI's appearance.</p>
                   </div>
                   <div class="page-content">
                         <div class="grid-container" id="inventory-grid-container"></div>
@@ -538,13 +593,12 @@
             <div class="container">
                 <div class="profile-content" data-aos="fade-up">
                     <div class="profile-sidebar">
-                        <div class="profile-avatar-section">
-                            <div class="profile-avatar-container">
-                                <img src="" alt="User Avatar" id="userAvatar">
-                                <button class="avatar-change-btn" title="Change Avatar" id="avatarChangeBtn">
-                                    <i class="fas fa-user-edit"></i>
-                                </button>
-                            </div>
+                        <div class="profile-avatar-section" style="text-align:center;">
+                             <div id="profile-avatar-wrapper">
+                                </div>
+                            <button class="avatar-change-btn" title="Change Avatar" id="avatarChangeBtn">
+                                <i class="fas fa-user-edit"></i>
+                            </button>
                             <h3 id="profileDisplayName">User Name</h3>
                             <p id="profileEmail">user@example.com</p>
                         </div>
@@ -653,7 +707,11 @@
 
     <div id="floating-ai-container">
         <div class="ai-body">
-            <div class="ai-eye"></div>
+            <div class="ai-face">
+                <div class="ai-eye ai-eye-left"></div>
+                <div class="ai-eye ai-eye-right"></div>
+                <div class="ai-mouth"></div>
+            </div>
         </div>
     </div>
     <div id="radial-menu-container">
@@ -705,7 +763,7 @@
             apiKey: "AIzaSyBlqTqN1gUoCpuqPqmpLdtZdJHVFbTWyTs",
             authDomain: "fugthdesign-91744.firebaseapp.com",
             projectId: "fugthdesign-91744",
-            storageBucket: "fugthdesign-91744.firebasestorage.app",
+            storageBucket: "fugthdesign-91744.appspot.com",
             messagingSenderId: "797596632132",
             appId: "1:797596632132:web:2c2ebfa54c908e09a26811"
         };
@@ -714,8 +772,9 @@
         const db = firebase.firestore();
         
         let currentUser = null;
-        let userInventory = new Set();
+        let userInventory = new Map();
         let allProductsCache = new Map();
+        let equippedItems = { skin: null, accessories: [] };
 
         // --- ELEMENT REFERENCES ---
         const authButton = document.getElementById('auth-button');
@@ -731,16 +790,33 @@
         
         // --- FLOATING AI ---
         const aiContainer = document.getElementById('floating-ai-container');
+        const aiFace = aiContainer.querySelector('.ai-face');
         const radialMenu = document.getElementById('radial-menu-container');
         let isDragging = false;
         let offsetX, offsetY;
-        let randomMoveInterval;
+        let moveTimeout;
+
+        function setAIFace(face) {
+            aiFace.classList.remove('happy', 'neutral', 'blinking');
+            if (face) {
+                aiFace.classList.add(face);
+            }
+        }
+
+        function blink() {
+            if (isDragging) return;
+            aiFace.classList.add('blinking');
+            setTimeout(() => {
+                aiFace.classList.remove('blinking');
+            }, 200);
+        }
+        setInterval(blink, 4000); // Blink every 4 seconds
 
         const startDrag = (e) => {
             isDragging = true;
             aiContainer.style.cursor = 'grabbing';
-            aiContainer.style.transition = 'none'; // Disable smooth transition while dragging
-            clearInterval(randomMoveInterval); // Stop random movement
+            aiContainer.style.transition = 'none';
+            clearTimeout(moveTimeout);
             
             offsetX = e.clientX - aiContainer.offsetLeft;
             offsetY = e.clientY - aiContainer.offsetTop;
@@ -754,7 +830,6 @@
             let x = e.clientX - offsetX;
             let y = e.clientY - offsetY;
             
-            // Constrain to viewport
             const maxX = window.innerWidth - aiContainer.clientWidth;
             const maxY = window.innerHeight - aiContainer.clientHeight;
             
@@ -767,29 +842,32 @@
         };
 
         const dragEnd = () => {
-            // Delay setting isDragging to false to prevent click event from firing immediately
             setTimeout(() => { isDragging = false; }, 50);
-
             aiContainer.style.cursor = 'grab';
             aiContainer.style.transition = 'top 2s ease-in-out, left 2s ease-in-out';
             document.removeEventListener('mousemove', dragMove);
             document.removeEventListener('mouseup', dragEnd);
-            startRandomMovement(); // Resume random movement
+            scheduleNextMove();
         };
 
         const moveAiRandomly = () => {
-            if (isDragging || radialMenu.classList.contains('show')) return;
+            if (isDragging || radialMenu.classList.contains('show')) {
+                scheduleNextMove();
+                return;
+            }
             const maxX = window.innerWidth - aiContainer.clientWidth;
             const maxY = window.innerHeight - aiContainer.clientHeight;
             const newX = Math.random() * maxX;
             const newY = Math.random() * maxY;
             aiContainer.style.left = `${newX}px`;
             aiContainer.style.top = `${newY}px`;
+            scheduleNextMove();
         };
         
-        const startRandomMovement = () => {
-            clearInterval(randomMoveInterval);
-            randomMoveInterval = setInterval(moveAiRandomly, 20000); // Move every 20 seconds
+        const scheduleNextMove = () => {
+            clearTimeout(moveTimeout);
+            const randomDelay = Math.random() * 5000 + 5000; // Move every 5-10 seconds
+            moveTimeout = setTimeout(moveAiRandomly, randomDelay);
         };
 
         const toggleRadialMenu = (e) => {
@@ -802,7 +880,6 @@
 
         const updateRadialMenuPosition = () => {
             const aiRect = aiContainer.getBoundingClientRect();
-            const menuSize = radialMenu.offsetWidth;
             radialMenu.style.left = `${aiRect.left + aiRect.width / 2}px`;
             radialMenu.style.top = `${aiRect.top + aiRect.height / 2}px`;
 
@@ -811,7 +888,7 @@
             const radius = 80;
 
             buttons.forEach((btn, index) => {
-                const angle = (index * angleStep - 90) * (Math.PI / 180); // -90 to start from top
+                const angle = (index * angleStep - 90) * (Math.PI / 180);
                 const x = radius * Math.cos(angle);
                 const y = radius * Math.sin(angle);
                 btn.style.transform = `translate(${x}px, ${y}px)`;
@@ -841,16 +918,16 @@
             }
         });
 
-        // --- Feature Demo Interactivity ---
-        const root = document.documentElement;
-        document.getElementById('demo-skin-purple').addEventListener('click', () => {
-            root.style.setProperty('--ai-body-color', '#845EEE');
+        // --- Feature Demo ---
+        document.querySelectorAll('.demo-skin-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.documentElement.style.setProperty('--ai-body-color', e.target.dataset.color);
+            });
         });
-        document.getElementById('demo-skin-cyan').addEventListener('click', () => {
-            root.style.setProperty('--ai-body-color', '#00DDEB');
-        });
-        document.getElementById('demo-skin-orange').addEventListener('click', () => {
-            root.style.setProperty('--ai-body-color', '#f97316');
+        document.querySelectorAll('.face-change-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                setAIFace(e.target.dataset.face);
+            });
         });
         
         // --- INITIALIZATION ---
@@ -858,36 +935,7 @@
             renderLoader(marketGrid);
             try {
                 await fetchAllProducts();
-                
-                auth.onAuthStateChanged(async user => {
-                    if (user) {
-                        currentUser = user;
-                        updateUIForLoggedInUser();
-                        try {
-                            const userDocRef = db.collection('users').doc(user.uid);
-                            const userDoc = await userDocRef.get();
-                            if (!userDoc.exists) {
-                                await userDocRef.set({
-                                    displayName: user.displayName || user.email.split('@')[0],
-                                    email: user.email,
-                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                    totalTokens: 1000, 
-                                });
-                            }
-                            await fetchUserInventory();
-                            updateProfilePageUI();
-                        } catch (error) {
-                            console.error("Error fetching user data after login:", error);
-                            showToast("Could not load your profile data.");
-                        }
-                        filterAndRenderProducts();
-                    } else {
-                        currentUser = null;
-                        updateUIForLoggedOutUser();
-                        filterAndRenderProducts();
-                    }
-                });
-                
+                auth.onAuthStateChanged(handleAuthStateChange);
                 switchToPage('hero-page');
             } catch (error) {
                 console.error("Error initializing app:", error);
@@ -895,7 +943,41 @@
             }
         }
         
-        // --- AUTHENTICATION ---
+        // --- AUTHENTICATION & CORE LOGIC ---
+        async function handleAuthStateChange(user) {
+            if (user) {
+                currentUser = user;
+                updateNavForLoggedInUser();
+                try {
+                    const userDocRef = db.collection('users').doc(user.uid);
+                    const userDoc = await userDocRef.get();
+                    if (!userDoc.exists) {
+                        await userDocRef.set({
+                            displayName: user.displayName || user.email.split('@')[0],
+                            email: user.email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            totalTokens: 1000,
+                        });
+                    }
+                    
+                    await fetchEquippedItems();
+                    await fetchUserInventory();
+
+                    updateAvatarDisplay();
+                    updateProfilePageUI();
+                    filterAndRenderProducts();
+
+                } catch (error) {
+                    console.error("Error fetching user data after login:", error);
+                    showToast("Could not load your profile data.");
+                }
+            } else {
+                currentUser = null;
+                updateUIForLoggedOutUser();
+                filterAndRenderProducts();
+            }
+        }
+
         authButton.addEventListener('click', e => {
             e.preventDefault();
             currentUser ? auth.signOut().then(() => showToast('You have been logged out.')) : openAuthModal();
@@ -905,7 +987,13 @@
         async function fetchAllProducts() {
             try {
                 const snapshot = await db.collection('products').get();
-                snapshot.forEach(doc => allProductsCache.set(doc.id, { id: doc.id, ...doc.data() }));
+                if (snapshot.empty) {
+                    await seedDefaultProducts();
+                    const newSnapshot = await db.collection('products').get();
+                    newSnapshot.forEach(doc => allProductsCache.set(doc.id, { id: doc.id, ...doc.data() }));
+                } else {
+                    snapshot.forEach(doc => allProductsCache.set(doc.id, { id: doc.id, ...doc.data() }));
+                }
             } catch (error) {
                 console.error("Error fetching products:", error);
                 if(marketGrid) marketGrid.innerHTML = '<p style="text-align:center;">Could not load marketplace items.</p>';
@@ -916,7 +1004,26 @@
             if (!currentUser) return;
             userInventory.clear();
             const snapshot = await db.collection('user_inventory').doc(currentUser.uid).collection('items').get();
-            snapshot.forEach(doc => userInventory.add(doc.id));
+            snapshot.forEach(doc => userInventory.set(doc.id, doc.data()));
+        }
+
+        async function fetchEquippedItems() {
+            if (!currentUser) return;
+            try {
+                const doc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('avatar').get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    equippedItems = {
+                        skin: data.skin || null,
+                        accessories: data.accessories || []
+                    };
+                } else {
+                    equippedItems = { skin: null, accessories: [] };
+                }
+            } catch (error) {
+                console.error("Error fetching equipped items:", error);
+                equippedItems = { skin: null, accessories: [] }; // Reset on error
+            }
         }
 
         // --- UI RENDERING ---
@@ -927,43 +1034,96 @@
         function renderInventory() {
             if (!inventoryGrid) return;
             if (userInventory.size === 0) { 
-                inventoryGrid.innerHTML = "<p style='text-align: center; grid-column: 1 / -1;'>Your asset inventory is empty.</p>"; 
+                inventoryGrid.innerHTML = "<p style='text-align: center; grid-column: 1 / -1;'>Your inventory is empty.</p>"; 
                 return; 
             }
-            inventoryGrid.innerHTML = Array.from(userInventory)
-                .map(id => allProductsCache.get(id))
-                .filter(Boolean)
-                .map(createProductCard)
-                .join('');
+            const inventoryArray = Array.from(userInventory.keys())
+                .map(id => ({ id, ...allProductsCache.get(id), ...userInventory.get(id) }))
+                .filter(item => item.name);
+
+            inventoryArray.sort((a, b) => {
+                if (a.favorited && !b.favorited) return -1;
+                if (!a.favorited && b.favorited) return 1;
+                return a.name.localeCompare(b.name);
+            });
+            
+            inventoryGrid.innerHTML = inventoryArray.map(product => createProductCard(product, 'inventory')).join('');
         }
 
-        function createProductCard(product) {
-            const priceText = product.price === 0 ? 'Free' : `$${product.price.toFixed(2)}`;
+        function createProductCard(product, context = 'marketplace') {
             const isOwned = userInventory.has(product.id);
-            return `<div class="market-card" data-product-id="${product.id}" data-aos="fade-up">
+            const isEquipped = equippedItems.skin === product.id || equippedItems.accessories.includes(product.id);
+            const equippedClass = isEquipped ? 'equipped' : '';
+            
+            let footerHtml = '';
+            let favoriteButtonHtml = '';
+
+            if (context === 'inventory') {
+                const isFavorited = userInventory.get(product.id)?.favorited;
+                favoriteButtonHtml = `<div class="favorite-btn ${isFavorited ? 'favorited' : ''}" data-product-id="${product.id}" title="Favorite"><i class="fa-solid fa-star"></i></div>`;
+                
+                const equipButtonText = isEquipped ? 'Unequip' : 'Equip';
+                footerHtml = `
+                    <div class="inventory-card-actions">
+                        <button class="btn btn-primary equip-btn" data-product-id="${product.id}">${equipButtonText}</button>
+                    </div>`;
+            } else {
+                const priceText = product.price === 0 ? 'Free' : `$${product.price.toFixed(2)}`;
+                footerHtml = `<span class="card-price text-gradient">${isOwned ? 'Owned' : priceText}</span>
+                              <i class="fa-solid fa-arrow-right"></i>`;
+            }
+
+            return `<div class="market-card ${equippedClass}" data-product-id="${product.id}" data-aos="fade-up">
+                        ${favoriteButtonHtml}
                         <div class="card-image"><i class="fa-solid fa-${product.icon}"></i></div>
                         <div class="card-content">
                             <h4 class="card-title">${product.name}</h4>
                             <p class="card-creator">by ${product.creator}</p>
                         </div>
-                        <div class="card-footer">
-                            <span class="card-price text-gradient">${isOwned ? 'Owned' : priceText}</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </div>
+                        <div class="card-footer">${footerHtml}</div>
                     </div>`;
         }
 
         // --- NAVIGATION & UI UPDATES ---
-        function updateUIForLoggedInUser() {
-            const name = currentUser.displayName || currentUser.email.split('@')[0];
-            const seed = encodeURIComponent(name);
-            const avatarUrl = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=${seed}&backgroundColor=845EEE`;
-            
-            userStatusContainer.innerHTML = `<img src="${avatarUrl}" alt="User Avatar"> <span>${name}</span>`;
+        function updateNavForLoggedInUser() {
             authButton.textContent = 'Logout';
             ctaHeaderBtn.classList.add('hidden');
             inventoryNavLink.classList.remove('hidden');
             profileNavLink.classList.remove('hidden');
+
+            const name = currentUser.displayName || currentUser.email.split('@')[0];
+            const baseAvatarUrl = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=${encodeURIComponent(name)}&backgroundColor=845EEE`;
+            const basicAvatarHtml = `<div class="avatar-display"><div class="avatar-base"><img src="${baseAvatarUrl}" alt="User Avatar"></div><div class="avatar-accessories"></div></div>`;
+            userStatusContainer.innerHTML = `${basicAvatarHtml}<span>${name}</span>`;
+        }
+
+        function updateAvatarDisplay() {
+            if (!currentUser) return;
+            const name = currentUser.displayName || currentUser.email.split('@')[0];
+            const baseAvatarUrl = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=${encodeURIComponent(name)}&backgroundColor=845EEE`;
+            
+            let avatarBaseHtml;
+            if (equippedItems.skin) {
+                const skinProduct = allProductsCache.get(equippedItems.skin);
+                avatarBaseHtml = `<div class="avatar-base" style="background-color: var(--color-primary);"><i class="fa-solid fa-${skinProduct?.icon || 'question'}"></i></div>`;
+            } else {
+                avatarBaseHtml = `<div class="avatar-base"><img src="${baseAvatarUrl}" alt="User Avatar"></div>`;
+            }
+
+            const accessoriesHtml = equippedItems.accessories
+                .map(id => allProductsCache.get(id))
+                .filter(Boolean)
+                .map(prod => `<i class="fa-solid ${prod.icon} accessory-${prod.icon}"></i>`)
+                .join('');
+            
+            const fullAvatarHtml = `<div class="avatar-display">${avatarBaseHtml}<div class="avatar-accessories">${accessoriesHtml}</div></div>`;
+            
+            userStatusContainer.innerHTML = `${fullAvatarHtml}<span>${name}</span>`;
+            
+            const profileAvatarWrapper = document.getElementById('profile-avatar-wrapper');
+            if (profileAvatarWrapper) {
+                 profileAvatarWrapper.innerHTML = fullAvatarHtml;
+            }
         }
 
         function updateUIForLoggedOutUser() {
@@ -973,6 +1133,7 @@
             inventoryNavLink.classList.add('hidden');
             profileNavLink.classList.add('hidden');
             userInventory.clear();
+            equippedItems = { skin: null, accessories: [] };
             switchToPage('hero-page');
         }
         
@@ -1024,9 +1185,68 @@
 
         document.addEventListener('click', e => {
             const card = e.target.closest('.market-card');
-            if (card) openProductModal(card.dataset.productId);
+            if (!card) return;
+
+            if (e.target.closest('.equip-btn')) {
+                handleEquipToggle(card.dataset.productId);
+            } else if (e.target.closest('.favorite-btn')) {
+                handleFavoriteToggle(card.dataset.productId);
+            } else if (!e.target.closest('.inventory-card-actions')) {
+                 openProductModal(card.dataset.productId);
+            }
         });
         
+        // --- ACTION HANDLERS ---
+        async function handleEquipToggle(productId) {
+            if (!currentUser) return;
+            const product = allProductsCache.get(productId);
+            if (!product) return;
+
+            const newEquipped = JSON.parse(JSON.stringify(equippedItems));
+
+            if (product.category === 'skin') {
+                newEquipped.skin = newEquipped.skin === productId ? null : productId;
+            } else if (product.category === 'accessory') {
+                const index = newEquipped.accessories.indexOf(productId);
+                if (index > -1) {
+                    newEquipped.accessories.splice(index, 1);
+                } else {
+                    newEquipped.accessories.push(productId);
+                }
+            }
+            
+            try {
+                await db.collection('users').doc(currentUser.uid).collection('settings').doc('avatar').set(newEquipped);
+                equippedItems = newEquipped;
+                updateAvatarDisplay();
+                renderInventory();
+                showToast(`${product.name} ${newEquipped.skin === productId || newEquipped.accessories.includes(productId) ? 'equipped' : 'unequipped'}.`);
+            } catch (error) {
+                console.error("Error updating equipped items:", error);
+                showToast("Could not update your equipment.");
+            }
+        }
+
+        async function handleFavoriteToggle(productId) {
+            if (!currentUser) return;
+            const currentItemData = userInventory.get(productId) || {};
+            const isCurrentlyFavorited = currentItemData.favorited || false;
+
+            try {
+                await db.collection('user_inventory').doc(currentUser.uid).collection('items').doc(productId).set({
+                    favorited: !isCurrentlyFavorited
+                }, { merge: true });
+
+                currentItemData.favorited = !isCurrentlyFavorited;
+                userInventory.set(productId, currentItemData);
+                
+                renderInventory();
+            } catch (error) {
+                console.error("Error toggling favorite:", error);
+                showToast("Could not update favorite status.");
+            }
+        }
+
         // --- HELPER FUNCTIONS (SIGNUP/LOGIN/ACQUIRE) ---
         async function handleSignup(e) {
              e.preventDefault();
@@ -1035,12 +1255,12 @@
              const password = form.password.value;
              const errorEl = form.querySelector('.form-error');
              try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                await userCredential.user.updateProfile({ displayName: email.split('@')[0] });
-                closeModal();
-                showToast(`Welcome!`);
+                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                 await userCredential.user.updateProfile({ displayName: email.split('@')[0] });
+                 closeModal();
+                 showToast(`Welcome!`);
              } catch (error) {
-                if (errorEl) errorEl.textContent = error.message;
+                 if (errorEl) errorEl.textContent = error.message;
              }
         }
         async function handleLogin(e) {
@@ -1050,11 +1270,11 @@
              const password = form.password.value;
              const errorEl = form.querySelector('.form-error');
              try {
-                await auth.signInWithEmailAndPassword(email, password);
-                closeModal();
-                showToast(`Welcome back!`);
+                 await auth.signInWithEmailAndPassword(email, password);
+                 closeModal();
+                 showToast(`Welcome back!`);
              } catch (error) {
-                if (errorEl) errorEl.textContent = error.message;
+                 if (errorEl) errorEl.textContent = error.message;
              }
         }
         async function acquireItem(productId) { 
@@ -1063,7 +1283,7 @@
             if(acquireBtn) { acquireBtn.textContent = 'Adding...'; acquireBtn.classList.add('btn-disabled'); }
             try {
                 await db.collection('user_inventory').doc(currentUser.uid).collection('items').doc(productId).set({ acquiredAt: firebase.firestore.FieldValue.serverTimestamp() });
-                userInventory.add(productId);
+                userInventory.set(productId, { favorited: false });
                 showToast('Item added to your inventory!');
                 closeModal();
                 filterAndRenderProducts();
@@ -1130,21 +1350,20 @@
         function filterAndRenderProducts() {
             if (!marketGrid) return;
             const filtered = Array.from(allProductsCache.values()).filter(p => {
+                if (!p || !p.name || !p.creator) return false;
                 const matchesSearch = p.name.toLowerCase().includes(searchQuery) || p.creator.toLowerCase().includes(searchQuery);
                 const matchesFilter = currentFilter === 'all' || (currentFilter === 'free' && p.price === 0) || p.category === currentFilter;
                 return matchesSearch && matchesFilter;
             });
-            marketGrid.innerHTML = filtered.length ? filtered.map(createProductCard).join('') : `<p style="text-align:center; grid-column: 1 / -1;">No items match your criteria.</p>`;
+            marketGrid.innerHTML = filtered.length ? filtered.map(p => createProductCard(p, 'marketplace')).join('') : `<p style="text-align:center; grid-column: 1 / -1;">No items match your criteria.</p>`;
         }
         
         // --- PROFILE PAGE FUNCTIONS ---
         function updateProfilePageUI() {
             if (!currentUser) return;
             const name = currentUser.displayName || 'User';
-            const seed = encodeURIComponent(name);
-            const avatarUrl = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=${seed}&backgroundColor=845EEE`;
-
-            document.getElementById('userAvatar').src = avatarUrl;
+            
+            updateAvatarDisplay();
             document.getElementById('profileDisplayName').textContent = name;
             document.getElementById('profileEmail').textContent = currentUser.email;
             document.getElementById('displayName').value = name;
@@ -1172,7 +1391,7 @@
                 await currentUser.updateProfile({ displayName: newName });
                 await db.collection('users').doc(currentUser.uid).update({ displayName: newName });
                 showToast('Profile updated!');
-                updateUIForLoggedInUser();
+                updateAvatarDisplay();
             } catch (error) {
                 showToast('Could not update profile.');
             }
@@ -1181,40 +1400,59 @@
         document.getElementById('avatarChangeBtn')?.addEventListener('click', () => {
              const avatarOptions = ['wizard', 'robot', 'ninja', 'alien', 'ghost', 'dragon'];
              const html = `<div class="modal-content modal-auth" style="max-width: 500px;">
-                 <div class="modal-close"><i class="fa-solid fa-times"></i></div>
-                 <h3>Choose Your Avatar</h3>
-                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0;">
-                 ${avatarOptions.map(id => `<div class="avatar-option" data-id="${id}" style="cursor: pointer; text-align: center;">
-                     <img src="https://api.dicebear.com/6.x/pixel-art/svg?seed=${id}&backgroundColor=845EEE" style="width:80px; height:80px; border-radius:8px;">
-                     </div>`).join('')}
-                 </div>
+                   <div class="modal-close"><i class="fa-solid fa-times"></i></div>
+                   <h3>Choose Your Base Avatar</h3>
+                   <p style="text-align:center;font-size:0.9rem;">This is your photo when no skin is equipped.</p>
+                   <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0;">
+                   ${avatarOptions.map(id => `<div class="avatar-option" data-id="${id}" style="cursor: pointer; text-align: center;">
+                           <img src="https://api.dicebear.com/6.x/pixel-art/svg?seed=${id}&backgroundColor=845EEE" style="width:80px; height:80px; border-radius:8px;">
+                           </div>`).join('')}
+                   </div>
              </div>`;
              modalContainer.innerHTML = html;
              modalContainer.classList.add('show');
              modalContainer.querySelector('.modal-close').addEventListener('click', closeModal);
              modalContainer.querySelectorAll('.avatar-option').forEach(opt => {
-                 opt.addEventListener('click', async () => {
-                     const avatarId = opt.dataset.id;
-                     const newAvatarUrl = `https://api.dicebear.com/6.x/pixel-art/svg?seed=${avatarId}&backgroundColor=845EEE`;
-                     if (!currentUser) { showToast('Please log in to save avatar.'); return; }
-                     try {
-                         await currentUser.updateProfile({ photoURL: newAvatarUrl });
-                         showToast('Avatar updated!');
-                         updateUIForLoggedInUser();
-                         closeModal();
-                     } catch(err) {
-                         showToast('Could not update avatar.');
-                     }
-                 });
+                  opt.addEventListener('click', async () => {
+                       const avatarId = opt.dataset.id;
+                       const newAvatarUrl = `https://api.dicebear.com/6.x/pixel-art/svg?seed=${avatarId}&backgroundColor=845EEE`;
+                       if (!currentUser) { showToast('Please log in to save avatar.'); return; }
+                       try {
+                           await currentUser.updateProfile({ photoURL: newAvatarUrl });
+                           showToast('Avatar updated!');
+                           updateAvatarDisplay();
+                           closeModal();
+                       } catch(err) {
+                           showToast('Could not update avatar.');
+                           console.error("Avatar update error:", err);
+                       }
+                  });
              });
         });
+
+        async function seedDefaultProducts() {
+            const defaultProducts = [
+                { name: "Sarcastic AI", description: "A witty and sarcastic personality.", icon: "fa-fire", category: "personality", price: 0, creator: "Anvil Studios" },
+                { name: "Helpful Assistant", description: "A friendly and helpful personality.", icon: "fa-hands-helping", category: "personality", price: 0, creator: "Anvil Studios" },
+                { name: "Glitch Skin", description: "A cool glitchy effect for your AI.", icon: "fa-ghost", category: "skin", price: 10, creator: "Community Artist" },
+                { name: "Code Master", description: "A tool to help you write and debug code.", icon: "fa-code", category: "tool", price: 20, creator: "Anvil Studios" },
+                { name: "Angel Halo", description: "A holy halo to give your AI an angelic look.", icon: "fa-sun", category: "accessory", price: 5.00, creator: "Anvil Studios"},
+                { name: "Angel Wings", description: "A pair of majestic wings for your AI.", icon: "fa-feather-winged", category: "accessory", price: 10.00, creator: "Anvil Studios"}
+            ];
+            const batch = db.batch();
+            defaultProducts.forEach(product => {
+                const docRef = db.collection("products").doc();
+                batch.set(docRef, product);
+            });
+            await batch.commit();
+            showToast("Default marketplace items loaded.");
+        }
 
         // --- APP INITIALIZATION ---
         initializeApp();
         // Initialize Floating AI
         createRadialMenu();
-        moveAiRandomly();
-        startRandomMovement();
+        scheduleNextMove();
     });
     </script>
 </body>
