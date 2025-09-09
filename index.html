@@ -33,6 +33,7 @@
             --color-text-secondary: #7d8590;
             --color-text-heading: #ffffff;
             --color-favorite: #facc15;
+            --color-error: #f85149;
             --font-family: 'Inter', sans-serif;
             --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
@@ -53,12 +54,12 @@
         /* General & Theme Styles */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body {    
-            font-family: var(--font-family);    
-            background-color: var(--color-background);    
-            color: var(--color-text-primary);    
-            line-height: 1.6;    
-            -webkit-font-smoothing: antialiased;    
+        body {  
+            font-family: var(--font-family);   
+            background-color: var(--color-background);   
+            color: var(--color-text-primary);   
+            line-height: 1.6;   
+            -webkit-font-smoothing: antialiased;   
             position: relative;
             overflow-x: hidden;
             background-image:
@@ -201,6 +202,36 @@
         .user-tokens .fa-coins { color: var(--color-favorite); font-size: 0.9em; }
         .card-price .fa-coins { margin-left: 0.25rem; color: var(--color-favorite); }
 
+        /* --- Uploader Styles --- */
+        #drop-zone {
+            border: 2px dashed var(--color-border);
+            border-radius: 8px;
+            padding: 2.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            background-color: var(--color-surface);
+        }
+        #drop-zone.dragover {
+            background-color: var(--color-surface-light);
+            border-color: var(--color-primary);
+        }
+        #log-container {
+            margin-top: 1.5rem;
+            background-color: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            padding: 1rem;
+            height: 250px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85em;
+        }
+        .log-entry { margin-bottom: 0.5em; }
+        .log-entry.success { color: var(--color-secondary); }
+        .log-entry.error { color: var(--color-error); }
+        .log-entry.info { color: var(--color-text-secondary); }
+
 
         /* Responsive Design */
         @media (max-width: 992px) {
@@ -236,6 +267,7 @@
                     <li><a class="nav-link" data-target="token-shop-page">Token Shop</a></li>
                     <li><a class="nav-link hidden" data-target="inventory-page" id="inventory-nav-link">My Inventory</a></li>
                     <li><a class="nav-link hidden" data-target="profile-page" id="profile-nav-link">Profile</a></li>
+                    <li><a class="nav-link hidden" data-target="uploader-page" id="upload-nav-link">Upload Item</a></li>
                 </ul>
                 <div class="auth-container">
                     <div class="user-status" id="user-status-container"></div>
@@ -382,13 +414,12 @@
             </div>
         </section>
 
-
         <section id="inventory-page" class="hidden">
              <div class="container">
                  <div class="section-header" data-aos="fade-up">
-                          <h2>My <span class="text-gradient">Inventory</span></h2>
-                          <p>All of your acquired items in one place. Equip skins and accessories to customize your AI's appearance.</p>
-                 </div>
+                         <h2>My <span class="text-gradient">Inventory</span></h2>
+                         <p>All of your acquired items in one place. Equip skins and accessories to customize your AI's appearance.</p>
+               </div>
                  <div class="page-content"><div class="grid-container" id="inventory-grid-container"></div></div>
              </div>
         </section>
@@ -425,6 +456,28 @@
                 </div>
             </div>
         </section>
+
+        <section id="uploader-page" class="hidden">
+            <div class="container" style="max-width: 700px;">
+                <div class="section-header" data-aos="fade-up">
+                    <h2>Admin <span class="text-gradient">Uploader</span></h2>
+                    <p>Upload new marketplace items from a .json or .txt file.</p>
+                </div>
+                <div id="uploader-main-content" data-aos="fade-up">
+                    <label for="file-input" id="drop-zone">
+                        <p>Drag & Drop your .json or .txt file here</p>
+                        <p style="font-size: 0.8em; color: var(--color-text-secondary);">or click to select a file</p>
+                    </label>
+                    <input type="file" id="file-input" accept=".json,.txt" style="display: none;">
+                    <div id="file-info" style="text-align: center; margin: 1rem 0; color: var(--color-text-secondary);">No file selected</div>
+                    <button id="upload-btn" class="btn btn-primary" style="width:100%;" disabled>Upload to Firestore</button>
+                    <div id="log-container">
+                        <div class="log-entry info">> Awaiting file...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
     
     <div id="floating-ai-container">
@@ -634,6 +687,11 @@
                 App.elements.inventoryNavLink.classList.remove('hidden');
                 App.elements.profileNavLink.classList.remove('hidden');
                 this.updateAvatarDisplay();
+
+                // Show admin link if user has admin role
+                if (App.state.userData.role === 'admin') {
+                    App.elements.uploadNavLink.classList.remove('hidden');
+                }
             },
 
             updateUIForLoggedOutUser() {
@@ -641,6 +699,7 @@
                 App.elements.authButton.textContent = 'Login';
                 App.elements.inventoryNavLink.classList.add('hidden');
                 App.elements.profileNavLink.classList.add('hidden');
+                App.elements.uploadNavLink.classList.add('hidden'); // Ensure admin link is hidden on logout
                 this.updateFloatingAIVisuals();
                 this.switchToPage('hero-page');
             },
@@ -711,7 +770,7 @@
             openAuthModal(showSignup = false) {
                 const loginHidden = showSignup ? 'hidden' : '';
                 const signupHidden = !showSignup ? 'hidden' : '';
-                App.elements.modalContainer.innerHTML = `<div class="modal-content"><div class="modal-close"><i class="fa-solid fa-times"></i></div><div id="login-view" class="${loginHidden}"><h3>Login</h3><form id="login-form" class="auth-form"><p class="form-error" style="color:red; text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Login</button></form><p style="text-align:center; margin-top:1rem;">No account? <a href="#" id="show-signup" style="color:var(--color-primary)">Sign Up</a></p></div><div id="signup-view" class="${signupHidden}"><h3>Create Account</h3><form id="signup-form" class="auth-form"><p class="form-error" style="color:red; text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Create</button></form><p style="text-align:center; margin-top:1rem;">Have an account? <a href="#" id="show-login" style="color:var(--color-primary)">Login</a></p></div></div>`;
+                App.elements.modalContainer.innerHTML = `<div class="modal-content"><div class="modal-close"><i class="fa-solid fa-times"></i></div><div id="login-view" class="${loginHidden}"><h3>Login</h3><form id="login-form" class="auth-form"><p class="form-error" style="color:var(--color-error); text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Login</button></form><p style="text-align:center; margin-top:1rem;">No account? <a href="#" id="show-signup" style="color:var(--color-primary)">Sign Up</a></p></div><div id="signup-view" class="${signupHidden}"><h3>Create Account</h3><form id="signup-form" class="auth-form"><p class="form-error" style="color:var(--color-error); text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Create</button></form><p style="text-align:center; margin-top:1rem;">Have an account? <a href="#" id="show-login" style="color:var(--color-primary)">Login</a></p></div></div>`;
                 App.elements.modalContainer.classList.add('show');
             },
 
@@ -724,6 +783,116 @@
                 document.getElementById('toast-container').appendChild(toast);
                 setTimeout(() => toast.classList.add('show'), 10);
                 setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 3000);
+            }
+        },
+
+        // --- UPLOADER LOGIC ---
+        uploader: {
+            productsToUpload: [],
+            
+            log(message, type = 'info') {
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = `> ${message}`;
+                App.elements.logContainer.prepend(entry);
+            },
+            
+            async handleFileSelect(event) {
+                const { fileInfo, uploadBtn } = App.elements;
+                const file = event.target.files[0];
+                this.productsToUpload = [];
+                uploadBtn.disabled = true;
+
+                if (!file) {
+                    fileInfo.textContent = 'No file selected';
+                    return;
+                }
+                
+                const isJson = file.name.endsWith('.json');
+                const isTxt = file.name.endsWith('.txt');
+                
+                if (!isJson && !isTxt) {
+                    fileInfo.textContent = 'Invalid file type (.json or .txt only)';
+                    this.log('Invalid file type.', 'error');
+                    return;
+                }
+                
+                fileInfo.textContent = `Selected: ${file.name}`;
+                this.log(`Reading file: ${file.name}...`);
+                const text = await file.text();
+                
+                try {
+                    this.productsToUpload = isJson ? JSON.parse(text) : this.parseTxtFile(text);
+                    this.log(`Successfully parsed ${this.productsToUpload.length} products.`, 'success');
+                    uploadBtn.disabled = false;
+                } catch (error) {
+                    this.log(`Error parsing file: ${error.message}`, 'error');
+                    fileInfo.textContent = 'Error parsing file. Check format.';
+                }
+            },
+
+            parseTxtFile(text) {
+                const products = [];
+                const productBlocks = text.trim().split(/\n\s*\n/);
+                for (const block of productBlocks) {
+                    const product = {};
+                    const lines = block.split('\n');
+                    for (const line of lines) {
+                        const separatorIndex = line.indexOf(':');
+                        if (separatorIndex === -1) continue;
+                        
+                        const key = line.substring(0, separatorIndex).trim();
+                        const value = line.substring(separatorIndex + 1).trim();
+                        
+                        if (key) {
+                            if (['price', 'downloads'].includes(key)) product[key] = Number(value);
+                            else if (key === 'tags') product[key] = value.split(',').map(tag => tag.trim());
+                            else if (key === 'featured') product[key] = value.toLowerCase() === 'true';
+                            else product[key] = value;
+                        }
+                    }
+                    if (Object.keys(product).length > 0) products.push(product);
+                }
+                return products;
+            },
+
+            async handleUpload() {
+                if (this.productsToUpload.length === 0) {
+                    this.log('No products to upload.', 'error');
+                    return;
+                }
+                
+                const uploadBtn = App.elements.uploadBtn;
+                uploadBtn.disabled = true;
+                uploadBtn.textContent = 'Uploading...';
+                this.log('Starting upload process...', 'info');
+                
+                let successCount = 0, errorCount = 0;
+                
+                for (const product of this.productsToUpload) {
+                    if (!product.name) {
+                        this.log('Skipping product with no name.', 'error');
+                        errorCount++;
+                        continue;
+                    }
+                    try {
+                        // Using v8 Firestore SDK
+                        await App.firebase.db.collection("products").add(product);
+                        this.log(`Uploaded: ${product.name}`, 'success');
+                        successCount++;
+                    } catch (e) {
+                        this.log(`Error uploading ${product.name}: ${e.message}`, 'error');
+                        errorCount++;
+                    }
+                }
+                
+                this.log('------------------------------------', 'info');
+                this.log(`Upload complete. Success: ${successCount}, Failed: ${errorCount}`, 'info');
+                uploadBtn.textContent = 'Upload to Firestore';
+                uploadBtn.disabled = false;
+                // Refresh marketplace data after upload
+                await App.firebase.fetchAllProducts();
+                App.ui.renderMarketplace();
             }
         },
 
@@ -769,13 +938,23 @@
             
             async fetchUserData() {
                 const userRef = this.db.collection('users').doc(App.state.currentUser.uid);
-                const userDoc = await userRef.get();
+                const roleRef = this.db.collection('roles').doc(App.state.currentUser.uid);
+
+                const [userDoc, roleDoc] = await Promise.all([userRef.get(), roleRef.get()]);
+
                 if (userDoc.exists) {
                     App.state.userData = userDoc.data();
                 } else {
-                    const initialData = { displayName: App.state.currentUser.displayName, email: App.state.currentUser.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), tokens: 50, lastLogin: new Date() };
+                    const initialData = { displayName: App.state.currentUser.displayName || App.state.currentUser.email.split('@')[0], email: App.state.currentUser.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), tokens: 50, lastLogin: new Date() };
                     await userRef.set(initialData);
                     App.state.userData = initialData;
+                }
+                
+                // Add role to user data state
+                if (roleDoc.exists && roleDoc.data().role) {
+                    App.state.userData.role = roleDoc.data().role;
+                } else {
+                    App.state.userData.role = 'user'; // default role
                 }
             },
 
@@ -792,8 +971,8 @@
             
             async fetchAllProducts() {
                 const snapshot = await this.db.collection('products').get();
-                if (snapshot.empty) { await this.seedDefaultProducts(); await this.fetchAllProducts(); }
-                else { snapshot.forEach(doc => App.state.allProductsCache.set(doc.id, { id: doc.id, ...doc.data() })); }
+                App.state.allProductsCache.clear();
+                snapshot.forEach(doc => App.state.allProductsCache.set(doc.id, { id: doc.id, ...doc.data() }));
             },
 
             async fetchUserInventory() {
@@ -808,8 +987,6 @@
                 const doc = await this.db.collection('users').doc(App.state.currentUser.uid).collection('settings').doc('avatar').get();
                 App.state.equippedItems = doc.exists ? { skin: doc.data().skin || null } : { skin: null };
             },
-            
-            async seedDefaultProducts() { const prods = [ { name: "Glitch Skin", icon: "ghost", category: "skin", price: 75, creator: "Community Artist" }, { name: "Fire Skin", icon: "fire", category: "skin", price: 0, creator: "Anvil Studios" }, { name: "Top Hat", icon: "hat-wizard", category: "accessory", price: 25, creator: "Anvil Studios" }, { name: "Logic Core", icon: "brain", category: "personality", price: 150, creator: "Anvil Studios" }, { name: "System Monitor", icon: "chart-line", category: "tool", price: 100, creator: "Community Dev" } ]; const batch = this.db.batch(); prods.forEach(p => batch.set(this.db.collection("products").doc(), p)); await batch.commit(); }
         },
 
         // --- EVENT HANDLERS ---
@@ -862,7 +1039,7 @@
                 if (!App.state.currentUser) { App.ui.showToast('Please log in to make a purchase.'); return; }
                 const product = App.state.allProductsCache.get(productId);
                 if (!product) { App.ui.showToast('Item not found.'); return; }
-                if (App.state.userData.tokens < product.price) { App.ui.showToast('Not enough Fugth Tokens!'); return; }
+                if ((App.state.userData.tokens || 0) < product.price) { App.ui.showToast('Not enough Fugth Tokens!'); return; }
                 const newBalance = App.state.userData.tokens - product.price;
                 try {
                     const batch = App.firebase.db.batch();
@@ -884,7 +1061,7 @@
             App.elements.navLinks.forEach(link => link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetId = e.currentTarget.dataset.target;
-                if ((targetId.includes('inventory') || targetId.includes('profile')) && !App.state.currentUser) {
+                if ((targetId.includes('inventory') || targetId.includes('profile') || targetId.includes('uploader')) && !App.state.currentUser) {
                     App.ui.openAuthModal(); return;
                 }
                 if (targetId === 'inventory-page') App.ui.renderInventory();
@@ -924,6 +1101,21 @@
                 if(e.target.id === 'login-form') App.handlers.handleLogin(e);
                 if(e.target.id === 'signup-form') App.handlers.handleSignup(e);
             });
+
+            // Bind uploader events
+            const { dropZone, fileInput, uploadBtn } = App.elements;
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    App.uploader.handleFileSelect({ target: fileInput });
+                }
+            });
+            fileInput.addEventListener('change', (e) => App.uploader.handleFileSelect(e));
+            uploadBtn.addEventListener('click', () => App.uploader.handleUpload());
         },
 
         // --- APPLICATION INITIALIZATION ---
@@ -937,13 +1129,20 @@
                 modalContainer: document.getElementById('modal-container'),
                 inventoryNavLink: document.getElementById('inventory-nav-link'),
                 profileNavLink: document.getElementById('profile-nav-link'),
+                uploadNavLink: document.getElementById('upload-nav-link'),
                 navLinks: document.querySelectorAll('.nav-link'),
                 header: document.getElementById('main-header'),
                 personalInfoForm: document.getElementById('personalInfoForm'),
                 aiContainer: document.getElementById('floating-ai-container'),
                 aiSkinLayer: document.querySelector('.ai-skin-layer'),
                 mobileMenuToggle: document.getElementById('mobile-menu-toggle'),
-                navLinksContainer: document.querySelector('.nav-links')
+                navLinksContainer: document.querySelector('.nav-links'),
+                // Uploader elements
+                dropZone: document.getElementById('drop-zone'),
+                fileInput: document.getElementById('file-input'),
+                fileInfo: document.getElementById('file-info'),
+                uploadBtn: document.getElementById('upload-btn'),
+                logContainer: document.getElementById('log-container'),
             };
             
             this.ui.init();
