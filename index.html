@@ -48,16 +48,17 @@
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(217, 249, 157, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(217, 249, 157, 0); } 100% { box-shadow: 0 0 0 0 rgba(217, 249, 157, 0); } }
         @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes run-off { to { transform: translate(200vw, -200vh) rotate(720deg) scale(0.5); opacity: 0; } }
 
         /* General & Theme Styles */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { 
-            font-family: var(--font-family); 
-            background-color: var(--color-background); 
-            color: var(--color-text-primary); 
-            line-height: 1.6; 
-            -webkit-font-smoothing: antialiased; 
+        body {    
+            font-family: var(--font-family);    
+            background-color: var(--color-background);    
+            color: var(--color-text-primary);    
+            line-height: 1.6;    
+            -webkit-font-smoothing: antialiased;    
             position: relative;
             overflow-x: hidden;
             background-image:
@@ -75,7 +76,9 @@
         section:last-of-type { border-bottom: none; }
         
         h1, h2, h3 { font-weight: 700; line-height: 1.2; color: var(--color-text-heading); letter-spacing: -0.03em; }
-        h1 { font-size: 4rem; } h2 { font-size: 2.5rem; } h3 { font-size: 1.75rem; }
+        h1 { font-size: clamp(2.5rem, 5vw + 1rem, 4rem); } 
+        h2 { font-size: clamp(2rem, 4vw + 1rem, 2.5rem); } 
+        h3 { font-size: 1.75rem; }
         p { color: var(--color-text-secondary); margin-bottom: 1rem; }
         
         .section-header { text-align: center; max-width: 700px; margin: 0 auto 60px auto; }
@@ -96,6 +99,7 @@
         .nav-links a { text-decoration: none; color: var(--color-text-secondary); font-weight: 500; transition: color 0.2s ease; cursor: pointer; padding-bottom: 4px; border-bottom: 2px solid transparent; }
         .nav-links a:hover, .nav-links a.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
         .auth-container { display: flex; align-items: center; gap: 12px; }
+        .mobile-menu-toggle { display: none; }
         
         .avatar-display { width: 32px; height: 32px; position: relative; }
         .avatar-display .avatar-base { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: var(--color-surface-light); border: 2px solid var(--color-primary); }
@@ -120,6 +124,15 @@
         .feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--color-primary); }
         .feature-icon { width: 50px; height: 50px; background: var(--color-surface-light); border: 1px solid var(--color-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.5rem; color: var(--color-primary); flex-shrink: 0; }
         .feature-card h3 { margin-bottom: 0.75rem; }
+
+        /* GGUF Customizer Styles */
+        .gguf-controls { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+        .gguf-control { display: flex; flex-direction: column; gap: 0.5rem; }
+        .gguf-control label { font-size: 0.9rem; font-weight: 500; color: var(--color-text-secondary); display: flex; justify-content: space-between; }
+        .gguf-control input[type="range"] { -webkit-appearance: none; width: 100%; height: 8px; background: var(--color-surface-light); border-radius: 4px; outline: none; border: 1px solid var(--color-border); }
+        .gguf-control input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; background: var(--color-primary); cursor: pointer; border-radius: 50%; border: 2px solid var(--color-background); }
+        .gguf-control input[type="number"] { background: var(--color-surface-light); border: 1px solid var(--color-border); padding: 0.5rem; border-radius: 6px; color: var(--color-text-primary); width: 100%; }
+        .tooltip-icon { cursor: help; margin-left: 8px; color: var(--color-text-secondary); }
         
         /* Modal */
         .modal-container { position: fixed; top:0; left:0; width:100%; height:100%; z-index: 2000; background: rgba(1, 4, 9, 0.5); backdrop-filter: blur(8px); display:flex; align-items:center; justify-content:center; opacity:0; visibility: hidden; transition: all 0.3s ease; }
@@ -132,7 +145,6 @@
         
         /* Profile Page */
         .profile-content { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-top: 2rem; align-items: start; }
-        @media (max-width: 992px) { .profile-content { grid-template-columns: 1fr; } }
         .profile-sidebar { background: var(--color-surface); border-radius: 12px; padding: 2rem; border: 1px solid var(--color-border); position: sticky; top: 100px; text-align:center;}
         #profile-avatar-wrapper { width: 150px; height: 150px; margin: 0 auto 1rem; position: relative; }
         #profile-avatar-wrapper .avatar-display { width: 100%; height: 100%; }
@@ -149,54 +161,32 @@
         #personalInfoForm button { margin-top: 1rem; }
 
         /* FLOATING AI STYLES */
-        #floating-ai-container { position: fixed; z-index: 1001; width: 70px; height: 70px; cursor: grab; transition: top 0.1s linear, left 0.1s linear; display: flex; align-items: center; justify-content: center; }
-        #floating-ai-container.idle { animation: breathe 3s ease-in-out infinite; transition: top 2s ease-in-out, left 2s ease-in-out; }
-        #floating-ai-container:active { cursor: grabbing; animation: none; transition: none; }
+        #floating-ai-container { position: fixed; z-index: 1001; width: 70px; height: 70px; cursor: grab; transition: top 2s ease-in-out, left 2s ease-in-out; display: flex; align-items: center; justify-content: center; }
+        #floating-ai-container.dragging, #floating-ai-container.needy { transition: none; }
+        #floating-ai-container.running-off { animation: run-off 0.7s ease-in forwards; }
+        #floating-ai-container:not(.needy):not(.dragging) { animation: breathe 3s ease-in-out infinite; }
+        #floating-ai-container:active:not(.needy) { cursor: grabbing; animation: none; }
         .ai-body { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
         .ai-skin-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-radius: 50%; background: var(--ai-body-color); box-shadow: inset 0 -5px 15px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 50px; color: var(--ai-body-color); transition: all 0.3s ease; }
         .ai-skin-layer.icon-active { background: transparent; box-shadow: none; text-shadow: 0 0 10px var(--ai-body-color); }
         .ai-face { width: 60%; height: 60%; position: relative; z-index: 2; }
         .ai-eye { position: absolute; top: 20%; width: 12px; height: 12px; background: var(--ai-eye-color); border-radius: 50%; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); transition: all 0.2s ease; }
-        .ai-eye-left { left: 15%; }
-        .ai-eye-right { right: 15%; }
+        .ai-eye-left { left: 15%; } .ai-eye-right { right: 15%; }
         .ai-mouth { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); width: 20px; height: 10px; border: 2px solid var(--ai-eye-color); border-top: none; border-radius: 0 0 10px 10px; transition: all 0.2s ease; }
-        .ai-face.happy .ai-mouth { height: 15px; border-radius: 0 0 15px 15px; }
+        .ai-face.happy .ai-mouth { height: 15px; width: 25px; border-radius: 0 0 15px 15px; bottom: 20%; }
+        .ai-face.happy .ai-eye { height: 15px; width: 8px; border-radius: 5px 5px 8px 8px; top: 15%; }
         .ai-face.sad .ai-mouth { transform: translateX(-50%) rotate(180deg); top: 50%; bottom: auto; border-radius: 0 0 15px 15px; }
-        .ai-face.annoyed .ai-eye { height: 4px; top: 40%; border-radius: 2px; transform: rotate(-15deg); }
-        .ai-face.annoyed .ai-eye-right { transform: rotate(15deg); }
-        .ai-face.annoyed .ai-mouth { width: 15px; height: 5px; border: 2px solid var(--ai-eye-color); border-radius: 5px; border-top-left-radius: 0; border-top-right-radius: 0; }
-        .ai-face.blinking .ai-eye { transform: scaleY(0.1); }
-
-        /* Customization Panel */
-        #customization-panel { position: fixed; z-index: 2500; width: 280px; background: rgba(13, 17, 23, 0.7); border: 1px solid var(--color-border); border-radius: 12px; box-shadow: var(--shadow-lg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); visibility: hidden; opacity: 0; transform: translate(-50%,-50%) scale(0.95); transition: all 0.3s ease; top: 50%; left: 50%; }
-        #customization-panel.show { visibility: visible; opacity: 1; transform: translate(-50%,-50%) scale(1); }
-        .panel-header { padding: 12px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; cursor: grab; }
-        .panel-header h4 { font-weight: 600; color: var(--color-primary); }
-        .panel-header:active { cursor: grabbing; }
-        .panel-close-btn { cursor: pointer; color: var(--color-text-secondary); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-        .panel-close-btn:hover { background: var(--color-surface-light); color: var(--color-text-primary); }
-        .panel-body { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .control-group { display: flex; flex-direction: column; gap: 8px; }
-        .control-group label { font-size: 0.9rem; color: var(--color-text-secondary); }
-        .control-group .shape-buttons, .control-group .expression-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .control-btn { padding: 8px; font-size: 1.2rem; }
-        input[type="color"] { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; height: 30px; background-color: transparent; border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer; }
-        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 5px; }
-
-        /* Marketplace */
-        .card-price .fa-coins { margin-left: 0.25rem; color: var(--color-favorite); }
-        .user-status { font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .user-tokens { color: var(--color-primary); font-weight: 600; display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: var(--color-surface-light); border-radius: 6px;}
-        .user-tokens .fa-coins { color: var(--color-favorite); font-size: 0.9em; }
+        .ai-face.sad .ai-eye { top: 30%; }
 
         /* Guild Pass / Pricing Page */
-        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; justify-content: center; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; justify-content: center; }
         .pricing-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 2rem; text-align:center; }
         .pricing-card.highlight { border-color: var(--color-primary); box-shadow: 0 0 30px rgba(217, 249, 157, 0.2); }
         .pricing-card ul { list-style: none; text-align: left; margin: 2rem 0; }
         .pricing-card li { margin-bottom: 1rem; }
-        .pricing-card li .fa-check-circle { color: var(--color-secondary); margin-right: 0.5rem; }
-        .pricing-card li .fa-star { color: gold; margin-right: 0.5rem; }
+        .pricing-card li i { margin-right: 0.5rem; }
+        .pricing-card li .fa-check-circle { color: var(--color-secondary); }
+        .pricing-card li .fa-star { color: gold; }
         .price-tag { font-size: 2.5rem; font-weight: 800; margin: 0.5rem 0; color: var(--color-text-heading); }
         .price-tag span { font-size: 1rem; font-weight: 500; color: var(--color-text-secondary); }
 
@@ -205,22 +195,30 @@
         .toast.show { opacity: 1; transform: translateY(0); }
         .loader-container { width: 100%; display: flex; justify-content: center; padding: 4rem; }
         .loader { width: 40px; height: 40px; border: 4px solid var(--color-border); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 1s linear infinite; }
-        #radial-menu-container { position: fixed; z-index: 1002; width: 220px; height: 220px; visibility: hidden; opacity: 0; transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease; transform: translate(-50%, -50%) scale(0.8); pointer-events: none; }
-        #radial-menu-container.show { visibility: visible; opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
-        .radial-button { position: absolute; top: 50%; left: 50%; width: 50px; height: 50px; background: rgba(1, 4, 9, 0.7); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid var(--color-border); backdrop-filter: blur(10px); cursor: pointer; transition: all 0.2s ease; margin-left: -25px; margin-top: -25px; }
-        .radial-button:hover { background: var(--color-primary); color: #010409;}
 
-        /* Responsive */
+        .user-status { font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .user-tokens { color: var(--color-primary); font-weight: 600; display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: var(--color-surface-light); border-radius: 6px;}
+        .user-tokens .fa-coins { color: var(--color-favorite); font-size: 0.9em; }
+        .card-price .fa-coins { margin-left: 0.25rem; color: var(--color-favorite); }
+
+
+        /* Responsive Design */
         @media (max-width: 992px) {
-            h1 { font-size: 3rem; } h2 { font-size: 2rem; }
+            section { padding: 60px 0; }
+            .profile-content { grid-template-columns: 1fr; }
+            .profile-sidebar { position: static; }
+            
             .mobile-menu-toggle { display: flex; flex-direction: column; justify-content: space-around; width: 30px; height: 25px; background: transparent; border: none; cursor: pointer; z-index: 1001; }
-            .mobile-menu-toggle span { width: 100%; height: 2px; background: var(--color-text-primary); transition: all 0.3s ease; }
-            .mobile-menu-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .mobile-menu-toggle span { width: 100%; height: 2px; background: var(--color-text-primary); border-radius: 1px; transition: all 0.3s ease; transform-origin: center; }
+            .mobile-menu-toggle.active span:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
             .mobile-menu-toggle.active span:nth-child(2) { opacity: 0; }
-            .mobile-menu-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-            .nav-links { position: fixed; top: 0; right: -100%; height: 100vh; width: 80%; max-width: 400px; background: var(--color-surface); flex-direction: column; justify-content: center; padding: 80px 2rem; transition: right 0.3s ease; box-shadow: var(--shadow-lg); z-index: 1000; }
+            .mobile-menu-toggle.active span:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+            
+            .nav-links { position: fixed; top: 0; right: -100%; height: 100vh; width: 80%; max-width: 400px; background: var(--color-surface); flex-direction: column; justify-content: center; padding: 80px 2rem; transition: right 0.4s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: var(--shadow-lg); z-index: 1000; gap: 40px; }
             .nav-links.active { right: 0; }
+            .nav-links a { font-size: 1.2rem; }
         }
+
     </style>
 </head>
 <body>
@@ -243,7 +241,7 @@
                     <div class="user-status" id="user-status-container"></div>
                     <a href="#" id="auth-button" class="btn btn-secondary">Login</a>
                 </div>
-                <button class="mobile-menu-toggle" id="mobile-menu-toggle"><span></span><span></span><span></span></button>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
             </nav>
         </div>
     </header>
@@ -259,7 +257,7 @@
             </div>
         </section>
 
-        <section id="features-showcase">
+        <section id="features-showcase" class="hidden">
              <div class="container">
                 <div class="section-header" data-aos="fade-up">
                     <h2>The <span class="text-gradient">Anvil Forge</span></h2>
@@ -279,7 +277,21 @@
                      <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
                         <div class="feature-icon"><i class="fas fa-brain"></i></div>
                         <h3>Deep Customization</h3>
-                        <p>Forge a true personality. Go beyond simple presets and fine-tune your AI's core traits, memory recall, and even its sense of humor to create a companion that is uniquely yours.</p>
+                        <p>Forge a true personality. Instead of simple presets, directly tune the core GGUF parameters to shape your AI's behavior.</p>
+                        <div class="gguf-controls">
+                            <div class="gguf-control">
+                                <label for="temp-slider">Temperature (Creativity) <i class="fas fa-info-circle tooltip-icon" title="Lower values make the AI more predictable and focused. Higher values increase creativity and randomness."></i></label>
+                                <input type="range" id="temp-slider" min="0" max="2" step="0.1" value="0.7">
+                            </div>
+                            <div class="gguf-control">
+                                <label for="ctx-size">Context Length (Memory) <i class="fas fa-info-circle tooltip-icon" title="The number of tokens the AI remembers from the conversation. Higher values mean better memory but use more resources."></i></label>
+                                <input type="number" id="ctx-size" value="2048" class="gguf-input">
+                            </div>
+                            <div class="gguf-control">
+                                <label for="gpu-layers">GPU Offload Layers <i class="fas fa-info-circle tooltip-icon" title="Number of model layers to offload to your GPU for faster processing. '0' uses CPU only."></i></label>
+                                <input type="range" id="gpu-layers" min="0" max="50" step="1" value="10">
+                            </div>
+                        </div>
                     </div>
                      <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
                         <div class="feature-icon"><i class="fas fa-users"></i></div>
@@ -323,7 +335,7 @@
                         <p class="text-gradient" style="font-weight: 600;">Monthly Subscription</p>
                         <p class="price-tag">$7.99<span>/mo</span></p>
                          <ul>
-                            <li><i class="fas fa-star"></i> **777** Fugth Tokens delivered every month.</li>
+                            <li><i class="fas fa-star"></i> <strong>777</strong> Fugth Tokens delivered every month.</li>
                             <li><i class="fas fa-star"></i> Exclusive skins and personalities for subscribers.</li>
                             <li><i class="fas fa-star"></i> Early access to new features and AI models.</li>
                             <li><i class="fas fa-star"></i> Special role in the community Discord.</li>
@@ -349,7 +361,7 @@
                             <p class="card-creator">A small pack to get you started.</p>
                         </div>
                          <div class="card-footer"><a href="https://buy.stripe.com/6oUdR90Uobr2d0L2o4grS0c" target="_blank" class="btn btn-primary" style="width:100%;">$0.99</a></div>
-                     </div>
+                    </div>
                      <div class="market-card">
                         <div class="card-image" style="font-size: 4rem;"><i class="fas fa-layer-group"></i></div>
                         <div class="card-content" style="text-align:center;">
@@ -374,8 +386,8 @@
         <section id="inventory-page" class="hidden">
              <div class="container">
                  <div class="section-header" data-aos="fade-up">
-                         <h2>My <span class="text-gradient">Inventory</span></h2>
-                         <p>All of your acquired items in one place. Equip skins and accessories to customize your AI's appearance.</p>
+                          <h2>My <span class="text-gradient">Inventory</span></h2>
+                          <p>All of your acquired items in one place. Equip skins and accessories to customize your AI's appearance.</p>
                  </div>
                  <div class="page-content"><div class="grid-container" id="inventory-grid-container"></div></div>
              </div>
@@ -426,34 +438,6 @@
         </div>
     </div>
 
-    <div id="radial-menu-container"></div>
-
-    <div id="customization-panel">
-        <div class="panel-header" id="panel-header"><h4>Live Customizer</h4><div class="panel-close-btn" id="panel-close-btn"><i class="fas fa-times"></i></div></div>
-        <div class="panel-body">
-            <div class="control-group"><label for="ai-color-picker">Color</label><input type="color" id="ai-color-picker" value="#d9f99d"></div>
-            <div class="control-group"><label for="ai-size-slider">Size</label><input type="range" id="ai-size-slider" min="50" max="150" value="70"></div>
-            <div class="control-group">
-                <label>Shape Override</label>
-                <div class="shape-buttons">
-                    <button class="btn btn-secondary control-btn" data-shape="default"><i class="fas fa-circle-notch"></i></button>
-                    <button class="btn btn-secondary control-btn" data-shape="fa-star"><i class="fas fa-star"></i></button>
-                    <button class="btn btn-secondary control-btn" data-shape="fa-heart"><i class="fas fa-heart"></i></button>
-                    <button class="btn btn-secondary control-btn" data-shape="fa-square"><i class="fas fa-square"></i></button>
-                </div>
-            </div>
-            <div class="control-group">
-                <label>Expressions</label>
-                <div class="expression-buttons">
-                    <button class="btn btn-secondary control-btn" data-face="happy"><i class="fas fa-smile"></i></button>
-                    <button class="btn btn-secondary control-btn" data-face="annoyed"><i class="fas fa-angry"></i></button>
-                    <button class="btn btn-secondary control-btn" data-face="sad"><i class="fas fa-frown"></i></button>
-                    <button class="btn btn-secondary control-btn" data-face="neutral"><i class="fas fa-meh"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -461,367 +445,522 @@
 
     <script>
     'use strict';
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- INITIALIZATION & GLOBAL STATE ---
-        AOS.init({ duration: 800, once: true, offset: 50 });
+    
+    const App = {
+        // --- STATE MANAGEMENT ---
+        state: {
+            currentUser: null,
+            userData: {},
+            userInventory: new Map(),
+            allProductsCache: new Map(),
+            equippedItems: { skin: null },
+        },
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBlqTqN1gUoCpuqPqmpLdtZdJHVFbTWyTs",
-            authDomain: "fugthdesign-91744.firebaseapp.com",
-            projectId: "fugthdesign-91744",
-            storageBucket: "fugthdesign-91744.appspot.com",
-            messagingSenderId: "797596632132",
-            appId: "1:797596632132:web:2c2ebfa54c908e09a26811"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        
-        let currentUser = null;
-        let userData = {};
-        let userInventory = new Map();
-        let allProductsCache = new Map();
-        let equippedItems = { skin: null };
+        // --- DOM ELEMENTS CACHE ---
+        elements: {},
 
-        const elements = {
-            authButton: document.getElementById('auth-button'),
-            userStatusContainer: document.getElementById('user-status-container'),
-            marketGrid: document.getElementById('market-grid-container'),
-            inventoryGrid: document.getElementById('inventory-grid-container'),
-            modalContainer: document.getElementById('modal-container'),
-            inventoryNavLink: document.getElementById('inventory-nav-link'),
-            profileNavLink: document.getElementById('profile-nav-link'),
-            navLinks: document.querySelectorAll('.nav-link'),
-            header: document.getElementById('main-header'),
-            personalInfoForm: document.getElementById('personalInfoForm'),
-            aiContainer: document.getElementById('floating-ai-container'),
-            aiSkinLayer: document.querySelector('.ai-skin-layer'),
-            radialMenu: document.getElementById('radial-menu-container'),
-            customizationPanel: document.getElementById('customization-panel'),
-            mobileMenuToggle: document.getElementById('mobile-menu-toggle'),
-            navLinksContainer: document.querySelector('.nav-links')
-        };
-        
-        let isDragging = false, isPanelDragging = false, offsetX, offsetY, panelOffsetX, panelOffsetY;
-        let moveTimeout, inactivityTimer, annoyanceInterval;
-        let lastInteractionTime = Date.now();
-        let isAnnoying = false;
-        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+        // --- FLOATING AI LOGIC ---
+        floatingAI: {
+            isDragging: false,
+            isNeedy: false,
+            offsetX: 0,
+            offsetY: 0,
+            moveTimeout: null,
+            inactivityTimer: null,
+            needyAnimationId: null,
+            lastInteractionTime: Date.now(),
+            mouse: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
 
-        function setAIFace(face) {
-            const aiFaceEl = elements.aiContainer.querySelector('.ai-face');
-            if (aiFaceEl) {
-                aiFaceEl.className = 'ai-face';
-                if (face && face !== 'neutral') aiFaceEl.classList.add(face);
+            init() {
+                const aiContainer = App.elements.aiContainer;
+                aiContainer.addEventListener('mousedown', this.startDrag.bind(this));
+                document.addEventListener('mousemove', this.updateMousePosition.bind(this));
+                document.addEventListener('click', this.resetInteractionTimer.bind(this));
+                aiContainer.addEventListener('dblclick', this.handleHappyRunOff.bind(this));
+
+                aiContainer.style.top = `${window.innerHeight / 2}px`;
+                aiContainer.style.left = `${window.innerWidth / 2}px`;
+
+                this.startInactivityCheck();
+                this.scheduleNextMove();
+            },
+            
+            updateMousePosition(e) {
+                this.mouse.x = e.clientX;
+                this.mouse.y = e.clientY;
+                this.resetInteractionTimer();
+            },
+
+            setFace(face) {
+                const aiFaceEl = App.elements.aiContainer.querySelector('.ai-face');
+                if (aiFaceEl) {
+                    aiFaceEl.className = 'ai-face'; // Reset
+                    if (face && face !== 'neutral') aiFaceEl.classList.add(face);
+                }
+            },
+
+            startDrag(e) {
+                if (this.isNeedy) return;
+                this.isDragging = true;
+                const aiContainer = App.elements.aiContainer;
+                aiContainer.classList.add('dragging');
+                clearTimeout(this.moveTimeout);
+                this.offsetX = e.clientX - aiContainer.offsetLeft;
+                this.offsetY = e.clientY - aiContainer.offsetTop;
+
+                const dragMove = (e) => {
+                    if (!this.isDragging) return;
+                    aiContainer.style.left = `${e.clientX - this.offsetX}px`;
+                    aiContainer.style.top = `${e.clientY - this.offsetY}px`;
+                };
+
+                const dragEnd = () => {
+                    this.isDragging = false;
+                    aiContainer.classList.remove('dragging');
+                    this.scheduleNextMove();
+                    document.removeEventListener('mousemove', dragMove);
+                    document.removeEventListener('mouseup', dragEnd);
+                };
+                
+                document.addEventListener('mousemove', dragMove);
+                document.addEventListener('mouseup', dragEnd, { once: true });
+            },
+
+            resetInteractionTimer() { this.lastInteractionTime = Date.now(); },
+
+            startInactivityCheck() {
+                if (this.inactivityTimer) clearInterval(this.inactivityTimer);
+                this.inactivityTimer = setInterval(() => {
+                    if (Date.now() - this.lastInteractionTime > 30000 && !this.isNeedy && !this.isDragging) {
+                        this.enterNeedyMode();
+                    }
+                }, 2000);
+            },
+            
+            enterNeedyMode() {
+                this.isNeedy = true;
+                clearTimeout(this.moveTimeout);
+                App.elements.aiContainer.classList.add('needy');
+                this.setFace('sad');
+                
+                const followCursor = () => {
+                    if (!this.isNeedy) return;
+                    const rect = App.elements.aiContainer.getBoundingClientRect();
+                    const targetX = this.mouse.x - rect.width / 2;
+                    const targetY = this.mouse.y - rect.height / 2;
+                    const currentX = rect.left;
+                    const currentY = rect.top;
+
+                    App.elements.aiContainer.style.left = `${currentX + (targetX - currentX) * 0.08}px`;
+                    App.elements.aiContainer.style.top = `${currentY + (targetY - currentY) * 0.08}px`;
+                    this.needyAnimationId = requestAnimationFrame(followCursor);
+                };
+                this.needyAnimationId = requestAnimationFrame(followCursor);
+            },
+
+            stopNeedyMode() {
+                if (!this.isNeedy) return;
+                this.isNeedy = false;
+                cancelAnimationFrame(this.needyAnimationId);
+                App.elements.aiContainer.classList.remove('needy');
+                this.resetInteractionTimer();
+            },
+
+            handleHappyRunOff() {
+                if (!this.isNeedy) return;
+                this.stopNeedyMode();
+                this.setFace('happy');
+                App.elements.aiContainer.classList.add('running-off');
+
+                setTimeout(() => {
+                    App.elements.aiContainer.classList.remove('running-off');
+                    this.moveAiRandomly(true);
+                    setTimeout(() => this.setFace('neutral'), 1000);
+                }, 700);
+            },
+
+            moveAiRandomly(immediate = false) {
+                 if (this.isDragging || this.isNeedy) return;
+                 const aiContainer = App.elements.aiContainer;
+                 const maxX = window.innerWidth - aiContainer.clientWidth;
+                 const maxY = window.innerHeight - aiContainer.clientHeight;
+                 aiContainer.style.left = `${Math.random() * maxX}px`;
+                 aiContainer.style.top = `${Math.random() * maxY}px`;
+                 this.scheduleNextMove();
+            },
+
+            scheduleNextMove() {
+                clearTimeout(this.moveTimeout);
+                if (this.isNeedy || this.isDragging) return;
+                this.moveTimeout = setTimeout(() => this.moveAiRandomly(false), 8000);
             }
-        }
+        },
 
-        function applyAIVisuals({ product, shapeOverride }) {
-            elements.aiSkinLayer.innerHTML = '';
-            elements.aiSkinLayer.classList.remove('icon-active');
-            let iconClass = (shapeOverride && shapeOverride !== 'default') ? shapeOverride : (product?.category === 'skin' ? product.icon : null);
-            if (iconClass) {
-                elements.aiSkinLayer.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
-                elements.aiSkinLayer.classList.add('icon-active');
+        // --- UI MANIPULATION ---
+        ui: {
+            init() {
+                AOS.init({ duration: 800, once: true, offset: 50 });
+            },
+
+            applyAIVisuals({ product, shapeOverride }) {
+                const aiSkinLayer = App.elements.aiSkinLayer;
+                aiSkinLayer.innerHTML = '';
+                aiSkinLayer.classList.remove('icon-active');
+                let iconClass = (shapeOverride && shapeOverride !== 'default') ? shapeOverride : (product?.category === 'skin' ? product.icon : null);
+                if (iconClass) {
+                    aiSkinLayer.innerHTML = `<i class="fa-solid fa-${iconClass}"></i>`;
+                    aiSkinLayer.classList.add('icon-active');
+                }
+            },
+
+            updateFloatingAIVisuals() {
+                const skinProduct = App.state.equippedItems.skin ? App.state.allProductsCache.get(App.state.equippedItems.skin) : null;
+                this.applyAIVisuals({ product: skinProduct });
+            },
+
+            switchToPage(pageId) {
+                document.querySelectorAll('main section').forEach(sec => sec.classList.add('hidden'));
+                const targetPage = document.getElementById(pageId);
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                    AOS.refresh();
+                }
+                App.elements.navLinks.forEach(link => link.classList.toggle('active', link.dataset.target === pageId));
+                window.scrollTo(0, 0);
+            },
+            
+            updateNavForLoggedInUser() {
+                App.elements.authButton.textContent = 'Logout';
+                App.elements.inventoryNavLink.classList.remove('hidden');
+                App.elements.profileNavLink.classList.remove('hidden');
+                this.updateAvatarDisplay();
+            },
+
+            updateUIForLoggedOutUser() {
+                App.elements.userStatusContainer.innerHTML = '';
+                App.elements.authButton.textContent = 'Login';
+                App.elements.inventoryNavLink.classList.add('hidden');
+                App.elements.profileNavLink.classList.add('hidden');
+                this.updateFloatingAIVisuals();
+                this.switchToPage('hero-page');
+            },
+            
+            updateAvatarDisplay() {
+                const { currentUser, userData, equippedItems, allProductsCache } = App.state;
+                if (!currentUser) return;
+                const name = userData.displayName || currentUser.email.split('@')[0];
+                const tokenBalance = userData.tokens || 0;
+                let avatarBaseHtml = `<div class="avatar-base"><i class="fas fa-user"></i></div>`;
+
+                const skinId = equippedItems.skin;
+                if (skinId && allProductsCache.has(skinId)) {
+                    const skinProduct = allProductsCache.get(skinId);
+                    avatarBaseHtml = `<div class="avatar-base"><i class="fa-solid fa-${skinProduct.icon}"></i></div>`;
+                }
+
+                App.elements.userStatusContainer.innerHTML = `<div class="user-tokens"><span>${tokenBalance}</span> <i class="fas fa-coins"></i></div><div class="avatar-display">${avatarBaseHtml}</div><span>${name}</span>`;
+                if (document.getElementById('profile-avatar-wrapper')) {
+                    document.getElementById('profile-avatar-wrapper').innerHTML = `<div class="avatar-display">${avatarBaseHtml}</div>`;
+                }
+            },
+
+            updateProfilePageUI() {
+                const { currentUser, userData } = App.state;
+                if (!currentUser || !userData) return;
+                this.updateAvatarDisplay();
+                document.getElementById('profileDisplayName').textContent = userData.displayName;
+                document.getElementById('profileEmail').textContent = userData.email;
+                document.getElementById('displayName').value = userData.displayName;
+                document.getElementById('email').value = userData.email;
+                document.getElementById('totalTokens').textContent = userData.tokens || 0;
+                const joinDate = userData.createdAt?.toDate();
+                if (joinDate) document.getElementById('joinDate').textContent = joinDate.toLocaleDateString();
+            },
+
+            renderMarketplace() {
+                const products = Array.from(App.state.allProductsCache.values());
+                App.elements.marketGrid.innerHTML = products.length ? products.map(p => this.createProductCard(p, 'marketplace')).join('') : `<p>No items found.</p>`;
+            },
+
+            renderInventory() {
+                if (App.state.userInventory.size === 0) {
+                    App.elements.inventoryGrid.innerHTML = "<p style='text-align: center; grid-column: 1 / -1;'>Inventory is empty.</p>"; return;
+                }
+                const inventoryArray = Array.from(App.state.userInventory.keys()).map(id => ({ id, ...App.state.allProductsCache.get(id) })).filter(item => item.name);
+                App.elements.inventoryGrid.innerHTML = inventoryArray.map(product => this.createProductCard(product, 'inventory')).join('');
+            },
+
+            createProductCard(product, context) {
+                if (!product) return '';
+                const { userInventory, equippedItems } = App.state;
+                const isOwned = userInventory.has(product.id);
+                const isEquipped = equippedItems.skin === product.id;
+                let footerHtml = '';
+
+                if (context === 'inventory') {
+                    if (product.category === 'skin') footerHtml = `<button class="btn btn-primary equip-btn" data-product-id="${product.id}">${isEquipped ? 'Unequip' : 'Equip'}</button>`;
+                    else footerHtml = `<button class="btn btn-secondary" disabled>Cannot Equip</button>`;
+                } else {
+                    const priceText = product.price === 0 ? 'Free' : `${product.price} <i class="fas fa-coins"></i>`;
+                    const actionButton = isOwned ? `<button class="btn" disabled>Owned</button>` : `<button class="btn btn-primary purchase-btn" data-product-id="${product.id}">Get</button>`;
+                    footerHtml = `<span class="card-price text-gradient">${priceText}</span>${actionButton}`;
+                }
+                return `<div class="market-card ${isEquipped ? 'equipped' : ''}" data-product-id="${product.id}" data-aos="fade-up"><div class="card-image"><i class="fa-solid fa-${product.icon}"></i></div><div class="card-content"><h4 class="card-title">${product.name}</h4><p class="card-creator">by ${product.creator}</p></div><div class="card-footer">${footerHtml}</div></div>`;
+            },
+            
+            openAuthModal(showSignup = false) {
+                const loginHidden = showSignup ? 'hidden' : '';
+                const signupHidden = !showSignup ? 'hidden' : '';
+                App.elements.modalContainer.innerHTML = `<div class="modal-content"><div class="modal-close"><i class="fa-solid fa-times"></i></div><div id="login-view" class="${loginHidden}"><h3>Login</h3><form id="login-form" class="auth-form"><p class="form-error" style="color:red; text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Login</button></form><p style="text-align:center; margin-top:1rem;">No account? <a href="#" id="show-signup" style="color:var(--color-primary)">Sign Up</a></p></div><div id="signup-view" class="${signupHidden}"><h3>Create Account</h3><form id="signup-form" class="auth-form"><p class="form-error" style="color:red; text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Create</button></form><p style="text-align:center; margin-top:1rem;">Have an account? <a href="#" id="show-login" style="color:var(--color-primary)">Login</a></p></div></div>`;
+                App.elements.modalContainer.classList.add('show');
+            },
+
+            closeModal() { if (App.elements.modalContainer) App.elements.modalContainer.classList.remove('show'); },
+
+            showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                document.getElementById('toast-container').appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 10);
+                setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 3000);
             }
-        }
-        
-        function updateFloatingAIVisuals() {
-            const skinProduct = equippedItems.skin ? allProductsCache.get(equippedItems.skin) : null;
-            applyAIVisuals({ product: skinProduct });
-        }
-        
-        const startDrag = (e) => { if (isAnnoying) return; isDragging = true; elements.aiContainer.classList.remove('idle'); clearTimeout(moveTimeout); offsetX = e.clientX - elements.aiContainer.offsetLeft; offsetY = e.clientY - elements.aiContainer.offsetTop; document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', dragEnd, { once: true }); };
-        const dragMove = (e) => { if (!isDragging) return; elements.aiContainer.style.left = `${e.clientX - offsetX}px`; elements.aiContainer.style.top = `${e.clientY - offsetY}px`; if(elements.radialMenu.classList.contains('show')) updateRadialMenuPosition(); };
-        const dragEnd = () => { isDragging = false; elements.aiContainer.classList.add('idle'); scheduleNextMove(); document.removeEventListener('mousemove', dragMove); };
-        
-        function resetInteractionTimer() { lastInteractionTime = Date.now(); }
-        document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; resetInteractionTimer(); });
-        document.addEventListener('click', resetInteractionTimer);
-        function startAnnoyanceCheck() { if (inactivityTimer) clearInterval(inactivityTimer); inactivityTimer = setInterval(() => { if (Date.now() - lastInteractionTime > 30000 && !isAnnoying && !isDragging) beginAnnoying(); }, 2000); }
-        function beginAnnoying() { isAnnoying = true; clearTimeout(moveTimeout); elements.aiContainer.classList.remove('idle'); setAIFace('sad'); annoyanceInterval = setInterval(() => { const rect = elements.aiContainer.getBoundingClientRect(); elements.aiContainer.style.left = `${rect.left + (mouseX - rect.left - rect.width/2) * 0.08}px`; elements.aiContainer.style.top = `${rect.top + (mouseY - rect.top - rect.height/2) * 0.08}px`; }, 30); }
-        function stopAnnoying() { isAnnoying = false; clearInterval(annoyanceInterval); setAIFace('happy'); moveAiRandomly(true); setTimeout(() => setAIFace('neutral'), 2000); }
-        
-        function moveAiRandomly(immediate = false) {
-             if (isDragging) return;
-             const maxX = window.innerWidth - elements.aiContainer.clientWidth;
-             const maxY = window.innerHeight - elements.aiContainer.clientHeight;
-             const newX = Math.random() * maxX;
-             const newY = Math.random() * maxY;
-             if (immediate) {
-                elements.aiContainer.classList.remove('idle');
-                elements.aiContainer.style.transition = 'top 0.5s ease, left 0.5s ease';
-             }
-             elements.aiContainer.style.left = `${newX}px`;
-             elements.aiContainer.style.top = `${newY}px`;
-             if (immediate) setTimeout(() => { elements.aiContainer.classList.add('idle'); elements.aiContainer.style.transition = ''; scheduleNextMove(); }, 500);
-             else scheduleNextMove();
-        }
-        
-        const scheduleNextMove = () => { clearTimeout(moveTimeout); if (isAnnoying || isDragging || elements.customizationPanel.classList.contains('show')) return; moveTimeout = setTimeout(() => moveAiRandomly(false), 8000); };
-        
-        async function initializeApp() {
-            elements.marketGrid.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
-            await fetchAllProducts();
-            auth.onAuthStateChanged(handleAuthStateChange);
-            switchToPage('hero-page');
-        }
+        },
 
-        async function handleAuthStateChange(user) {
-            currentUser = user;
-            if (user) await onLogin(); else onLogout();
-        }
+        // --- FIREBASE & DATA LOGIC ---
+        firebase: {
+            auth: null,
+            db: null,
+            init() {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyBlqTqN1gUoCpuqPqmpLdtZdJHVFbTWyTs",
+                    authDomain: "fugthdesign-91744.firebaseapp.com",
+                    projectId: "fugthdesign-91744",
+                    storageBucket: "fugthdesign-91744.appspot.com",
+                    messagingSenderId: "797596632132",
+                    appId: "1:797596632132:web:2c2ebfa54c908e09a26811"
+                };
+                firebase.initializeApp(firebaseConfig);
+                this.auth = firebase.auth();
+                this.db = firebase.firestore();
+            },
 
-        async function onLogin() {
-            await fetchUserData();
-            await Promise.all([fetchEquippedItems(), fetchUserInventory(), checkForDailyLogin()]);
-            updateNavForLoggedInUser();
-            updateFloatingAIVisuals();
-            updateProfilePageUI();
-            filterAndRenderProducts();
-        }
+            async handleAuthStateChange(user) {
+                App.state.currentUser = user;
+                if (user) await this.onLogin(); else this.onLogout();
+            },
+            
+            async onLogin() {
+                await this.fetchUserData();
+                await Promise.all([this.fetchEquippedItems(), this.fetchUserInventory(), this.checkForDailyLogin()]);
+                App.ui.updateNavForLoggedInUser();
+                App.ui.updateFloatingAIVisuals();
+                App.ui.updateProfilePageUI();
+                App.ui.renderMarketplace();
+            },
 
-        function onLogout() {
-            userData = {};
-            userInventory.clear();
-            equippedItems = { skin: null };
-            updateUIForLoggedOutUser();
-            filterAndRenderProducts();
-        }
+            onLogout() {
+                App.state.userData = {};
+                App.state.userInventory.clear();
+                App.state.equippedItems = { skin: null };
+                App.ui.updateUIForLoggedOutUser();
+                App.ui.renderMarketplace();
+            },
+            
+            async fetchUserData() {
+                const userRef = this.db.collection('users').doc(App.state.currentUser.uid);
+                const userDoc = await userRef.get();
+                if (userDoc.exists) {
+                    App.state.userData = userDoc.data();
+                } else {
+                    const initialData = { displayName: App.state.currentUser.displayName, email: App.state.currentUser.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), tokens: 50, lastLogin: new Date() };
+                    await userRef.set(initialData);
+                    App.state.userData = initialData;
+                }
+            },
 
-        async function fetchUserData() {
-            const userRef = db.collection('users').doc(currentUser.uid);
-            const userDoc = await userRef.get();
-            if (userDoc.exists) {
-                userData = userDoc.data();
-            } else { // Handle first-time login for pre-existing auth users
-                const initialData = { displayName: currentUser.displayName, email: currentUser.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), tokens: 50, lastLogin: new Date() };
-                await userRef.set(initialData);
-                userData = initialData;
+            async checkForDailyLogin() {
+                const today = new Date().toISOString().split('T')[0];
+                const lastLoginDate = App.state.userData.lastLogin?.toDate().toISOString().split('T')[0];
+                if (today !== lastLoginDate) {
+                    const newTokens = (App.state.userData.tokens || 0) + 7;
+                    await this.db.collection('users').doc(App.state.currentUser.uid).update({ tokens: newTokens, lastLogin: new Date() });
+                    App.state.userData.tokens = newTokens;
+                    App.ui.showToast(`+7 Tokens for your daily login!`);
+                }
+            },
+            
+            async fetchAllProducts() {
+                const snapshot = await this.db.collection('products').get();
+                if (snapshot.empty) { await this.seedDefaultProducts(); await this.fetchAllProducts(); }
+                else { snapshot.forEach(doc => App.state.allProductsCache.set(doc.id, { id: doc.id, ...doc.data() })); }
+            },
+
+            async fetchUserInventory() {
+                if (!App.state.currentUser) return;
+                App.state.userInventory.clear();
+                const snapshot = await this.db.collection('user_inventory').doc(App.state.currentUser.uid).collection('items').get();
+                snapshot.forEach(doc => App.state.userInventory.set(doc.id, doc.data()));
+            },
+
+            async fetchEquippedItems() {
+                if (!App.state.currentUser) { App.state.equippedItems = { skin: null }; return; }
+                const doc = await this.db.collection('users').doc(App.state.currentUser.uid).collection('settings').doc('avatar').get();
+                App.state.equippedItems = doc.exists ? { skin: doc.data().skin || null } : { skin: null };
+            },
+            
+            async seedDefaultProducts() { const prods = [ { name: "Glitch Skin", icon: "ghost", category: "skin", price: 75, creator: "Community Artist" }, { name: "Fire Skin", icon: "fire", category: "skin", price: 0, creator: "Anvil Studios" }, { name: "Top Hat", icon: "hat-wizard", category: "accessory", price: 25, creator: "Anvil Studios" }, { name: "Logic Core", icon: "brain", category: "personality", price: 150, creator: "Anvil Studios" }, { name: "System Monitor", icon: "chart-line", category: "tool", price: 100, creator: "Community Dev" } ]; const batch = this.db.batch(); prods.forEach(p => batch.set(this.db.collection("products").doc(), p)); await batch.commit(); }
+        },
+
+        // --- EVENT HANDLERS ---
+        handlers: {
+            async handleLogin(e) { e.preventDefault(); try { await App.firebase.auth.signInWithEmailAndPassword(e.target.email.value, e.target.password.value); App.ui.closeModal(); App.ui.showToast(`Welcome back!`); } catch (err) { e.target.querySelector('.form-error').textContent = err.message; } },
+            
+            async handleSignup(e) {
+                e.preventDefault();
+                try {
+                    const cred = await App.firebase.auth.createUserWithEmailAndPassword(e.target.email.value, e.target.password.value);
+                    const initialName = cred.user.email.split('@')[0];
+                    await cred.user.updateProfile({ displayName: initialName });
+                    await App.firebase.db.collection('users').doc(cred.user.uid).set({ displayName: initialName, email: cred.user.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), tokens: 50, lastLogin: new Date() });
+                    App.ui.closeModal();
+                    App.ui.showToast(`Welcome! You start with 50 Fugth Tokens!`);
+                } catch (err) { e.target.querySelector('.form-error').textContent = err.message; }
+            },
+            
+            async handleEquipToggle(productId) {
+                if (!App.state.currentUser) return;
+                const newSkin = App.state.equippedItems.skin === productId ? null : productId;
+                try {
+                    await App.firebase.db.collection('users').doc(App.state.currentUser.uid).collection('settings').doc('avatar').set({ skin: newSkin }, { merge: true });
+                    App.state.equippedItems.skin = newSkin;
+                    App.ui.updateFloatingAIVisuals();
+                    App.ui.updateAvatarDisplay();
+                    App.ui.renderInventory();
+                    App.ui.showToast(`Item ${newSkin ? 'equipped' : 'unequipped'}.`);
+                } catch (error) { App.ui.showToast("Couldn't save your choice."); }
+            },
+
+            async handleProfileUpdate(e) {
+                e.preventDefault();
+                const newName = document.getElementById('displayName').value.trim();
+                if (!App.state.currentUser || !newName || newName === App.state.userData.displayName) return;
+                const saveButton = e.target.querySelector('button[type="submit"]');
+                saveButton.textContent = 'Saving...'; saveButton.disabled = true;
+                try {
+                    await App.state.currentUser.updateProfile({ displayName: newName });
+                    await App.firebase.db.collection('users').doc(App.state.currentUser.uid).update({ displayName: newName });
+                    App.state.userData.displayName = newName;
+                    App.ui.updateNavForLoggedInUser();
+                    App.ui.updateProfilePageUI();
+                    App.ui.showToast('Profile updated successfully!');
+                } catch (error) { App.ui.showToast('Failed to update profile.'); }
+                finally { saveButton.textContent = 'Save Changes'; saveButton.disabled = false; }
+            },
+            
+            async handlePurchase(productId) {
+                if (!App.state.currentUser) { App.ui.showToast('Please log in to make a purchase.'); return; }
+                const product = App.state.allProductsCache.get(productId);
+                if (!product) { App.ui.showToast('Item not found.'); return; }
+                if (App.state.userData.tokens < product.price) { App.ui.showToast('Not enough Fugth Tokens!'); return; }
+                const newBalance = App.state.userData.tokens - product.price;
+                try {
+                    const batch = App.firebase.db.batch();
+                    batch.update(App.firebase.db.collection('users').doc(App.state.currentUser.uid), { tokens: newBalance });
+                    batch.set(App.firebase.db.collection('user_inventory').doc(App.state.currentUser.uid).collection('items').doc(productId), { acquiredAt: firebase.firestore.FieldValue.serverTimestamp() });
+                    await batch.commit();
+                    App.state.userData.tokens = newBalance;
+                    App.state.userInventory.set(productId, { acquiredAt: new Date() });
+                    App.ui.showToast(`Purchased ${product.name}!`);
+                    App.ui.updateNavForLoggedInUser();
+                    App.ui.updateProfilePageUI();
+                    App.ui.renderMarketplace();
+                } catch (error) { App.ui.showToast("Purchase failed. Please try again."); }
             }
-        }
+        },
 
-        async function checkForDailyLogin() {
-            const today = new Date().toISOString().split('T')[0];
-            const lastLoginDate = userData.lastLogin?.toDate().toISOString().split('T')[0];
-            if (today !== lastLoginDate) {
-                const newTokens = (userData.tokens || 0) + 7;
-                await db.collection('users').doc(currentUser.uid).update({ tokens: newTokens, lastLogin: new Date() });
-                userData.tokens = newTokens;
-                showToast(`+7 Tokens for your daily login!`);
-            }
-            // Placeholder for monthly subscription token drop
-            // In a real app, a secure backend would verify the Stripe subscription
-            // and add tokens. For now, we advertise it on the Guild Pass page.
-        }
+        // --- EVENT LISTENER SETUP ---
+        bindEvents() {
+            App.elements.navLinks.forEach(link => link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.currentTarget.dataset.target;
+                if ((targetId.includes('inventory') || targetId.includes('profile')) && !App.state.currentUser) {
+                    App.ui.openAuthModal(); return;
+                }
+                if (targetId === 'inventory-page') App.ui.renderInventory();
+                App.ui.switchToPage(targetId);
+                App.elements.navLinksContainer.classList.remove('active');
+                App.elements.mobileMenuToggle.classList.remove('active');
+            }));
 
-        async function fetchAllProducts() {
-            const snapshot = await db.collection('products').get();
-            if (snapshot.empty) { await seedDefaultProducts(); await fetchAllProducts(); }
-            else { snapshot.forEach(doc => allProductsCache.set(doc.id, { id: doc.id, ...doc.data() })); }
-        }
+            window.addEventListener('scroll', () => App.elements.header.classList.toggle('scrolled', window.scrollY > 50));
+            
+            App.elements.authButton.addEventListener('click', e => {
+                e.preventDefault();
+                App.state.currentUser ? App.firebase.auth.signOut() : App.ui.openAuthModal();
+            });
 
-        async function fetchUserInventory() {
-            if (!currentUser) return;
-            userInventory.clear();
-            const snapshot = await db.collection('user_inventory').doc(currentUser.uid).collection('items').get();
-            snapshot.forEach(doc => userInventory.set(doc.id, doc.data()));
-        }
+            document.addEventListener('click', e => {
+                const equipBtn = e.target.closest('.equip-btn');
+                const purchaseBtn = e.target.closest('.purchase-btn');
+                if (equipBtn) App.handlers.handleEquipToggle(equipBtn.dataset.productId);
+                if (purchaseBtn) App.handlers.handlePurchase(purchaseBtn.dataset.productId);
+            });
 
-        async function fetchEquippedItems() {
-            if (!currentUser) { equippedItems = { skin: null }; return; }
-            const doc = await db.collection('users').doc(currentUser.uid).collection('settings').doc('avatar').get();
-            equippedItems = doc.exists ? { skin: doc.data().skin || null } : { skin: null };
-        }
-        
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            document.getElementById('toast-container').appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 3000);
-        }
+            App.elements.personalInfoForm?.addEventListener('submit', App.handlers.handleProfileUpdate);
+            
+            App.elements.mobileMenuToggle.addEventListener('click', () => {
+                App.elements.mobileMenuToggle.classList.toggle('active');
+                App.elements.navLinksContainer.classList.toggle('active');
+            });
+            
+            App.elements.modalContainer.addEventListener('click', (e) => {
+                if (e.target.closest('.modal-close') || e.target.id === 'modal-container') App.ui.closeModal();
+                else if (e.target.closest('#show-signup')) { e.preventDefault(); App.ui.openAuthModal(true); }
+                else if (e.target.closest('#show-login')) { e.preventDefault(); App.ui.openAuthModal(false); }
+            });
+            
+            App.elements.modalContainer.addEventListener('submit', (e) => {
+                if(e.target.id === 'login-form') App.handlers.handleLogin(e);
+                if(e.target.id === 'signup-form') App.handlers.handleSignup(e);
+            });
+        },
 
-        function switchToPage(pageId) {
-            document.querySelectorAll('main section').forEach(sec => sec.classList.add('hidden'));
-            const targetPage = document.getElementById(pageId);
-            if(targetPage) { targetPage.classList.remove('hidden'); AOS.refresh(); }
-            elements.navLinks.forEach(link => link.classList.toggle('active', link.dataset.target === pageId));
-            window.scrollTo(0, 0);
+        // --- APPLICATION INITIALIZATION ---
+        async init() {
+            // Cache all DOM elements
+            this.elements = {
+                authButton: document.getElementById('auth-button'),
+                userStatusContainer: document.getElementById('user-status-container'),
+                marketGrid: document.getElementById('market-grid-container'),
+                inventoryGrid: document.getElementById('inventory-grid-container'),
+                modalContainer: document.getElementById('modal-container'),
+                inventoryNavLink: document.getElementById('inventory-nav-link'),
+                profileNavLink: document.getElementById('profile-nav-link'),
+                navLinks: document.querySelectorAll('.nav-link'),
+                header: document.getElementById('main-header'),
+                personalInfoForm: document.getElementById('personalInfoForm'),
+                aiContainer: document.getElementById('floating-ai-container'),
+                aiSkinLayer: document.querySelector('.ai-skin-layer'),
+                mobileMenuToggle: document.getElementById('mobile-menu-toggle'),
+                navLinksContainer: document.querySelector('.nav-links')
+            };
+            
+            this.ui.init();
+            this.firebase.init();
+            this.bindEvents();
+            
+            App.elements.marketGrid.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+            await this.firebase.fetchAllProducts();
+            this.firebase.auth.onAuthStateChanged(this.firebase.handleAuthStateChange.bind(this.firebase));
+            
+            this.ui.switchToPage('hero-page');
+            this.floatingAI.init();
         }
+    };
 
-        function updateNavForLoggedInUser() {
-            elements.authButton.textContent = 'Logout';
-            elements.inventoryNavLink.classList.remove('hidden');
-            elements.profileNavLink.classList.remove('hidden');
-            updateAvatarDisplay();
-        }
+    document.addEventListener('DOMContentLoaded', () => App.init());
 
-        function updateUIForLoggedOutUser() {
-            elements.userStatusContainer.innerHTML = '';
-            elements.authButton.textContent = 'Login';
-            elements.inventoryNavLink.classList.add('hidden');
-            elements.profileNavLink.classList.add('hidden');
-            updateFloatingAIVisuals();
-            switchToPage('hero-page');
-        }
-
-        function updateAvatarDisplay() {
-            if (!currentUser) return;
-            const name = userData.displayName || currentUser.email.split('@')[0];
-            const baseAvatarUrl = currentUser.photoURL || `https://api.dicebear.com/6.x/pixel-art/svg?seed=${encodeURIComponent(name)}`;
-            const tokenBalance = userData.tokens || 0;
-            let avatarBaseHtml;
-            if (equippedItems.skin && allProductsCache.has(equippedItems.skin)) {
-                const skinProduct = allProductsCache.get(equippedItems.skin);
-                avatarBaseHtml = `<div class="avatar-base"><i class="fa-solid ${skinProduct.icon}"></i></div>`;
-            } else {
-                avatarBaseHtml = `<div class="avatar-base"><img src="${baseAvatarUrl}" alt="User Avatar"></div>`;
-            }
-            elements.userStatusContainer.innerHTML = `<div class="user-tokens"><span>${tokenBalance}</span> <i class="fas fa-coins"></i></div><div class="avatar-display">${avatarBaseHtml}</div><span>${name}</span>`;
-            if (document.getElementById('profile-avatar-wrapper')) {
-                document.getElementById('profile-avatar-wrapper').innerHTML = `<div class="avatar-display">${avatarBaseHtml}</div>`;
-            }
-        }
-        
-        function updateProfilePageUI() {
-            if (!currentUser || !userData) return;
-            updateAvatarDisplay();
-            document.getElementById('profileDisplayName').textContent = userData.displayName;
-            document.getElementById('profileEmail').textContent = userData.email;
-            document.getElementById('displayName').value = userData.displayName;
-            document.getElementById('email').value = userData.email;
-            document.getElementById('totalTokens').textContent = userData.tokens || 0;
-            const joinDate = userData.createdAt?.toDate();
-            if(joinDate) document.getElementById('joinDate').textContent = joinDate.toLocaleDateString();
-        }
-        
-        function openAuthModal(showSignup = false) {
-            const loginHidden = showSignup ? 'hidden' : '';
-            const signupHidden = !showSignup ? 'hidden' : '';
-            elements.modalContainer.innerHTML = `<div class="modal-content"><div class="modal-close"><i class="fa-solid fa-times"></i></div><div id="login-view" class="${loginHidden}"><h3>Login</h3><form id="login-form" class="auth-form"><p class="form-error" style="color:red; text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Login</button></form><p style="text-align:center; margin-top:1rem;">No account? <a href="#" id="show-signup" style="color:var(--color-primary)">Sign Up</a></p></div><div id="signup-view" class="${signupHidden}"><h3>Create Account</h3><form id="signup-form" class="auth-form"><p class="form-error" style="color:red; text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Create</button></form><p style="text-align:center; margin-top:1rem;">Have an account? <a href="#" id="show-login" style="color:var(--color-primary)">Login</a></p></div></div>`;
-            elements.modalContainer.classList.add('show');
-            elements.modalContainer.querySelector('.modal-close').addEventListener('click', closeModal);
-            document.getElementById('login-form')?.addEventListener('submit', handleLogin);
-            document.getElementById('signup-form')?.addEventListener('submit', handleSignup);
-            document.getElementById('show-signup').addEventListener('click', e => { e.preventDefault(); openAuthModal(true); });
-            document.getElementById('show-login').addEventListener('click', e => { e.preventDefault(); openAuthModal(false); });
-        }
-
-        function closeModal() { if(elements.modalContainer) elements.modalContainer.classList.remove('show'); }
-
-        async function handleLogin(e) { e.preventDefault(); try { await auth.signInWithEmailAndPassword(e.target.email.value, e.target.password.value); closeModal(); showToast(`Welcome back!`); } catch (err) { e.target.querySelector('.form-error').textContent = err.message; } }
-        
-        async function handleSignup(e) {
-            e.preventDefault();
-            try {
-                const cred = await auth.createUserWithEmailAndPassword(e.target.email.value, e.target.password.value);
-                const initialName = cred.user.email.split('@')[0];
-                await cred.user.updateProfile({ displayName: initialName });
-                await db.collection('users').doc(cred.user.uid).set({ displayName: initialName, email: cred.user.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), tokens: 50, lastLogin: new Date() });
-                closeModal();
-                showToast(`Welcome! You start with 50 Fugth Tokens!`);
-            } catch (err) { e.target.querySelector('.form-error').textContent = err.message; }
-        }
-        
-        function filterAndRenderProducts() {
-            if (!elements.marketGrid) return;
-            const products = Array.from(allProductsCache.values());
-            elements.marketGrid.innerHTML = products.length ? products.map(p => createProductCard(p, 'marketplace')).join('') : `<p>No items found.</p>`;
-        }
-
-        function renderInventory() {
-            if (!elements.inventoryGrid) return;
-            if (userInventory.size === 0) { elements.inventoryGrid.innerHTML = "<p style='text-align: center; grid-column: 1 / -1;'>Inventory is empty.</p>"; return; }
-            const inventoryArray = Array.from(userInventory.keys()).map(id => ({ id, ...allProductsCache.get(id) })).filter(item => item.name);
-            elements.inventoryGrid.innerHTML = inventoryArray.map(product => createProductCard(product, 'inventory')).join('');
-        }
-
-        function createProductCard(product, context) {
-            if (!product) return '';
-            const isOwned = userInventory.has(product.id);
-            const isEquipped = equippedItems.skin === product.id;
-            let footerHtml = '';
-
-            if (context === 'inventory') {
-                if (product.category === 'skin') footerHtml = `<button class="btn btn-primary equip-btn" data-product-id="${product.id}">${isEquipped ? 'Unequip' : 'Equip'}</button>`;
-                else footerHtml = `<button class="btn btn-secondary" disabled>Cannot Equip</button>`;
-            } else {
-                const priceText = product.price === 0 ? 'Free' : `${product.price} <i class="fas fa-coins"></i>`;
-                const actionButton = isOwned ? `<button class="btn btn-disabled">Owned</button>` : `<button class="btn btn-primary" onclick="window.handlePurchase('${product.id}')">Get</button>`;
-                footerHtml = `<span class="card-price text-gradient">${priceText}</span>${actionButton}`;
-            }
-            return `<div class="market-card ${isEquipped ? 'equipped' : ''}" data-product-id="${product.id}" data-aos="fade-up"><div class="card-image"><i class="fa-solid fa-${product.icon}"></i></div><div class="card-content"><h4 class="card-title">${product.name}</h4><p class="card-creator">by ${product.creator}</p></div><div class="card-footer">${footerHtml}</div></div>`;
-        }
-
-        async function handleEquipToggle(productId) {
-            if (!currentUser) return;
-            const newSkin = equippedItems.skin === productId ? null : productId;
-            try {
-                await db.collection('users').doc(currentUser.uid).collection('settings').doc('avatar').set({ skin: newSkin }, { merge: true });
-                equippedItems.skin = newSkin;
-                updateFloatingAIVisuals();
-                updateAvatarDisplay();
-                renderInventory();
-                showToast(`Item ${newSkin ? 'equipped' : 'unequipped'}.`);
-            } catch (error) { showToast("Couldn't save your choice."); }
-        }
-
-        async function handleProfileUpdate(e) {
-            e.preventDefault();
-            const newName = document.getElementById('displayName').value.trim();
-            if (!currentUser || !newName || newName === userData.displayName) return;
-            const saveButton = e.target.querySelector('button[type="submit"]');
-            saveButton.textContent = 'Saving...'; saveButton.disabled = true;
-            try {
-                await currentUser.updateProfile({ displayName: newName });
-                await db.collection('users').doc(currentUser.uid).update({ displayName: newName });
-                userData.displayName = newName; // Update local state immediately
-                updateNavForLoggedInUser();
-                updateProfilePageUI();
-                showToast('Profile updated successfully!');
-            } catch (error) { showToast('Failed to update profile.'); }
-            finally { saveButton.textContent = 'Save Changes'; saveButton.disabled = false; }
-        }
-        
-        async function handlePurchase(productId) {
-            if (!currentUser) { showToast('Please log in to make a purchase.'); return; }
-            const product = allProductsCache.get(productId);
-            if (!product) { showToast('Item not found.'); return; }
-            if (userData.tokens < product.price) { showToast('Not enough Fugth Tokens!'); return; }
-            const newBalance = userData.tokens - product.price;
-            try {
-                const batch = db.batch();
-                batch.update(db.collection('users').doc(currentUser.uid), { tokens: newBalance });
-                batch.set(db.collection('user_inventory').doc(currentUser.uid).collection('items').doc(productId), { acquiredAt: firebase.firestore.FieldValue.serverTimestamp() });
-                await batch.commit();
-                userData.tokens = newBalance;
-                userInventory.set(productId, { acquiredAt: new Date() });
-                showToast(`Purchased ${product.name}!`);
-                updateNavForLoggedInUser();
-                updateProfilePageUI();
-                filterAndRenderProducts();
-            } catch (error) { showToast("Purchase failed. Please try again."); }
-        }
-        window.handlePurchase = handlePurchase;
-
-        async function seedDefaultProducts() { const prods = [ { name: "Glitch Skin", icon: "fa-ghost", category: "skin", price: 75, creator: "Community Artist" }, { name: "Fire Skin", icon: "fa-fire", category: "skin", price: 0, creator: "Anvil Studios" }, { name: "Top Hat", icon: "fa-hat-wizard", category: "accessory", price: 25, creator: "Anvil Studios" }, { name: "Logic Core", icon: "fa-brain", category: "personality", price: 150, creator: "Anvil Studios" }, { name: "System Monitor", icon: "fa-chart-line", category: "tool", price: 100, creator: "Community Dev" } ]; const batch = db.batch(); prods.forEach(p => batch.set(db.collection("products").doc(), p)); await batch.commit(); }
-
-        elements.navLinks.forEach(link => link.addEventListener('click', (e) => { e.preventDefault(); const targetId = e.currentTarget.dataset.target; if ((targetId.includes('inventory') || targetId.includes('profile')) && !currentUser) { openAuthModal(); return; } if (targetId === 'inventory-page') renderInventory(); switchToPage(targetId); elements.navLinksContainer.classList.remove('active'); elements.mobileMenuToggle.classList.remove('active'); }));
-        window.addEventListener('scroll', () => elements.header.classList.toggle('scrolled', window.scrollY > 50));
-        elements.authButton.addEventListener('click', e => { e.preventDefault(); currentUser ? auth.signOut() : openAuthModal(); });
-        document.addEventListener('click', e => { if (e.target.closest('.equip-btn')) handleEquipToggle(e.target.closest('.equip-btn').dataset.productId); });
-        elements.personalInfoForm?.addEventListener('submit', handleProfileUpdate);
-        document.querySelector('.filter-controls')?.addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON') { document.querySelector('.filter-controls .active')?.classList.remove('active'); e.target.classList.add('active'); filterAndRenderProducts(e.target.dataset.filter); } });
-        elements.mobileMenuToggle.addEventListener('click', () => { elements.mobileMenuToggle.classList.toggle('active'); elements.navLinksContainer.classList.toggle('active'); });
-
-        // --- STARTUP ---
-        initializeApp();
-        elements.aiContainer.classList.add('idle');
-        scheduleNextMove();
-        startAnnoyanceCheck();
-    });
     </script>
 </body>
 </html>
