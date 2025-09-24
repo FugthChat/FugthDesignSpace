@@ -113,13 +113,14 @@
         .hero-content { max-width: 800px; margin: 0 auto; }
 
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-        .market-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; transition: all 0.3s ease; display: flex; flex-direction: column; position: relative;}
+        .market-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; transition: all 0.3s ease; display: flex; flex-direction: column; position: relative; cursor: pointer;}
         .market-card:hover { transform: translateY(-8px); border-color: var(--color-primary); box-shadow: 0 0 30px rgba(217, 249, 157, 0.1); }
         .market-card.equipped { border-color: var(--color-secondary); box-shadow: 0 0 15px rgba(126, 231, 135, 0.2); }
         .card-image { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background: var(--color-background); color: var(--color-primary); }
         .card-content { padding: 1rem; flex-grow: 1; }
         .card-title { font-size: 1.1rem; font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.25rem; }
-        .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 0 1rem 1rem 1rem; font-size: 1rem; font-weight: 600; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 0 1rem 1rem 1rem; font-size: 1rem; font-weight: 600; margin-top: auto; }
+        .card-footer > * { cursor: pointer; } /* Make buttons clickable inside card */
         
         /* Marketplace Category Filters */
         .category-filters { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
@@ -150,10 +151,15 @@
         .modal-container.show { opacity: 1; visibility: visible; }
         .modal-content {
             background: var(--color-surface);
-            border-left: 1px solid var(--color-border); /* Border only on the left */
-            padding: 3rem 2rem; width: 100%; max-width: 420px; height: 100%;
-            position: relative; transform: translateX(100%); /* Start off-screen */
+            border-left: 1px solid var(--color-border);
+            width: 100%; max-width: 420px; height: 100%;
+            position: relative; transform: translateX(100%);
+            display: flex; flex-direction: column;
         }
+        .modal-header { padding: 2rem 2rem 1rem; }
+        .modal-body { padding: 0 2rem 2rem; overflow-y: auto; flex-grow: 1; }
+        .modal-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--color-border); margin-top: auto; }
+
         .modal-container.show .modal-content { animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
         .modal-container.closing .modal-content { animation: slideOutRight 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
 
@@ -161,13 +167,18 @@
             position: absolute; top: 1.5rem; right: 1.5rem; background: var(--color-surface-light);
             border-radius: 50%; width: 32px; height: 32px; display: flex;
             align-items: center; justify-content: center; cursor: pointer; font-size: 1rem;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s; z-index: 10;
         }
         .modal-close:hover { background-color: var(--color-background); }
 
         .auth-form { display:flex; flex-direction:column; gap: 1rem; margin-top: 1.5rem; }
         .auth-form input { background: var(--color-background); border: 1px solid var(--color-border); padding: 0.75rem; border-radius: 6px; color: var(--color-text-primary); font-size: 1rem; }
         
+        /* Item Details Modal Styles */
+        .item-details-icon { font-size: 5rem; text-align: center; margin-bottom: 1.5rem; color: var(--color-primary); }
+        .item-details-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+        .item-details-tag { background: var(--color-surface-light); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; }
+
         /* Profile Page */
         .profile-content { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-top: 2rem; align-items: start; }
         .profile-sidebar { background: var(--color-surface); border-radius: 12px; padding: 2rem; border: 1px solid var(--color-border); position: sticky; top: 100px; text-align:center;}
@@ -227,35 +238,13 @@
         .card-price .fa-coins { margin-left: 0.25rem; color: var(--color-favorite); }
 
         /* --- Uploader Styles --- */
-        #drop-zone {
-            border: 2px dashed var(--color-border);
-            border-radius: 8px;
-            padding: 2.5rem;
-            text-align: center;
-            cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-            background-color: var(--color-surface);
-        }
-        #drop-zone.dragover {
-            background-color: var(--color-surface-light);
-            border-color: var(--color-primary);
-        }
-        #log-container {
-            margin-top: 1.5rem;
-            background-color: var(--color-background);
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            padding: 1rem;
-            height: 250px;
-            overflow-y: auto;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85em;
-        }
+        #drop-zone { border: 2px dashed var(--color-border); border-radius: 8px; padding: 2.5rem; text-align: center; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; background-color: var(--color-surface); }
+        #drop-zone.dragover { background-color: var(--color-surface-light); border-color: var(--color-primary); }
+        #log-container { margin-top: 1.5rem; background-color: var(--color-background); border: 1px solid var(--color-border); border-radius: 6px; padding: 1rem; height: 250px; overflow-y: auto; font-family: 'Courier New', Courier, monospace; font-size: 0.85em; }
         .log-entry { margin-bottom: 0.5em; }
         .log-entry.success { color: var(--color-secondary); }
         .log-entry.error { color: var(--color-error); }
         .log-entry.info { color: var(--color-text-secondary); }
-
 
         /* Responsive Design */
         @media (max-width: 992px) {
@@ -445,8 +434,8 @@
         <section id="inventory-page" class="hidden">
              <div class="container">
                  <div class="section-header" data-aos="fade-up">
-                       <h2>My <span class="text-gradient">Inventory</span></h2>
-                       <p>All of your acquired items in one place. Equip skins and accessories to customize your AI's appearance.</p>
+                        <h2>My <span class="text-gradient">Inventory</span></h2>
+                        <p>All of your acquired items in one place. Equip skins and accessories to customize your AI's appearance.</p>
                </div>
                  <div class="page-content"><div class="grid-container" id="inventory-grid-container"></div></div>
              </div>
@@ -543,252 +532,97 @@
 
         // --- FLOATING AI LOGIC ---
         floatingAI: {
-            isDragging: false,
-            isNeedy: false,
-            offsetX: 0,
-            offsetY: 0,
-            moveTimeout: null,
-            inactivityTimer: null,
-            needyAnimationId: null,
-            lastInteractionTime: Date.now(),
-            mouse: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
-
+            isDragging: false, isNeedy: false, offsetX: 0, offsetY: 0, moveTimeout: null, inactivityTimer: null,
+            needyAnimationId: null, lastInteractionTime: Date.now(), mouse: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
             init() {
                 const aiContainer = App.elements.aiContainer;
                 aiContainer.addEventListener('mousedown', this.startDrag.bind(this));
                 document.addEventListener('mousemove', this.updateMousePosition.bind(this));
                 document.addEventListener('click', this.resetInteractionTimer.bind(this));
                 aiContainer.addEventListener('dblclick', this.handleHappyRunOff.bind(this));
-
                 aiContainer.style.top = `${window.innerHeight / 2}px`;
                 aiContainer.style.left = `${window.innerWidth / 2}px`;
-
                 this.startInactivityCheck();
                 this.scheduleNextMove();
             },
-            
-            updateMousePosition(e) {
-                this.mouse.x = e.clientX;
-                this.mouse.y = e.clientY;
-                this.resetInteractionTimer();
-            },
-
+            updateMousePosition(e) { this.mouse.x = e.clientX; this.mouse.y = e.clientY; this.resetInteractionTimer(); },
             setFace(face) {
                 const aiFaceEl = App.elements.aiContainer.querySelector('.ai-face');
-                if (aiFaceEl) {
-                    aiFaceEl.className = 'ai-face'; // Reset
-                    if (face && face !== 'neutral') aiFaceEl.classList.add(face);
-                }
+                if (aiFaceEl) { aiFaceEl.className = 'ai-face'; if (face && face !== 'neutral') aiFaceEl.classList.add(face); }
             },
-
             startDrag(e) {
-                if (this.isNeedy) return;
-                this.isDragging = true;
-                const aiContainer = App.elements.aiContainer;
-                aiContainer.classList.add('dragging');
-                clearTimeout(this.moveTimeout);
-                this.offsetX = e.clientX - aiContainer.offsetLeft;
+                if (this.isNeedy) return; this.isDragging = true; const aiContainer = App.elements.aiContainer;
+                aiContainer.classList.add('dragging'); clearTimeout(this.moveTimeout); this.offsetX = e.clientX - aiContainer.offsetLeft;
                 this.offsetY = e.clientY - aiContainer.offsetTop;
-
-                const dragMove = (e) => {
-                    if (!this.isDragging) return;
-                    aiContainer.style.left = `${e.clientX - this.offsetX}px`;
-                    aiContainer.style.top = `${e.clientY - this.offsetY}px`;
-                };
-
-                const dragEnd = () => {
-                    this.isDragging = false;
-                    aiContainer.classList.remove('dragging');
-                    this.scheduleNextMove();
-                    document.removeEventListener('mousemove', dragMove);
-                    document.removeEventListener('mouseup', dragEnd);
-                };
-                
-                document.addEventListener('mousemove', dragMove);
-                document.addEventListener('mouseup', dragEnd, { once: true });
+                const dragMove = (e) => { if (!this.isDragging) return; aiContainer.style.left = `${e.clientX - this.offsetX}px`; aiContainer.style.top = `${e.clientY - this.offsetY}px`; };
+                const dragEnd = () => { this.isDragging = false; aiContainer.classList.remove('dragging'); this.scheduleNextMove(); document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', dragEnd); };
+                document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', dragEnd, { once: true });
             },
-
             resetInteractionTimer() { this.lastInteractionTime = Date.now(); },
-
-            startInactivityCheck() {
-                if (this.inactivityTimer) clearInterval(this.inactivityTimer);
-                this.inactivityTimer = setInterval(() => {
-                    if (Date.now() - this.lastInteractionTime > 30000 && !this.isNeedy && !this.isDragging) {
-                        this.enterNeedyMode();
-                    }
-                }, 2000);
-            },
-            
+            startInactivityCheck() { if (this.inactivityTimer) clearInterval(this.inactivityTimer); this.inactivityTimer = setInterval(() => { if (Date.now() - this.lastInteractionTime > 30000 && !this.isNeedy && !this.isDragging) { this.enterNeedyMode(); } }, 2000); },
             enterNeedyMode() {
-                this.isNeedy = true;
-                clearTimeout(this.moveTimeout);
-                App.elements.aiContainer.classList.add('needy');
-                this.setFace('sad');
-                
-                const followCursor = () => {
-                    if (!this.isNeedy) return;
-                    const rect = App.elements.aiContainer.getBoundingClientRect();
-                    const targetX = this.mouse.x - rect.width / 2;
-                    const targetY = this.mouse.y - rect.height / 2;
-                    const currentX = rect.left;
-                    const currentY = rect.top;
-
-                    App.elements.aiContainer.style.left = `${currentX + (targetX - currentX) * 0.08}px`;
-                    App.elements.aiContainer.style.top = `${currentY + (targetY - currentY) * 0.08}px`;
-                    this.needyAnimationId = requestAnimationFrame(followCursor);
-                };
+                this.isNeedy = true; clearTimeout(this.moveTimeout); App.elements.aiContainer.classList.add('needy'); this.setFace('sad');
+                const followCursor = () => { if (!this.isNeedy) return; const rect = App.elements.aiContainer.getBoundingClientRect(); const targetX = this.mouse.x - rect.width / 2; const targetY = this.mouse.y - rect.height / 2; const currentX = rect.left; const currentY = rect.top; App.elements.aiContainer.style.left = `${currentX + (targetX - currentX) * 0.08}px`; App.elements.aiContainer.style.top = `${currentY + (targetY - currentY) * 0.08}px`; this.needyAnimationId = requestAnimationFrame(followCursor); };
                 this.needyAnimationId = requestAnimationFrame(followCursor);
             },
-
-            stopNeedyMode() {
-                if (!this.isNeedy) return;
-                this.isNeedy = false;
-                cancelAnimationFrame(this.needyAnimationId);
-                App.elements.aiContainer.classList.remove('needy');
-                this.resetInteractionTimer();
-            },
-
-            handleHappyRunOff() {
-                if (!this.isNeedy) return;
-                this.stopNeedyMode();
-                this.setFace('happy');
-                App.elements.aiContainer.classList.add('running-off');
-
-                setTimeout(() => {
-                    App.elements.aiContainer.classList.remove('running-off');
-                    this.moveAiRandomly(true);
-                    setTimeout(() => this.setFace('neutral'), 1000);
-                }, 700);
-            },
-
-            moveAiRandomly(immediate = false) {
-                 if (this.isDragging || this.isNeedy) return;
-                 const aiContainer = App.elements.aiContainer;
-                 const maxX = window.innerWidth - aiContainer.clientWidth;
-                 const maxY = window.innerHeight - aiContainer.clientHeight;
-                 aiContainer.style.left = `${Math.random() * maxX}px`;
-                 aiContainer.style.top = `${Math.random() * maxY}px`;
-                 this.scheduleNextMove();
-            },
-
-            scheduleNextMove() {
-                clearTimeout(this.moveTimeout);
-                if (this.isNeedy || this.isDragging) return;
-                this.moveTimeout = setTimeout(() => this.moveAiRandomly(false), 8000);
-            }
+            stopNeedyMode() { if (!this.isNeedy) return; this.isNeedy = false; cancelAnimationFrame(this.needyAnimationId); App.elements.aiContainer.classList.remove('needy'); this.resetInteractionTimer(); },
+            handleHappyRunOff() { if (!this.isNeedy) return; this.stopNeedyMode(); this.setFace('happy'); App.elements.aiContainer.classList.add('running-off'); setTimeout(() => { App.elements.aiContainer.classList.remove('running-off'); this.moveAiRandomly(true); setTimeout(() => this.setFace('neutral'), 1000); }, 700); },
+            moveAiRandomly(immediate = false) { if (this.isDragging || this.isNeedy) return; const aiContainer = App.elements.aiContainer; const maxX = window.innerWidth - aiContainer.clientWidth; const maxY = window.innerHeight - aiContainer.clientHeight; aiContainer.style.left = `${Math.random() * maxX}px`; aiContainer.style.top = `${Math.random() * maxY}px`; this.scheduleNextMove(); },
+            scheduleNextMove() { clearTimeout(this.moveTimeout); if (this.isNeedy || this.isDragging) return; this.moveTimeout = setTimeout(() => this.moveAiRandomly(false), 8000); }
         },
 
         // --- UI MANIPULATION ---
         ui: {
-            init() {
-                AOS.init({ duration: 800, once: true, offset: 50 });
-            },
-
+            init() { AOS.init({ duration: 800, once: true, offset: 50 }); },
             applyAIVisuals({ product, shapeOverride }) {
-                const aiSkinLayer = App.elements.aiSkinLayer;
-                aiSkinLayer.innerHTML = '';
-                aiSkinLayer.classList.remove('icon-active');
+                const aiSkinLayer = App.elements.aiSkinLayer; aiSkinLayer.innerHTML = ''; aiSkinLayer.classList.remove('icon-active');
                 let iconClass = (shapeOverride && shapeOverride !== 'default') ? shapeOverride : (product?.category === 'skin' ? product.icon : null);
-                if (iconClass) {
-                    aiSkinLayer.innerHTML = `<i class="fa-solid fa-${iconClass}"></i>`;
-                    aiSkinLayer.classList.add('icon-active');
-                }
+                if (iconClass) { aiSkinLayer.innerHTML = `<i class="fa-solid fa-${iconClass}"></i>`; aiSkinLayer.classList.add('icon-active'); }
             },
-
-            updateFloatingAIVisuals() {
-                const skinProduct = App.state.equippedItems.skin ? App.state.allProductsCache.get(App.state.equippedItems.skin) : null;
-                this.applyAIVisuals({ product: skinProduct });
-            },
-
-            switchToPage(pageId) {
-                document.querySelectorAll('main section').forEach(sec => sec.classList.add('hidden'));
-                const targetPage = document.getElementById(pageId);
-                if (targetPage) {
-                    targetPage.classList.remove('hidden');
-                    AOS.refresh();
-                }
-                App.elements.navLinks.forEach(link => link.classList.toggle('active', link.dataset.target === pageId));
-                window.scrollTo(0, 0);
-            },
-            
+            updateFloatingAIVisuals() { const skinProduct = App.state.equippedItems.skin ? App.state.allProductsCache.get(App.state.equippedItems.skin) : null; this.applyAIVisuals({ product: skinProduct }); },
+            switchToPage(pageId) { document.querySelectorAll('main section').forEach(sec => sec.classList.add('hidden')); const targetPage = document.getElementById(pageId); if (targetPage) { targetPage.classList.remove('hidden'); AOS.refresh(); } App.elements.navLinks.forEach(link => link.classList.toggle('active', link.dataset.target === pageId)); window.scrollTo(0, 0); },
             updateNavForLoggedInUser() {
-                App.elements.authButton.textContent = 'Logout';
-                App.elements.inventoryNavLink.classList.remove('hidden');
-                App.elements.profileNavLink.classList.remove('hidden');
-                this.updateAvatarDisplay();
-
-                // Show admin link if user has admin role
-                if (App.state.userData.role === 'admin') {
-                    App.elements.uploadNavLink.classList.remove('hidden');
-                }
+                App.elements.authButton.textContent = 'Logout'; App.elements.inventoryNavLink.classList.remove('hidden');
+                App.elements.profileNavLink.classList.remove('hidden'); this.updateAvatarDisplay();
+                if (App.state.userData.role === 'admin') { App.elements.uploadNavLink.classList.remove('hidden'); }
             },
-
             updateUIForLoggedOutUser() {
-                App.elements.userStatusContainer.innerHTML = '';
-                App.elements.authButton.textContent = 'Login';
-                App.elements.inventoryNavLink.classList.add('hidden');
-                App.elements.profileNavLink.classList.add('hidden');
-                App.elements.uploadNavLink.classList.add('hidden'); // Ensure admin link is hidden on logout
-                this.updateFloatingAIVisuals();
-                this.switchToPage('hero-page');
+                App.elements.userStatusContainer.innerHTML = ''; App.elements.authButton.textContent = 'Login';
+                App.elements.inventoryNavLink.classList.add('hidden'); App.elements.profileNavLink.classList.add('hidden');
+                App.elements.uploadNavLink.classList.add('hidden'); this.updateFloatingAIVisuals(); this.switchToPage('hero-page');
             },
-            
             updateAvatarDisplay() {
-                const { currentUser, userData, equippedItems, allProductsCache } = App.state;
-                if (!currentUser) return;
-                const name = userData.displayName || currentUser.email.split('@')[0];
-                const tokenBalance = userData.tokens || 0;
+                const { currentUser, userData, equippedItems, allProductsCache } = App.state; if (!currentUser) return;
+                const name = userData.displayName || currentUser.email.split('@')[0]; const tokenBalance = userData.tokens || 0;
                 let avatarBaseHtml = `<div class="avatar-base"><i class="fas fa-user"></i></div>`;
-
                 const skinId = equippedItems.skin;
-                if (skinId && allProductsCache.has(skinId)) {
-                    const skinProduct = allProductsCache.get(skinId);
-                    avatarBaseHtml = `<div class="avatar-base"><i class="fa-solid fa-${skinProduct.icon}"></i></div>`;
-                }
-
+                if (skinId && allProductsCache.has(skinId)) { const skinProduct = allProductsCache.get(skinId); avatarBaseHtml = `<div class="avatar-base"><i class="fa-solid fa-${skinProduct.icon}"></i></div>`; }
                 App.elements.userStatusContainer.innerHTML = `<div class="user-tokens"><span>${tokenBalance}</span> <i class="fas fa-coins"></i></div><div class="avatar-display">${avatarBaseHtml}</div><span>${name}</span>`;
-                if (document.getElementById('profile-avatar-wrapper')) {
-                    document.getElementById('profile-avatar-wrapper').innerHTML = `<div class="avatar-display">${avatarBaseHtml}</div>`;
-                }
+                if (document.getElementById('profile-avatar-wrapper')) { document.getElementById('profile-avatar-wrapper').innerHTML = `<div class="avatar-display">${avatarBaseHtml}</div>`; }
             },
-
             updateProfilePageUI() {
-                const { currentUser, userData } = App.state;
-                if (!currentUser || !userData) return;
-                this.updateAvatarDisplay();
-                document.getElementById('profileDisplayName').textContent = userData.displayName;
-                document.getElementById('profileEmail').textContent = userData.email;
-                document.getElementById('displayName').value = userData.displayName;
-                document.getElementById('email').value = userData.email;
-                document.getElementById('totalTokens').textContent = userData.tokens || 0;
-                const joinDate = userData.createdAt?.toDate();
-                if (joinDate) document.getElementById('joinDate').textContent = joinDate.toLocaleDateString();
+                const { currentUser, userData } = App.state; if (!currentUser || !userData) return;
+                this.updateAvatarDisplay(); document.getElementById('profileDisplayName').textContent = userData.displayName;
+                document.getElementById('profileEmail').textContent = userData.email; document.getElementById('displayName').value = userData.displayName;
+                document.getElementById('email').value = userData.email; document.getElementById('totalTokens').textContent = userData.tokens || 0;
+                const joinDate = userData.createdAt?.toDate(); if (joinDate) document.getElementById('joinDate').textContent = joinDate.toLocaleDateString();
             },
-
             renderCategoryFilters() {
                 const categories = ['all', ...new Set(Array.from(App.state.allProductsCache.values()).map(p => p.category).filter(Boolean))];
-                App.elements.categoryFilters.innerHTML = categories.map(cat =>
-                    `<button class="btn btn-secondary ${App.state.currentCategory === cat ? 'active' : ''}" data-category="${cat}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</button>`
-                ).join('');
+                App.elements.categoryFilters.innerHTML = categories.map(cat => `<button class="btn btn-secondary ${App.state.currentCategory === cat ? 'active' : ''}" data-category="${cat}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</button>`).join('');
             },
-
             renderMarketplace() {
                 let products = Array.from(App.state.allProductsCache.values());
-                if (App.state.currentCategory !== 'all') {
-                    products = products.filter(p => p.category === App.state.currentCategory);
-                }
+                if (App.state.currentCategory !== 'all') { products = products.filter(p => p.category === App.state.currentCategory); }
                 App.elements.marketGrid.innerHTML = products.length ? products.map(p => this.createProductCard(p, 'marketplace')).join('') : `<p style='text-align: center; grid-column: 1 / -1;'>No items found in this category.</p>`;
                 setTimeout(() => AOS.refresh(), 100);
             },
-
             renderInventory() {
-                if (App.state.userInventory.size === 0) {
-                    App.elements.inventoryGrid.innerHTML = "<p style='text-align: center; grid-column: 1 / -1;'>Inventory is empty.</p>"; return;
-                }
-                const inventoryArray = Array.from(App.state.userInventory.keys()).map(id => ({ id, ...App.state.allProductsCache.get(id) })).filter(item => item.name);
+                if (App.state.userInventory.size === 0) { App.elements.inventoryGrid.innerHTML = "<p style='text-align: center; grid-column: 1 / -1;'>Inventory is empty.</p>"; return; }
+                const inventoryArray = Array.from(App.state.userInventory.keys()).map(id => App.state.allProductsCache.get(id)).filter(item => item && item.name);
                 App.elements.inventoryGrid.innerHTML = inventoryArray.map(product => this.createProductCard(product, 'inventory')).join('');
             },
-
+            // --- MODIFIED createProductCard function ---
             createProductCard(product, context) {
                 if (!product) return '';
                 const { userInventory, equippedItems } = App.state;
@@ -797,41 +631,97 @@
                 let footerHtml = '';
 
                 if (context === 'inventory') {
-                    if (product.category === 'skin') footerHtml = `<button class="btn btn-primary equip-btn" data-product-id="${product.id}">${isEquipped ? 'Unequip' : 'Equip'}</button>`;
-                    else footerHtml = `<button class="btn btn-secondary" disabled>Cannot Equip</button>`;
-                } else {
+                    if (product.category === 'skin') {
+                        footerHtml = `<button class="btn btn-primary equip-btn" data-product-id="${product.id}">${isEquipped ? 'Unequip' : 'Equip'}</button>`;
+                    } else if (product.category === 'tool' && product.id === 'GGtZEFfqGAZNvkmajH5c') {
+                        // NEW: Specific button for the FugthAnvil Installer tool
+                        const downloadUrl = 'https://github.com/FugthChat/FugthDesignSpace/releases/download/v1.0.0-anvilbeta/FugthAnvil.exe';
+                        footerHtml = `<a href="${downloadUrl}" class="btn btn-primary" style="background-color: var(--color-secondary); border-color: var(--color-secondary);">Install Anvil</a>`;
+                    } else {
+                        footerHtml = `<button class="btn btn-secondary" disabled>Cannot Use Here</button>`;
+                    }
+                } else { // Marketplace context
                     const priceText = product.price === 0 ? 'Free' : `${product.price} <i class="fas fa-coins"></i>`;
                     const actionButton = isOwned ? `<button class="btn" disabled>Owned</button>` : `<button class="btn btn-primary purchase-btn" data-product-id="${product.id}">Get</button>`;
                     footerHtml = `<span class="card-price text-gradient">${priceText}</span>${actionButton}`;
                 }
-                return `<div class="market-card ${isEquipped ? 'equipped' : ''}" data-product-id="${product.id}" data-aos="fade-up"><div class="card-image"><i class="fa-solid fa-${product.icon}"></i></div><div class="card-content"><h4 class="card-title">${product.name}</h4><p class="card-creator">by ${product.creator}</p></div><div class="card-footer">${footerHtml}</div></div>`;
+                return `<div class="market-card ${isEquipped ? 'equipped' : ''}" data-product-id="${product.id}" data-aos="fade-up">
+                            <div class="card-image"><i class="fa-solid fa-${product.icon}"></i></div>
+                            <div class="card-content">
+                                <h4 class="card-title">${product.name}</h4>
+                                <p class="card-creator">by ${product.creator}</p>
+                            </div>
+                            <div class="card-footer">${footerHtml}</div>
+                        </div>`;
             },
-            
             openAuthModal(showSignup = false) {
-                const loginHidden = showSignup ? 'hidden' : '';
-                const signupHidden = !showSignup ? 'hidden' : '';
-                App.elements.modalContainer.innerHTML = `<div class="modal-content"><div class="modal-close"><i class="fa-solid fa-times"></i></div><div id="login-view" class="${loginHidden}"><h3>Login</h3><form id="login-form" class="auth-form"><p class="form-error" style="color:var(--color-error); text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Login</button></form><p style="text-align:center; margin-top:1rem;">No account? <a href="#" id="show-signup" style="color:var(--color-primary)">Sign Up</a></p></div><div id="signup-view" class="${signupHidden}"><h3>Create Account</h3><form id="signup-form" class="auth-form"><p class="form-error" style="color:var(--color-error); text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Create</button></form><p style="text-align:center; margin-top:1rem;">Have an account? <a href="#" id="show-login" style="color:var(--color-primary)">Login</a></p></div></div>`;
-                
-                if (App.elements.modalContainer.classList.contains('closing')) {
-                    App.elements.modalContainer.classList.remove('closing');
-                }
+                const loginHidden = showSignup ? 'hidden' : ''; const signupHidden = !showSignup ? 'hidden' : '';
+                App.elements.modalContainer.innerHTML = `<div class="modal-content">
+                    <div class="modal-close"><i class="fa-solid fa-times"></i></div>
+                    <div class="modal-body">
+                        <div id="login-view" class="${loginHidden}"><h3>Login</h3><form id="login-form" class="auth-form"><p class="form-error" style="color:var(--color-error); text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Login</button></form><p style="text-align:center; margin-top:1rem;">No account? <a href="#" id="show-signup" style="color:var(--color-primary)">Sign Up</a></p></div>
+                        <div id="signup-view" class="${signupHidden}"><h3>Create Account</h3><form id="signup-form" class="auth-form"><p class="form-error" style="color:var(--color-error); text-align:center;"></p><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button type="submit" class="btn btn-primary" style="width:100%;">Create</button></form><p style="text-align:center; margin-top:1rem;">Have an account? <a href="#" id="show-login" style="color:var(--color-primary)">Login</a></p></div>
+                    </div>
+                </div>`;
+                if (App.elements.modalContainer.classList.contains('closing')) { App.elements.modalContainer.classList.remove('closing'); }
                 App.elements.modalContainer.classList.add('show');
             },
+            // --- NEW openProductDetailsModal function ---
+            openProductDetailsModal(product) {
+                if (!product) return;
+                const { userInventory, equippedItems } = App.state;
+                const isOwned = userInventory.has(product.id);
+                const isEquipped = equippedItems.skin === product.id;
+                let footerHtml = '';
+                
+                // Generate footer based on ownership and category
+                if (isOwned) {
+                    if (product.category === 'skin') {
+                         footerHtml = `<button class="btn btn-primary equip-btn" data-product-id="${product.id}">${isEquipped ? 'Unequip' : 'Equip'}</button>`;
+                    } else if (product.category === 'tool' && product.id === 'GGtZEFfqGAZNvkmajH5c') {
+                        const downloadUrl = 'https://github.com/FugthChat/FugthDesignSpace/releases/download/v1.0.0-anvilbeta/FugthAnvil.exe';
+                        footerHtml = `<a href="${downloadUrl}" class="btn btn-primary" style="background-color: var(--color-secondary); border-color: var(--color-secondary);">Install Anvil</a>`;
+                    } else {
+                        footerHtml = `<button class="btn" disabled>Owned</button>`;
+                    }
+                } else {
+                    const priceText = product.price === 0 ? 'Free' : `${product.price} <i class="fas fa-coins"></i>`;
+                    footerHtml = `<span class="card-price text-gradient">${priceText}</span><button class="btn btn-primary purchase-btn" data-product-id="${product.id}">Get</button>`;
+                }
 
+                App.elements.modalContainer.innerHTML = `<div class="modal-content">
+                    <div class="modal-close"><i class="fa-solid fa-times"></i></div>
+                    <div class="modal-header">
+                         <div class="item-details-icon"><i class="fa-solid fa-${product.icon}"></i></div>
+                         <h3 style="text-align:center;">${product.name}</h3>
+                         <p style="text-align:center; margin-bottom: 0;">by ${product.creator} | v${product.version}</p>
+                    </div>
+                    <div class="modal-body">
+                        <p>${product.details || product.description}</p>
+                        <div class="item-details-tags">
+                            ${(product.tags || []).map(tag => `<span class="item-details-tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="details-modal-footer">
+                        ${footerHtml}
+                    </div>
+                </div>`;
+
+                if (App.elements.modalContainer.classList.contains('closing')) { App.elements.modalContainer.classList.remove('closing'); }
+                App.elements.modalContainer.classList.add('show');
+            },
             closeModal() {
                  if (App.elements.modalContainer && App.elements.modalContainer.classList.contains('show')) {
-                    App.elements.modalContainer.classList.add('closing');
-                    setTimeout(() => {
-                        App.elements.modalContainer.classList.remove('show');
-                        App.elements.modalContainer.classList.remove('closing');
-                    }, 400); // Match animation duration
-                }
+                     App.elements.modalContainer.classList.add('closing');
+                     setTimeout(() => {
+                         App.elements.modalContainer.classList.remove('show');
+                         App.elements.modalContainer.classList.remove('closing');
+                         App.elements.modalContainer.innerHTML = '';
+                     }, 400);
+                 }
             },
-
             showToast(message) {
-                const toast = document.createElement('div');
-                toast.className = 'toast';
-                toast.textContent = message;
+                const toast = document.createElement('div'); toast.className = 'toast'; toast.textContent = message;
                 document.getElementById('toast-container').appendChild(toast);
                 setTimeout(() => toast.classList.add('show'), 10);
                 setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 3000);
@@ -841,329 +731,95 @@
         // --- UPLOADER LOGIC ---
         uploader: {
             productsToUpload: [],
-            
-            log(message, type = 'info') {
-                const entry = document.createElement('div');
-                entry.className = `log-entry ${type}`;
-                entry.textContent = `> ${message}`;
-                App.elements.logContainer.prepend(entry);
-            },
-            
+            log(message, type = 'info') { const entry = document.createElement('div'); entry.className = `log-entry ${type}`; entry.textContent = `> ${message}`; App.elements.logContainer.prepend(entry); },
             async handleFileSelect(event) {
-                const { fileInfo, uploadBtn } = App.elements;
-                const file = event.target.files[0];
-                this.productsToUpload = [];
-                uploadBtn.disabled = true;
-
-                if (!file) {
-                    fileInfo.textContent = 'No file selected';
-                    return;
-                }
-                
-                const isJson = file.name.endsWith('.json');
-                const isTxt = file.name.endsWith('.txt');
-                
-                if (!isJson && !isTxt) {
-                    fileInfo.textContent = 'Invalid file type (.json or .txt only)';
-                    this.log('Invalid file type.', 'error');
-                    return;
-                }
-                
-                fileInfo.textContent = `Selected: ${file.name}`;
-                this.log(`Reading file: ${file.name}...`);
-                const text = await file.text();
-                
-                try {
-                    this.productsToUpload = isJson ? JSON.parse(text) : this.parseTxtFile(text);
-                    this.log(`Successfully parsed ${this.productsToUpload.length} products.`, 'success');
-                    uploadBtn.disabled = false;
-                } catch (error) {
-                    this.log(`Error parsing file: ${error.message}`, 'error');
-                    fileInfo.textContent = 'Error parsing file. Check format.';
-                }
+                const { fileInfo, uploadBtn } = App.elements; const file = event.target.files[0];
+                this.productsToUpload = []; uploadBtn.disabled = true; if (!file) { fileInfo.textContent = 'No file selected'; return; }
+                const isJson = file.name.endsWith('.json'); const isTxt = file.name.endsWith('.txt');
+                if (!isJson && !isTxt) { fileInfo.textContent = 'Invalid file type (.json or .txt only)'; this.log('Invalid file type.', 'error'); return; }
+                fileInfo.textContent = `Selected: ${file.name}`; this.log(`Reading file: ${file.name}...`); const text = await file.text();
+                try { this.productsToUpload = isJson ? JSON.parse(text) : this.parseTxtFile(text); this.log(`Successfully parsed ${this.productsToUpload.length} products.`, 'success'); uploadBtn.disabled = false; } catch (error) { this.log(`Error parsing file: ${error.message}`, 'error'); fileInfo.textContent = 'Error parsing file. Check format.'; }
             },
-
             parseTxtFile(text) {
-                const products = [];
-                const productBlocks = text.trim().split(/\n\s*\n/);
-                for (const block of productBlocks) {
-                    const product = {};
-                    const lines = block.split('\n');
-                    for (const line of lines) {
-                        const separatorIndex = line.indexOf(':');
-                        if (separatorIndex === -1) continue;
-                        
-                        const key = line.substring(0, separatorIndex).trim();
-                        const value = line.substring(separatorIndex + 1).trim();
-                        
-                        if (key) {
-                            if (['price', 'downloads'].includes(key)) product[key] = Number(value);
-                            else if (key === 'tags') product[key] = value.split(',').map(tag => tag.trim());
-                            else if (key === 'featured') product[key] = value.toLowerCase() === 'true';
-                            else product[key] = value;
-                        }
-                    }
-                    if (Object.keys(product).length > 0) products.push(product);
-                }
+                const products = []; const productBlocks = text.trim().split(/\n\s*\n/);
+                for (const block of productBlocks) { const product = {}; const lines = block.split('\n'); for (const line of lines) { const separatorIndex = line.indexOf(':'); if (separatorIndex === -1) continue; const key = line.substring(0, separatorIndex).trim(); const value = line.substring(separatorIndex + 1).trim(); if (key) { if (['price', 'downloads'].includes(key)) product[key] = Number(value); else if (key === 'tags') product[key] = value.split(',').map(tag => tag.trim()); else if (key === 'featured') product[key] = value.toLowerCase() === 'true'; else product[key] = value; } } if (Object.keys(product).length > 0) products.push(product); }
                 return products;
             },
-
             async handleUpload() {
-                if (this.productsToUpload.length === 0) {
-                    this.log('No products to upload.', 'error');
-                    return;
-                }
-                
-                const uploadBtn = App.elements.uploadBtn;
-                uploadBtn.disabled = true;
-                uploadBtn.textContent = 'Uploading...';
-                this.log('Starting upload process...', 'info');
-                
+                if (this.productsToUpload.length === 0) { this.log('No products to upload.', 'error'); return; }
+                const uploadBtn = App.elements.uploadBtn; uploadBtn.disabled = true; uploadBtn.textContent = 'Uploading...'; this.log('Starting upload process...', 'info');
                 let successCount = 0, errorCount = 0;
-                
-                for (const product of this.productsToUpload) {
-                    if (!product.name) {
-                        this.log('Skipping product with no name.', 'error');
-                        errorCount++;
-                        continue;
-                    }
-                    try {
-                        // Using v8 Firestore SDK
-                        await App.firebase.db.collection("products").add(product);
-                        this.log(`Uploaded: ${product.name}`, 'success');
-                        successCount++;
-                    } catch (e) {
-                        this.log(`Error uploading ${product.name}: ${e.message}`, 'error');
-                        errorCount++;
-                    }
-                }
-                
-                this.log('------------------------------------', 'info');
-                this.log(`Upload complete. Success: ${successCount}, Failed: ${errorCount}`, 'info');
-                uploadBtn.textContent = 'Upload to Firestore';
-                uploadBtn.disabled = false;
-                // Refresh marketplace data after upload
-                await App.firebase.fetchAllProducts();
-                App.ui.renderCategoryFilters();
-                App.ui.renderMarketplace();
+                for (const product of this.productsToUpload) { if (!product.name) { this.log('Skipping product with no name.', 'error'); errorCount++; continue; } try { await App.firebase.db.collection("products").add(product); this.log(`Uploaded: ${product.name}`, 'success'); successCount++; } catch (e) { this.log(`Error uploading ${product.name}: ${e.message}`, 'error'); errorCount++; } }
+                this.log('------------------------------------', 'info'); this.log(`Upload complete. Success: ${successCount}, Failed: ${errorCount}`, 'info');
+                uploadBtn.textContent = 'Upload to Firestore'; uploadBtn.disabled = false;
+                await App.firebase.fetchAllProducts(); App.ui.renderCategoryFilters(); App.ui.renderMarketplace();
             }
         },
 
         // --- FIREBASE & DATA LOGIC ---
         firebase: {
-            auth: null,
-            db: null,
-            init() {
-                const firebaseConfig = {
-                    apiKey: "AIzaSyBlqTqN1gUoCpuqPqmpLdtZdJHVFbTWyTs",
-                    authDomain: "fugthdesign-91744.firebaseapp.com",
-                    projectId: "fugthdesign-91744",
-                    storageBucket: "fugthdesign-91744.appspot.com",
-                    messagingSenderId: "797596632132",
-                    appId: "1:797596632132:web:2c2ebfa54c908e09a26811"
-                };
-                firebase.initializeApp(firebaseConfig);
-                this.auth = firebase.auth();
-                this.db = firebase.firestore();
-            },
-
-            async handleAuthStateChange(user) {
-                App.state.currentUser = user;
-                if (user) await this.onLogin(); else this.onLogout();
-            },
-            
-            async onLogin() {
-                await this.fetchUserData();
-                await Promise.all([this.fetchEquippedItems(), this.fetchUserInventory(), this.checkForDailyLogin()]);
-                App.ui.updateNavForLoggedInUser();
-                App.ui.updateFloatingAIVisuals();
-                App.ui.updateProfilePageUI();
-                App.ui.renderMarketplace();
-            },
-
-            onLogout() {
-                App.state.userData = {};
-                App.state.userInventory.clear();
-                App.state.equippedItems = { skin: null };
-                App.ui.updateUIForLoggedOutUser();
-                App.ui.renderMarketplace();
-            },
-            
+            auth: null, db: null,
+            init() { const firebaseConfig = { apiKey: "AIzaSyBlqTqN1gUoCpuqPqmpLdtZdJHVFbTWyTs", authDomain: "fugthdesign-91744.firebaseapp.com", projectId: "fugthdesign-91744", storageBucket: "fugthdesign-91744.appspot.com", messagingSenderId: "797596632132", appId: "1:797596632132:web:2c2ebfa54c908e09a26811" }; firebase.initializeApp(firebaseConfig); this.auth = firebase.auth(); this.db = firebase.firestore(); },
+            async handleAuthStateChange(user) { App.state.currentUser = user; if (user) await this.onLogin(); else this.onLogout(); },
+            async onLogin() { await this.fetchUserData(); await Promise.all([this.fetchEquippedItems(), this.fetchUserInventory(), this.checkForDailyLogin()]); App.ui.updateNavForLoggedInUser(); App.ui.updateFloatingAIVisuals(); App.ui.updateProfilePageUI(); App.ui.renderMarketplace(); },
+            onLogout() { App.state.userData = {}; App.state.userInventory.clear(); App.state.equippedItems = { skin: null }; App.ui.updateUIForLoggedOutUser(); App.ui.renderMarketplace(); },
             async fetchUserData() {
-                const userRef = this.db.collection('users').doc(App.state.currentUser.uid);
-                const roleRef = this.db.collection('roles').doc(App.state.currentUser.uid);
-
+                const userRef = this.db.collection('users').doc(App.state.currentUser.uid); const roleRef = this.db.collection('roles').doc(App.state.currentUser.uid);
                 const [userDoc, roleDoc] = await Promise.all([userRef.get(), roleRef.get()]);
-
-                if (userDoc.exists) {
-                    App.state.userData = userDoc.data();
-                } else {
-                    const initialData = { displayName: App.state.currentUser.displayName || App.state.currentUser.email.split('@')[0], email: App.state.currentUser.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), tokens: 50, lastLogin: new Date() };
-                    await userRef.set(initialData);
-                    App.state.userData = initialData;
-                }
-                
-                // Add role to user data state
-                if (roleDoc.exists && roleDoc.data().role) {
-                    App.state.userData.role = roleDoc.data().role;
-                } else {
-                    App.state.userData.role = 'user'; // default role
-                }
+                if (userDoc.exists) { App.state.userData = userDoc.data(); } else { const initialData = { displayName: App.state.currentUser.displayName || App.state.currentUser.email.split('@')[0], email: App.state.currentUser.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), tokens: 50, lastLogin: new Date() }; await userRef.set(initialData); App.state.userData = initialData; }
+                if (roleDoc.exists && roleDoc.data().role) { App.state.userData.role = roleDoc.data().role; } else { App.state.userData.role = 'user'; }
             },
-
             async checkForDailyLogin() {
-                const today = new Date().toISOString().split('T')[0];
-                const lastLoginDate = App.state.userData.lastLogin?.toDate().toISOString().split('T')[0];
-                if (today !== lastLoginDate) {
-                    const newTokens = (App.state.userData.tokens || 0) + 7;
-                    await this.db.collection('users').doc(App.state.currentUser.uid).update({ tokens: newTokens, lastLogin: new Date() });
-                    App.state.userData.tokens = newTokens;
-                    App.ui.showToast(`+7 Tokens for your daily login!`);
-                }
+                const today = new Date().toISOString().split('T')[0]; const lastLoginDate = App.state.userData.lastLogin?.toDate().toISOString().split('T')[0];
+                if (today !== lastLoginDate) { const newTokens = (App.state.userData.tokens || 0) + 7; await this.db.collection('users').doc(App.state.currentUser.uid).update({ tokens: newTokens, lastLogin: new Date() }); App.state.userData.tokens = newTokens; App.ui.showToast(`+7 Tokens for your daily login!`); }
             },
-            
-            async fetchAllProducts() {
-                const snapshot = await this.db.collection('products').get();
-                App.state.allProductsCache.clear();
-                snapshot.forEach(doc => App.state.allProductsCache.set(doc.id, { id: doc.id, ...doc.data() }));
-            },
-
-            async fetchUserInventory() {
-                if (!App.state.currentUser) return;
-                App.state.userInventory.clear();
-                const snapshot = await this.db.collection('user_inventory').doc(App.state.currentUser.uid).collection('items').get();
-                snapshot.forEach(doc => App.state.userInventory.set(doc.id, doc.data()));
-            },
-
-            async fetchEquippedItems() {
-                if (!App.state.currentUser) { App.state.equippedItems = { skin: null }; return; }
-                const doc = await this.db.collection('users').doc(App.state.currentUser.uid).collection('settings').doc('avatar').get();
-                App.state.equippedItems = doc.exists ? { skin: doc.data().skin || null } : { skin: null };
-            },
+            async fetchAllProducts() { const snapshot = await this.db.collection('products').get(); App.state.allProductsCache.clear(); snapshot.forEach(doc => App.state.allProductsCache.set(doc.id, { id: doc.id, ...doc.data() })); },
+            async fetchUserInventory() { if (!App.state.currentUser) return; App.state.userInventory.clear(); const snapshot = await this.db.collection('user_inventory').doc(App.state.currentUser.uid).collection('items').get(); snapshot.forEach(doc => App.state.userInventory.set(doc.id, doc.data())); },
+            async fetchEquippedItems() { if (!App.state.currentUser) { App.state.equippedItems = { skin: null }; return; } const doc = await this.db.collection('users').doc(App.state.currentUser.uid).collection('settings').doc('avatar').get(); App.state.equippedItems = doc.exists ? { skin: doc.data().skin || null } : { skin: null }; },
         },
 
         // --- EVENT HANDLERS ---
         handlers: {
-            async handleLogin(e) {
-                e.preventDefault();
-                const loginButton = e.target.querySelector('button[type="submit"]');
-                loginButton.disabled = true;
-                loginButton.innerHTML = `<span class="loader" style="width:1.2rem;height:1.2rem;border-width:2px;margin:auto;"></span>`;
-                try {
-                    await App.firebase.auth.signInWithEmailAndPassword(e.target.email.value, e.target.password.value);
-                    App.ui.showToast(`Welcome back!`);
-                    setTimeout(() => location.reload(), 1500);
-                } catch (err) {
-                    e.target.querySelector('.form-error').textContent = err.message;
-                    loginButton.disabled = false;
-                    loginButton.innerHTML = 'Login';
-                }
-            },
-            
-            async handleSignup(e) {
-                e.preventDefault();
-                const signupButton = e.target.querySelector('button[type="submit"]');
-                signupButton.disabled = true;
-                signupButton.innerHTML = `<span class="loader" style="width:1.2rem;height:1.2rem;border-width:2px;margin:auto;"></span>`;
-                try {
-                    const cred = await App.firebase.auth.createUserWithEmailAndPassword(e.target.email.value, e.target.password.value);
-                    const initialName = cred.user.email.split('@')[0];
-                    await cred.user.updateProfile({ displayName: initialName });
-                    await App.firebase.db.collection('users').doc(cred.user.uid).set({ displayName: initialName, email: cred.user.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), tokens: 50, lastLogin: new Date() });
-                    App.ui.showToast(`Welcome! You start with 50 Fugth Tokens!`);
-                    setTimeout(() => location.reload(), 1500);
-                } catch (err) {
-                    e.target.querySelector('.form-error').textContent = err.message;
-                    signupButton.disabled = false;
-                    signupButton.innerHTML = 'Create';
-                }
-            },
-            
-            async handleEquipToggle(productId) {
-                if (!App.state.currentUser) return;
-                const newSkin = App.state.equippedItems.skin === productId ? null : productId;
-                try {
-                    await App.firebase.db.collection('users').doc(App.state.currentUser.uid).collection('settings').doc('avatar').set({ skin: newSkin }, { merge: true });
-                    App.state.equippedItems.skin = newSkin;
-                    App.ui.updateFloatingAIVisuals();
-                    App.ui.updateAvatarDisplay();
-                    App.ui.renderInventory();
-                    App.ui.showToast(`Item ${newSkin ? 'equipped' : 'unequipped'}.`);
-                } catch (error) { App.ui.showToast("Couldn't save your choice."); }
-            },
-
-            async handleProfileUpdate(e) {
-                e.preventDefault();
-                const newName = document.getElementById('displayName').value.trim();
-                if (!App.state.currentUser || !newName || newName === App.state.userData.displayName) return;
-                const saveButton = e.target.querySelector('button[type="submit"]');
-                saveButton.textContent = 'Saving...'; saveButton.disabled = true;
-                try {
-                    await App.state.currentUser.updateProfile({ displayName: newName });
-                    await App.firebase.db.collection('users').doc(App.state.currentUser.uid).update({ displayName: newName });
-                    App.state.userData.displayName = newName;
-                    App.ui.updateNavForLoggedInUser();
-                    App.ui.updateProfilePageUI();
-                    App.ui.showToast('Profile updated successfully!');
-                } catch (error) { App.ui.showToast('Failed to update profile.'); }
-                finally { saveButton.textContent = 'Save Changes'; saveButton.disabled = false; }
-            },
-            
-            async handlePurchase(productId) {
-                if (!App.state.currentUser) { App.ui.showToast('Please log in to make a purchase.'); return; }
-                const product = App.state.allProductsCache.get(productId);
-                if (!product) { App.ui.showToast('Item not found.'); return; }
-                if ((App.state.userData.tokens || 0) < product.price) { App.ui.showToast('Not enough Fugth Tokens!'); return; }
-                const newBalance = App.state.userData.tokens - product.price;
-                try {
-                    const batch = App.firebase.db.batch();
-                    batch.update(App.firebase.db.collection('users').doc(App.state.currentUser.uid), { tokens: newBalance });
-                    batch.set(App.firebase.db.collection('user_inventory').doc(App.state.currentUser.uid).collection('items').doc(productId), { acquiredAt: firebase.firestore.FieldValue.serverTimestamp() });
-                    await batch.commit();
-                    App.state.userData.tokens = newBalance;
-                    App.state.userInventory.set(productId, { acquiredAt: new Date() });
-                    App.ui.showToast(`Purchased ${product.name}!`);
-                    App.ui.updateNavForLoggedInUser();
-                    App.ui.updateProfilePageUI();
-                    App.ui.renderMarketplace();
-                } catch (error) { App.ui.showToast("Purchase failed. Please try again."); }
-            }
+            async handleLogin(e) { e.preventDefault(); const loginButton = e.target.querySelector('button[type="submit"]'); loginButton.disabled = true; loginButton.innerHTML = `<span class="loader" style="width:1.2rem;height:1.2rem;border-width:2px;margin:auto;"></span>`; try { await App.firebase.auth.signInWithEmailAndPassword(e.target.email.value, e.target.password.value); App.ui.showToast(`Welcome back!`); setTimeout(() => location.reload(), 1500); } catch (err) { e.target.querySelector('.form-error').textContent = err.message; loginButton.disabled = false; loginButton.innerHTML = 'Login'; } },
+            async handleSignup(e) { e.preventDefault(); const signupButton = e.target.querySelector('button[type="submit"]'); signupButton.disabled = true; signupButton.innerHTML = `<span class="loader" style="width:1.2rem;height:1.2rem;border-width:2px;margin:auto;"></span>`; try { const cred = await App.firebase.auth.createUserWithEmailAndPassword(e.target.email.value, e.target.password.value); const initialName = cred.user.email.split('@')[0]; await cred.user.updateProfile({ displayName: initialName }); await App.firebase.db.collection('users').doc(cred.user.uid).set({ displayName: initialName, email: cred.user.email, createdAt: firebase.firestore.FieldValue.serverTimestamp(), tokens: 50, lastLogin: new Date() }); App.ui.showToast(`Welcome! You start with 50 Fugth Tokens!`); setTimeout(() => location.reload(), 1500); } catch (err) { e.target.querySelector('.form-error').textContent = err.message; signupButton.disabled = false; signupButton.innerHTML = 'Create'; } },
+            async handleEquipToggle(productId) { if (!App.state.currentUser) return; const newSkin = App.state.equippedItems.skin === productId ? null : productId; try { await App.firebase.db.collection('users').doc(App.state.currentUser.uid).collection('settings').doc('avatar').set({ skin: newSkin }, { merge: true }); App.state.equippedItems.skin = newSkin; App.ui.updateFloatingAIVisuals(); App.ui.updateAvatarDisplay(); App.ui.renderInventory(); App.ui.showToast(`Item ${newSkin ? 'equipped' : 'unequipped'}.`); App.ui.closeModal(); } catch (error) { App.ui.showToast("Couldn't save your choice."); } },
+            async handleProfileUpdate(e) { e.preventDefault(); const newName = document.getElementById('displayName').value.trim(); if (!App.state.currentUser || !newName || newName === App.state.userData.displayName) return; const saveButton = e.target.querySelector('button[type="submit"]'); saveButton.textContent = 'Saving...'; saveButton.disabled = true; try { await App.state.currentUser.updateProfile({ displayName: newName }); await App.firebase.db.collection('users').doc(App.state.currentUser.uid).update({ displayName: newName }); App.state.userData.displayName = newName; App.ui.updateNavForLoggedInUser(); App.ui.updateProfilePageUI(); App.ui.showToast('Profile updated successfully!'); } catch (error) { App.ui.showToast('Failed to update profile.'); } finally { saveButton.textContent = 'Save Changes'; saveButton.disabled = false; } },
+            async handlePurchase(productId) { if (!App.state.currentUser) { App.ui.showToast('Please log in to make a purchase.'); return; } const product = App.state.allProductsCache.get(productId); if (!product) { App.ui.showToast('Item not found.'); return; } if ((App.state.userData.tokens || 0) < product.price) { App.ui.showToast('Not enough Fugth Tokens!'); return; } const newBalance = App.state.userData.tokens - product.price; try { const batch = App.firebase.db.batch(); batch.update(App.firebase.db.collection('users').doc(App.state.currentUser.uid), { tokens: newBalance }); batch.set(App.firebase.db.collection('user_inventory').doc(App.state.currentUser.uid).collection('items').doc(productId), { acquiredAt: firebase.firestore.FieldValue.serverTimestamp() }); await batch.commit(); App.state.userData.tokens = newBalance; App.state.userInventory.set(productId, { acquiredAt: new Date() }); App.ui.showToast(`Purchased ${product.name}!`); App.ui.updateNavForLoggedInUser(); App.ui.updateProfilePageUI(); App.ui.renderMarketplace(); App.ui.closeModal(); } catch (error) { App.ui.showToast("Purchase failed. Please try again."); } }
         },
 
         // --- EVENT LISTENER SETUP ---
         bindEvents() {
             App.elements.navLinks.forEach(link => link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = e.currentTarget.dataset.target;
-                if ((targetId.includes('inventory') || targetId.includes('profile') || targetId.includes('uploader')) && !App.state.currentUser) {
-                    App.ui.openAuthModal(); return;
-                }
+                e.preventDefault(); const targetId = e.currentTarget.dataset.target;
+                if ((targetId.includes('inventory') || targetId.includes('profile') || targetId.includes('uploader')) && !App.state.currentUser) { App.ui.openAuthModal(); return; }
                 if (targetId === 'inventory-page') App.ui.renderInventory();
-                App.ui.switchToPage(targetId);
-                App.elements.navLinksContainer.classList.remove('active');
-                App.elements.mobileMenuToggle.classList.remove('active');
+                App.ui.switchToPage(targetId); App.elements.navLinksContainer.classList.remove('active'); App.elements.mobileMenuToggle.classList.remove('active');
             }));
 
             window.addEventListener('scroll', () => App.elements.header.classList.toggle('scrolled', window.scrollY > 50));
             
-            App.elements.authButton.addEventListener('click', e => {
-                e.preventDefault();
-                App.state.currentUser ? App.firebase.auth.signOut() : App.ui.openAuthModal();
-            });
+            App.elements.authButton.addEventListener('click', e => { e.preventDefault(); App.state.currentUser ? App.firebase.auth.signOut() : App.ui.openAuthModal(); });
 
+            // --- MODIFIED global click handler ---
             document.addEventListener('click', e => {
+                // Modal specific buttons
                 const equipBtn = e.target.closest('.equip-btn');
                 const purchaseBtn = e.target.closest('.purchase-btn');
-                if (equipBtn) App.handlers.handleEquipToggle(equipBtn.dataset.productId);
-                if (purchaseBtn) App.handlers.handlePurchase(purchaseBtn.dataset.productId);
+                if (equipBtn) return App.handlers.handleEquipToggle(equipBtn.dataset.productId);
+                if (purchaseBtn) return App.handlers.handlePurchase(purchaseBtn.dataset.productId);
+                
+                // Open details modal if a card is clicked, but not a button inside its footer
+                const card = e.target.closest('.market-card');
+                const cardFooter = e.target.closest('.card-footer');
+                if (card && !cardFooter) {
+                    const product = App.state.allProductsCache.get(card.dataset.productId);
+                    App.ui.openProductDetailsModal(product);
+                }
             });
 
             App.elements.personalInfoForm?.addEventListener('submit', App.handlers.handleProfileUpdate);
             
-            App.elements.mobileMenuToggle.addEventListener('click', () => {
-                App.elements.mobileMenuToggle.classList.toggle('active');
-                App.elements.navLinksContainer.classList.toggle('active');
-            });
+            App.elements.mobileMenuToggle.addEventListener('click', () => { App.elements.mobileMenuToggle.classList.toggle('active'); App.elements.navLinksContainer.classList.toggle('active'); });
             
             App.elements.modalContainer.addEventListener('click', (e) => {
                 if (e.target.closest('.modal-close') || e.target.id === 'modal-container') App.ui.closeModal();
@@ -1171,61 +827,31 @@
                 else if (e.target.closest('#show-login')) { e.preventDefault(); App.ui.openAuthModal(false); }
             });
             
-            App.elements.modalContainer.addEventListener('submit', (e) => {
-                if(e.target.id === 'login-form') App.handlers.handleLogin(e);
-                if(e.target.id === 'signup-form') App.handlers.handleSignup(e);
-            });
+            App.elements.modalContainer.addEventListener('submit', (e) => { if(e.target.id === 'login-form') App.handlers.handleLogin(e); if(e.target.id === 'signup-form') App.handlers.handleSignup(e); });
 
-            // Bind category filter events
-            App.elements.categoryFilters.addEventListener('click', e => {
-                if (e.target.matches('.btn[data-category]')) {
-                    App.state.currentCategory = e.target.dataset.category;
-                    App.ui.renderCategoryFilters();
-                    App.ui.renderMarketplace();
-                }
-            });
+            App.elements.categoryFilters.addEventListener('click', e => { if (e.target.matches('.btn[data-category]')) { App.state.currentCategory = e.target.dataset.category; App.ui.renderCategoryFilters(); App.ui.renderMarketplace(); } });
 
-            // Bind uploader events
             const { dropZone, fileInput, uploadBtn } = App.elements;
             dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
             dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                if (e.dataTransfer.files.length) {
-                    fileInput.files = e.dataTransfer.files;
-                    App.uploader.handleFileSelect({ target: fileInput });
-                }
-            });
+            dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; App.uploader.handleFileSelect({ target: fileInput }); } });
             fileInput.addEventListener('change', (e) => App.uploader.handleFileSelect(e));
             uploadBtn.addEventListener('click', () => App.uploader.handleUpload());
         },
 
         // --- APPLICATION INITIALIZATION ---
         async init() {
-            // Cache all DOM elements
             this.elements = {
-                authButton: document.getElementById('auth-button'),
-                userStatusContainer: document.getElementById('user-status-container'),
-                marketGrid: document.getElementById('market-grid-container'),
-                inventoryGrid: document.getElementById('inventory-grid-container'),
-                modalContainer: document.getElementById('modal-container'),
-                inventoryNavLink: document.getElementById('inventory-nav-link'),
-                profileNavLink: document.getElementById('profile-nav-link'),
-                uploadNavLink: document.getElementById('upload-nav-link'),
-                navLinks: document.querySelectorAll('.nav-link'),
-                header: document.getElementById('main-header'),
-                personalInfoForm: document.getElementById('personalInfoForm'),
-                aiContainer: document.getElementById('floating-ai-container'),
-                aiSkinLayer: document.querySelector('.ai-skin-layer'),
-                mobileMenuToggle: document.getElementById('mobile-menu-toggle'),
-                navLinksContainer: document.querySelector('.nav-links'),
-                categoryFilters: document.getElementById('category-filters'),
-                // Uploader elements
-                dropZone: document.getElementById('drop-zone'),
-                fileInput: document.getElementById('file-input'),
-                fileInfo: document.getElementById('file-info'),
-                uploadBtn: document.getElementById('upload-btn'),
+                authButton: document.getElementById('auth-button'), userStatusContainer: document.getElementById('user-status-container'),
+                marketGrid: document.getElementById('market-grid-container'), inventoryGrid: document.getElementById('inventory-grid-container'),
+                modalContainer: document.getElementById('modal-container'), inventoryNavLink: document.getElementById('inventory-nav-link'),
+                profileNavLink: document.getElementById('profile-nav-link'), uploadNavLink: document.getElementById('upload-nav-link'),
+                navLinks: document.querySelectorAll('.nav-link'), header: document.getElementById('main-header'),
+                personalInfoForm: document.getElementById('personalInfoForm'), aiContainer: document.getElementById('floating-ai-container'),
+                aiSkinLayer: document.querySelector('.ai-skin-layer'), mobileMenuToggle: document.getElementById('mobile-menu-toggle'),
+                navLinksContainer: document.querySelector('.nav-links'), categoryFilters: document.getElementById('category-filters'),
+                dropZone: document.getElementById('drop-zone'), fileInput: document.getElementById('file-input'),
+                fileInfo: document.getElementById('file-info'), uploadBtn: document.getElementById('upload-btn'),
                 logContainer: document.getElementById('log-container'),
             };
             
