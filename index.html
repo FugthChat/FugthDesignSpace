@@ -52,6 +52,12 @@
         @keyframes run-off { to { transform: translate(200vw, -200vh) rotate(720deg) scale(0.5); opacity: 0; } }
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
         @keyframes slideOutRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
+        @keyframes torso-sway { 0%, 100% { transform: translateX(-50%) rotate(0deg); } 50% { transform: translateX(-50%) rotate(2deg); } }
+        @keyframes arm-sway { 0%, 100% { transform: rotate(-20deg); } 50% { transform: rotate(-15deg); } }
+        @keyframes arm-sway-right { 0%, 100% { transform: rotate(20deg); } 50% { transform: rotate(15deg); } }
+        @keyframes leg-dangle { 0%, 100% { transform: rotate(10deg); } 50% { transform: rotate(15deg); } }
+        @keyframes leg-dangle-right { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(-15deg); } }
+
 
         /* General & Theme Styles */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -131,10 +137,12 @@
         /* Marketplace & Inventory Category Filters */
         .category-filters { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
         
-        /* --- NEW: AI Customizer Styles --- */
+        /* --- AI Customizer Styles --- */
         .customizer-layout { display: grid; grid-template-columns: 1fr 350px; gap: 3rem; align-items: center; }
-        .customizer-preview { background: var(--color-background); border: 1px solid var(--color-border); border-radius: 16px; padding: 3rem; display: flex; justify-content: center; align-items: center; position: relative; height: 400px; }
-        .preview-ai-container { position: relative; width: 150px; height: 150px; animation: float 4s ease-in-out infinite; }
+        .customizer-preview { background: var(--color-background); border: 1px solid var(--color-border); border-radius: 16px; padding: 3rem; display: flex; justify-content: center; align-items: center; position: relative; min-height: 450px; }
+        .preview-ai-container { position: relative; width: 180px; height: 300px; }
+        .preview-ai-container .ai-character-rig { animation: float 4s ease-in-out infinite; }
+
         .customizer-controls { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 2rem; }
         .control-group { margin-bottom: 1.5rem; }
         .control-group label { display: block; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 0.75rem; }
@@ -202,22 +210,89 @@
         #personalInfoForm button { margin-top: 1rem; }
 
         /* FLOATING AI STYLES */
-        #floating-ai-container { position: fixed; z-index: 1001; width: 70px; height: 70px; cursor: grab; transition: top 2s ease-in-out, left 2s ease-in-out; display: flex; align-items: center; justify-content: center; }
+        #floating-ai-container { position: fixed; z-index: 1001; width: 85px; height: 140px; cursor: grab; transition: top 2s ease-in-out, left 2s ease-in-out; display: flex; align-items: center; justify-content: center; }
         #floating-ai-container.dragging, #floating-ai-container.needy { transition: none; }
         #floating-ai-container.running-off { animation: run-off 0.7s ease-in forwards; }
         #floating-ai-container:not(.needy):not(.dragging) { animation: breathe 3s ease-in-out infinite; }
         #floating-ai-container:active:not(.needy) { cursor: grabbing; animation: none; }
-        .ai-body { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
-        .ai-skin-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-radius: 50%; background: var(--ai-body-color); box-shadow: inset 0 -5px 15px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 50px; color: var(--ai-body-color); transition: all 0.3s ease; }
+        
+        .ai-character-rig { width: 100%; height: 100%; position: relative; }
+        
+        /* Head */
+        .ai-body { width: 82%; height: 70px; position: absolute; left: 50%; transform: translateX(-50%); top: 0; display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .ai-skin-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-radius: 50%; background: var(--ai-body-color); box-shadow: inset 0 -5px 15px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 50px; color: var(--ai-body-color); transition: all 0.3s ease; border: 4px solid var(--color-surface); outline: 2px solid var(--ai-body-color); }
         .ai-skin-layer.icon-active { background: transparent; box-shadow: none; text-shadow: 0 0 10px var(--ai-body-color); }
+        
+        /* Torso */
+        .ai-torso { position: absolute; left: 50%; transform: translateX(-50%); background: var(--ai-body-color); border: 2px solid var(--ai-body-color); background-color: var(--color-surface); border-radius: 20px 20px 15px 15px; box-shadow: none; transition: background-color 0.3s ease; z-index: 5; }
+        .ai-torso::before { content: ''; position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; background: var(--ai-body-color); border-radius: 12px; box-shadow: inset 0 -4px 8px rgba(0,0,0,0.25); }
+        #floating-ai-container:not(.needy):not(.dragging) .ai-torso { animation: torso-sway 3s ease-in-out infinite; animation-delay: -1.5s; }
+
+        /* Joints */
+        .ai-arm::after, .ai-leg::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); background: var(--ai-body-color); border: 2px solid var(--color-surface); border-radius: 50%; z-index: 6; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* Arms & Legs */
+        .ai-arm, .ai-leg { position: absolute; background: var(--ai-body-color); box-shadow: inset 0 2px 8px rgba(0,0,0,0.2); z-index: 1; transform-origin: top center; border-radius: 10px; }
+        .ai-arm-left { transform: rotate(-20deg); }
+        .ai-arm-right { transform: rotate(20deg); }
+        .ai-leg-left { transform: rotate(10deg); }
+        .ai-leg-right { transform: rotate(-10deg); }
+
+        /* Hands & Feet */
+        .ai-hand, .ai-foot { position: absolute; background: var(--ai-body-color); border-radius: 50%; box-shadow: inset 0 -4px 8px rgba(0,0,0,0.2); left: 50%; transform: translateX(-50%); }
+        .ai-foot { border-radius: 10px; }
+
+        /* --- Sizing & Positioning for Floating AI --- */
+        #floating-ai-container .ai-torso { top: 60px; width: 60px; height: 65px; }
+        #floating-ai-container .ai-arm { top: 70px; width: 18px; height: 45px; }
+        #floating-ai-container .ai-arm-left { left: 10px; }
+        #floating-ai-container .ai-arm-right { right: 10px; }
+        #floating-ai-container .ai-leg { top: 115px; width: 18px; height: 40px; }
+        #floating-ai-container .ai-leg-left { left: 20px; }
+        #floating-ai-container .ai-leg-right { right: 20px; }
+        #floating-ai-container .ai-hand { bottom: -8px; width: 24px; height: 24px; }
+        #floating-ai-container .ai-foot { bottom: -8px; width: 28px; height: 16px; }
+        #floating-ai-container .ai-arm::after, #floating-ai-container .ai-leg::after { top: -10px; width: 22px; height: 22px; }
+        
+        /* --- Sizing & Positioning for Preview AI --- */
+        .preview-ai-container .ai-body { width: 90px; height: 90px; }
+        .preview-ai-container .ai-torso { top: 80px; width: 90px; height: 110px; }
+        .preview-ai-container .ai-arm { top: 95px; width: 25px; height: 70px; }
+        .preview-ai-container .ai-arm-left { left: 20px; }
+        .preview-ai-container .ai-arm-right { right: 20px; }
+        .preview-ai-container .ai-leg { top: 180px; width: 25px; height: 60px; }
+        .preview-ai-container .ai-leg-left { left: 40px; }
+        .preview-ai-container .ai-leg-right { right: 40px; }
+        .preview-ai-container .ai-hand { bottom: -15px; width: 35px; height: 35px; }
+        .preview-ai-container .ai-foot { bottom: -10px; width: 40px; height: 20px; }
+        .preview-ai-container .ai-arm::after, .preview-ai-container .ai-leg::after { top: -12px; width: 32px; height: 32px; }
+
+        /* --- Animations for Limbs --- */
+        .ai-arm.ai-arm-left { animation: arm-sway 2.5s ease-in-out infinite alternate; }
+        .ai-arm.ai-arm-right { animation: arm-sway-right 2.5s ease-in-out infinite alternate; animation-delay: 0.2s; }
+        .ai-leg.ai-leg-left { animation: leg-dangle 3.5s ease-in-out infinite alternate; }
+        .ai-leg.ai-leg-right { animation: leg-dangle-right 3.5s ease-in-out infinite alternate; animation-delay: 0.3s; }
+        #floating-ai-container.dragging .ai-arm, #floating-ai-container.dragging .ai-leg,
+        #floating-ai-container.needy .ai-arm, #floating-ai-container.needy .ai-leg { animation: none; }
+
+        /* Face & Expressions */
         .ai-face { width: 60%; height: 60%; position: relative; z-index: 2; }
         .ai-eye { position: absolute; top: 20%; width: 12px; height: 12px; background: var(--ai-eye-color); border-radius: 50%; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); transition: all 0.2s ease; }
         .ai-eye-left { left: 15%; } .ai-eye-right { right: 15%; }
         .ai-mouth { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); width: 20px; height: 10px; border: 2px solid var(--ai-eye-color); border-top: none; border-radius: 0 0 10px 10px; transition: all 0.2s ease; }
+        
         .ai-face.happy .ai-mouth { height: 15px; width: 25px; border-radius: 0 0 15px 15px; bottom: 20%; }
         .ai-face.happy .ai-eye { height: 15px; width: 8px; border-radius: 5px 5px 8px 8px; top: 15%; }
+        
         .ai-face.sad .ai-mouth { transform: translateX(-50%) rotate(180deg); top: 50%; bottom: auto; border-radius: 0 0 15px 15px; }
         .ai-face.sad .ai-eye { top: 30%; }
+
+        .ai-face.surprised .ai-eye { width: 14px; height: 14px; top: 22%; }
+        .ai-face.surprised .ai-mouth { width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--ai-eye-color); bottom: 20%; }
+
+        .ai-face.wink .ai-eye-left { height: 2px; top: 28%; }
+        .ai-face.wink .ai-mouth { height: 12px; width: 22px; border-radius: 0 0 12px 12px; bottom: 22%; }
+
 
         /* Guild Pass / Pricing Page */
         .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; justify-content: center; }
@@ -316,13 +391,20 @@
                 <div class="customizer-layout">
                     <div class="customizer-preview" data-aos="fade-right">
                         <div class="preview-ai-container">
-                            <div class="ai-body">
-                                <div id="preview-skin-layer" class="ai-skin-layer"></div>
-                                <div class="ai-face">
-                                    <div class="ai-eye ai-eye-left"></div>
-                                    <div class="ai-eye ai-eye-right"></div>
-                                    <div class="ai-mouth"></div>
+                             <div class="ai-character-rig">
+                                <div class="ai-body">
+                                    <div id="preview-skin-layer" class="ai-skin-layer"></div>
+                                    <div class="ai-face">
+                                        <div class="ai-eye ai-eye-left"></div>
+                                        <div class="ai-eye ai-eye-right"></div>
+                                        <div class="ai-mouth"></div>
+                                    </div>
                                 </div>
+                                <div class="ai-torso"></div>
+                                <div class="ai-arm ai-arm-left"><div class="ai-hand"></div></div>
+                                <div class="ai-arm ai-arm-right"><div class="ai-hand"></div></div>
+                                <div class="ai-leg ai-leg-left"><div class="ai-foot"></div></div>
+                                <div class="ai-leg ai-leg-right"><div class="ai-foot"></div></div>
                             </div>
                         </div>
                     </div>
@@ -433,7 +515,7 @@
 
         <section id="inventory-page" class="hidden">
              <div class="container">
-                  <div class="section-header" data-aos="fade-up">
+                   <div class="section-header" data-aos="fade-up">
                         <h2>My <span class="text-gradient">Inventory</span></h2>
                         <p>All of your acquired items in one place. Equip skins and accessories to customize your AI's appearance.</p>
                </div>
@@ -501,13 +583,20 @@
     </main>
     
     <div id="floating-ai-container">
-        <div class="ai-body">
-            <div class="ai-skin-layer"></div>
-            <div class="ai-face">
-                <div class="ai-eye ai-eye-left"></div>
-                <div class="ai-eye ai-eye-right"></div>
-                <div class="ai-mouth"></div>
+        <div class="ai-character-rig">
+             <div class="ai-body">
+                <div class="ai-skin-layer"></div>
+                <div class="ai-face">
+                    <div class="ai-eye ai-eye-left"></div>
+                    <div class="ai-eye ai-eye-right"></div>
+                    <div class="ai-mouth"></div>
+                </div>
             </div>
+            <div class="ai-torso"></div>
+            <div class="ai-arm ai-arm-left"><div class="ai-hand"></div></div>
+            <div class="ai-arm ai-arm-right"><div class="ai-hand"></div></div>
+            <div class="ai-leg ai-leg-left"><div class="ai-foot"></div></div>
+            <div class="ai-leg ai-leg-right"><div class="ai-foot"></div></div>
         </div>
     </div>
 
@@ -538,6 +627,8 @@
         floatingAI: {
             isDragging: false, isNeedy: false, offsetX: 0, offsetY: 0, moveTimeout: null, inactivityTimer: null,
             needyAnimationId: null, lastInteractionTime: Date.now(), mouse: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+            expressions: ['neutral', 'wink', 'happy', 'surprised'],
+            expressionTimer: null,
             init() {
                 const aiContainer = App.elements.aiContainer;
                 aiContainer.addEventListener('mousedown', this.startDrag.bind(this));
@@ -548,29 +639,67 @@
                 aiContainer.style.left = `${window.innerWidth / 2}px`;
                 this.startInactivityCheck();
                 this.scheduleNextMove();
+                this.changeExpressionRandomly();
             },
             updateMousePosition(e) { this.mouse.x = e.clientX; this.mouse.y = e.clientY; this.resetInteractionTimer(); },
             setFace(face) {
                 const aiFaceEl = App.elements.aiContainer.querySelector('.ai-face');
                 if (aiFaceEl) { aiFaceEl.className = 'ai-face'; if (face && face !== 'neutral') aiFaceEl.classList.add(face); }
             },
+            changeExpressionRandomly() {
+                if (this.isNeedy || this.isDragging) return;
+                const currentFace = App.elements.aiContainer.querySelector('.ai-face').classList[1] || 'neutral';
+                let possibleExpressions = this.expressions.filter(e => e !== currentFace);
+                if (possibleExpressions.length === 0) possibleExpressions = ['neutral'];
+                const randomExpression = possibleExpressions[Math.floor(Math.random() * possibleExpressions.length)];
+                this.setFace(randomExpression);
+
+                if(this.expressionTimer) clearTimeout(this.expressionTimer);
+                this.expressionTimer = setTimeout(this.changeExpressionRandomly.bind(this), Math.random() * 4000 + 2000);
+            },
             startDrag(e) {
-                if (this.isNeedy) return; this.isDragging = true; const aiContainer = App.elements.aiContainer;
+                if (this.isNeedy) return; 
+                this.isDragging = true; 
+                clearTimeout(this.expressionTimer);
+                const aiContainer = App.elements.aiContainer;
                 aiContainer.classList.add('dragging'); clearTimeout(this.moveTimeout); this.offsetX = e.clientX - aiContainer.offsetLeft;
                 this.offsetY = e.clientY - aiContainer.offsetTop;
                 const dragMove = (e) => { if (!this.isDragging) return; aiContainer.style.left = `${e.clientX - this.offsetX}px`; aiContainer.style.top = `${e.clientY - this.offsetY}px`; };
-                const dragEnd = () => { this.isDragging = false; aiContainer.classList.remove('dragging'); this.scheduleNextMove(); document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', dragEnd); };
+                const dragEnd = () => { 
+                    this.isDragging = false; 
+                    aiContainer.classList.remove('dragging'); 
+                    this.scheduleNextMove(); 
+                    this.changeExpressionRandomly();
+                    document.removeEventListener('mousemove', dragMove); 
+                    document.removeEventListener('mouseup', dragEnd); 
+                };
                 document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', dragEnd, { once: true });
             },
             resetInteractionTimer() { this.lastInteractionTime = Date.now(); },
             startInactivityCheck() { if (this.inactivityTimer) clearInterval(this.inactivityTimer); this.inactivityTimer = setInterval(() => { if (Date.now() - this.lastInteractionTime > 30000 && !this.isNeedy && !this.isDragging) { this.enterNeedyMode(); } }, 2000); },
             enterNeedyMode() {
-                this.isNeedy = true; clearTimeout(this.moveTimeout); App.elements.aiContainer.classList.add('needy'); this.setFace('sad');
+                this.isNeedy = true; 
+                clearTimeout(this.moveTimeout);
+                clearTimeout(this.expressionTimer);
+                App.elements.aiContainer.classList.add('needy'); this.setFace('sad');
                 const followCursor = () => { if (!this.isNeedy) return; const rect = App.elements.aiContainer.getBoundingClientRect(); const targetX = this.mouse.x - rect.width / 2; const targetY = this.mouse.y - rect.height / 2; const currentX = rect.left; const currentY = rect.top; App.elements.aiContainer.style.left = `${currentX + (targetX - currentX) * 0.08}px`; App.elements.aiContainer.style.top = `${currentY + (targetY - currentY) * 0.08}px`; this.needyAnimationId = requestAnimationFrame(followCursor); };
                 this.needyAnimationId = requestAnimationFrame(followCursor);
             },
             stopNeedyMode() { if (!this.isNeedy) return; this.isNeedy = false; cancelAnimationFrame(this.needyAnimationId); App.elements.aiContainer.classList.remove('needy'); this.resetInteractionTimer(); },
-            handleHappyRunOff() { if (!this.isNeedy) return; this.stopNeedyMode(); this.setFace('happy'); App.elements.aiContainer.classList.add('running-off'); setTimeout(() => { App.elements.aiContainer.classList.remove('running-off'); this.moveAiRandomly(true); setTimeout(() => this.setFace('neutral'), 1000); }, 700); },
+            handleHappyRunOff() { 
+                if (!this.isNeedy) return; 
+                this.stopNeedyMode(); 
+                this.setFace('happy'); 
+                App.elements.aiContainer.classList.add('running-off'); 
+                setTimeout(() => { 
+                    App.elements.aiContainer.classList.remove('running-off'); 
+                    this.moveAiRandomly(true); 
+                    setTimeout(() => {
+                        this.setFace('neutral');
+                        this.changeExpressionRandomly();
+                    }, 1000); 
+                }, 700); 
+            },
             moveAiRandomly(immediate = false) { if (this.isDragging || this.isNeedy) return; const aiContainer = App.elements.aiContainer; const maxX = window.innerWidth - aiContainer.clientWidth; const maxY = window.innerHeight - aiContainer.clientHeight; aiContainer.style.left = `${Math.random() * maxX}px`; aiContainer.style.top = `${Math.random() * maxY}px`; this.scheduleNextMove(); },
             scheduleNextMove() { clearTimeout(this.moveTimeout); if (this.isNeedy || this.isDragging) return; this.moveTimeout = setTimeout(() => this.moveAiRandomly(false), 8000); }
         },
@@ -578,7 +707,6 @@
         // --- UI MANIPULATION ---
         ui: {
             init() { AOS.init({ duration: 800, once: true, offset: 50 }); },
-            // --- UPDATED: applyAIVisuals now handles colors and equipped skins ---
             applyAIVisuals() {
                 const { equippedItems, allProductsCache } = App.state;
                 
@@ -590,7 +718,7 @@
                 const skinProduct = equippedItems.skin ? allProductsCache.get(equippedItems.skin) : null;
                 const iconClass = skinProduct ? skinProduct.icon : null;
                 
-                const skinLayers = [App.elements.aiSkinLayer, App.elements.previewSkinLayer];
+                const skinLayers = document.querySelectorAll('.ai-skin-layer');
                 skinLayers.forEach(layer => {
                     if (layer) {
                         layer.innerHTML = '';
@@ -602,7 +730,6 @@
                     }
                 });
             },
-            // --- UPDATED: Renamed for clarity ---
             updateAllVisuals() { 
                 this.applyAIVisuals();
                 this.updateAvatarDisplay();
@@ -639,7 +766,6 @@
                 document.getElementById('email').value = userData.email; document.getElementById('totalTokens').textContent = userData.tokens || 0;
                 const joinDate = userData.createdAt?.toDate(); if (joinDate) document.getElementById('joinDate').textContent = joinDate.toLocaleDateString();
             },
-            // --- NEW: Syncs the customizer inputs with the current state ---
             updateCustomizerControls() {
                 const { bodyColor, eyeColor } = App.state.equippedItems;
                 App.elements.bodyColorPicker.value = bodyColor;
@@ -764,12 +890,12 @@
             },
             closeModal() {
                  if (App.elements.modalContainer && App.elements.modalContainer.classList.contains('show')) {
-                      App.elements.modalContainer.classList.add('closing');
-                      setTimeout(() => {
-                          App.elements.modalContainer.classList.remove('show');
-                          App.elements.modalContainer.classList.remove('closing');
-                          App.elements.modalContainer.innerHTML = '';
-                      }, 400);
+                        App.elements.modalContainer.classList.add('closing');
+                        setTimeout(() => {
+                            App.elements.modalContainer.classList.remove('show');
+                            App.elements.modalContainer.classList.remove('closing');
+                            App.elements.modalContainer.innerHTML = '';
+                        }, 400);
                  }
             },
             showToast(message) {
@@ -811,7 +937,6 @@
             },
             async fetchAllProducts() { const snapshot = await this.db.collection('products').get(); App.state.allProductsCache.clear(); snapshot.forEach(doc => App.state.allProductsCache.set(doc.id, { id: doc.id, ...doc.data() })); },
             async fetchUserInventory() { if (!App.state.currentUser) return; App.state.userInventory.clear(); const snapshot = await this.db.collection('user_inventory').doc(App.state.currentUser.uid).collection('items').get(); snapshot.forEach(doc => App.state.userInventory.set(doc.id, doc.data())); },
-            // --- UPDATED: Now fetches colors along with the skin ---
             async fetchEquippedItems() { 
                 if (!App.state.currentUser) { 
                     App.state.equippedItems = { skin: null, bodyColor: '#d9f99d', eyeColor: '#010409' }; 
@@ -838,7 +963,6 @@
             async handleEquipToggle(productId) { if (!App.state.currentUser) return; const newSkin = App.state.equippedItems.skin === productId ? null : productId; try { await App.firebase.db.collection('users').doc(App.state.currentUser.uid).collection('settings').doc('avatar').set({ skin: newSkin }, { merge: true }); App.state.equippedItems.skin = newSkin; App.ui.updateAllVisuals(); App.ui.renderInventory(); App.ui.showToast(`Item ${newSkin ? 'equipped' : 'unequipped'}.`); App.ui.closeModal(); } catch (error) { App.ui.showToast("Couldn't save your choice."); } },
             async handleProfileUpdate(e) { /* ... Omitted for brevity, no changes ... */ },
             async handlePurchase(productId) { /* ... Omitted for brevity, no changes ... */ },
-            // --- NEW: Saves the AI's custom colors to Firebase ---
             async handleAvatarCustomizationSave() {
                 if (!App.state.currentUser) {
                     App.ui.showToast("Please log in to save your customizations.");
@@ -907,7 +1031,6 @@
             App.elements.categoryFilters.addEventListener('click', e => { if (e.target.matches('.btn[data-category]')) { App.state.currentCategory = e.target.dataset.category; App.ui.renderCategoryFilters(); App.ui.renderMarketplace(); } });
             App.elements.inventoryCategoryFilters.addEventListener('click', e => { if (e.target.matches('.btn[data-category]')) { App.state.currentInventoryCategory = e.target.dataset.category; App.ui.renderInventory(); } });
             
-            // --- NEW: Event listeners for AI Customizer ---
             App.elements.bodyColorPicker.addEventListener('input', (e) => {
                 document.documentElement.style.setProperty('--ai-body-color', e.target.value);
                 App.elements.bodyColorValue.textContent = e.target.value;
@@ -935,9 +1058,8 @@
                 inventoryGrid: document.getElementById('inventory-grid-container'), inventoryCategoryFilters: document.getElementById('inventory-category-filters'),
                 personalInfoForm: document.getElementById('personalInfoForm'),
                 // Floating AI
-                aiContainer: document.getElementById('floating-ai-container'), aiSkinLayer: document.querySelector('#floating-ai-container .ai-skin-layer'),
-                // --- NEW: Customizer Elements ---
-                previewSkinLayer: document.getElementById('preview-skin-layer'),
+                aiContainer: document.getElementById('floating-ai-container'),
+                // Customizer Elements
                 bodyColorPicker: document.getElementById('ai-body-color-picker'), bodyColorValue: document.getElementById('ai-body-color-value'),
                 eyeColorPicker: document.getElementById('ai-eye-color-picker'), eyeColorValue: document.getElementById('ai-eye-color-value'),
                 saveCustomizationsBtn: document.getElementById('save-customizations-btn'),
