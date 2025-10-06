@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OlOrh 1 Interactive UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>OlOrh 1 - Robust UI Prototype</title>
     <style>
         :root {
             --phone-width: 375px;
@@ -11,6 +11,9 @@
             --text-color: #ffffff;
             --icon-size: 60px;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --blur-background: rgba(255, 255, 255, 0.15);
+            --blur-value: 15px;
         }
 
         body {
@@ -18,11 +21,10 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #2c3e50;
+            background-color: #1d2b3a;
             font-family: var(--font-family);
             color: var(--text-color);
             padding: 20px;
-            overflow: hidden; /* Prevents scrollbars from page content */
         }
 
         .phone {
@@ -30,7 +32,7 @@
             height: var(--phone-height);
             background-color: #000;
             border-radius: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 0 0 2px #111;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             padding: 15px;
             box-sizing: border-box;
             position: relative;
@@ -43,23 +45,9 @@
             border-radius: 30px;
             position: relative;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
         
-        .notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 25px;
-            background-color: #000;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
-            z-index: 100;
-        }
-
+        /* Universal Elements */
         .status-bar {
             padding: 0 20px;
             height: 40px;
@@ -73,146 +61,77 @@
             box-sizing: border-box;
             top: 5px;
             left: 0;
-            z-index: 50;
+            z-index: 100;
         }
         
-        .status-bar-right svg {
-            width: 20px;
-            height: 20px;
-            margin-left: 5px;
-            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+        .notch {
+            position: absolute; top: 0; left: 50%;
+            transform: translateX(-50%); width: 150px; height: 25px;
+            background-color: #000; border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px; z-index: 99;
         }
 
-        .content {
-            padding-top: 50px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            overflow: hidden; /* This is crucial for the slider */
+        .home-bar {
+            position: absolute; bottom: 10px; left: 50%;
+            transform: translateX(-50%); width: 130px; height: 5px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 5px; z-index: 100; cursor: pointer;
         }
+
+        /* App Container & Transitions */
+        .app-container {
+            width: 100%; height: 100%; position: absolute;
+            top: 0; left: 0;
+            opacity: 0; pointer-events: none;
+            transform: scale(1.05);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            display: flex; flex-direction: column;
+        }
+        .app-container.active {
+            opacity: 1; pointer-events: auto; transform: scale(1);
+        }
+
+        /* Home Screen Specific */
+        #home-screen .content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; padding-top: 60px; }
+        #home-screen .search-bar { width: 90%; padding: 10px 15px; border-radius: 20px; background-color: var(--blur-background); backdrop-filter: blur(var(--blur-value)); -webkit-backdrop-filter: blur(var(--blur-value)); text-align: left; font-size: 16px; margin-top: 20px; }
+        #home-screen .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px; width: 100%; box-sizing: border-box; }
+        #home-screen .app { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; user-select: none; }
+        #home-screen .app .icon { width: var(--icon-size); height: var(--icon-size); margin-bottom: 5px; display: flex; justify-content: center; align-items: center; font-size: 36px; text-shadow: 0 3px 6px var(--shadow-color); transition: transform 0.1s ease-out; }
+        #home-screen .app:active .icon { transform: scale(0.9); }
+        #home-screen .app span { font-size: 12px; font-weight: 500; }
+        #home-screen .dock { width: 95%; margin: 0 auto 30px auto; padding: 10px; border-radius: 25px; background-color: var(--blur-background); backdrop-filter: blur(var(--blur-value)); -webkit-backdrop-filter: blur(var(--blur-value)); display: flex; justify-content: space-around; align-items: center; z-index: 20; }
+        #home-screen .dock .app .icon { text-shadow: none; }
+
+        /* Generic App UI Elements */
+        .app-header { padding: 50px 20px 15px 20px; display: flex; align-items: center; }
+        .app-header .back-button { font-size: 24px; cursor: pointer; background: none; border: none; color: white; padding: 0 10px 0 0; }
+        .app-header .title { font-size: 28px; font-weight: 700; }
+        .app-content { flex-grow: 1; padding: 0 20px 20px 20px; overflow-y: auto; }
         
-        .pages-container {
-            display: flex;
-            flex-grow: 1;
-            width: 200%; /* 100% for each page */
-            height: 100%;
-            transition: transform 0.3s ease-out;
-            cursor: grab;
-        }
+        /* Camera App UI */
+        #camera-app { background-color: #111; }
+        #camera-app .viewfinder { flex-grow: 1; background-color: #000; width: 100%; display: flex; justify-content: center; align-items: center; color: #555; font-size: 20px; }
+        #camera-app .controls { height: 120px; display: flex; justify-content: center; align-items: center; background-color: var(--blur-background); backdrop-filter: blur(var(--blur-value)); -webkit-backdrop-filter: blur(var(--blur-value)); }
+        #camera-app .shutter-button { width: 70px; height: 70px; background-color: white; border-radius: 50%; border: 4px solid #333; cursor: pointer; }
 
-        .page {
-            width: 100%;
-            height: 100%;
-            flex-shrink: 0;
-        }
+        /* Settings App UI */
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 16px; }
+        .setting-item span { display: flex; align-items: center; gap: 15px; }
+        .toggle-switch { width: 50px; height: 30px; background-color: #555; border-radius: 15px; position: relative; cursor: pointer; transition: background-color 0.2s ease; }
+        .toggle-switch.active { background-color: #4cd964; }
+        .toggle-switch::before { content: ''; position: absolute; width: 26px; height: 26px; border-radius: 50%; background-color: white; top: 2px; left: 2px; transition: transform 0.2s ease; }
+        .toggle-switch.active::before { transform: translateX(20px); }
 
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            padding: 20px;
-            width: 100%;
-            box-sizing: border-box;
-        }
+        /* Photos App UI */
+        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .photo-item { width: 100%; padding-bottom: 100%; /* Aspect ratio hack */ background-color: #555; background-size: cover; background-position: center; border-radius: 4px; }
 
-        .app {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            user-select: none; /* Prevents text selection while dragging */
-        }
-        
-        .app .icon {
-            width: var(--icon-size);
-            height: var(--icon-size);
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 50px;
-            /* This is the key change: no background, just a shadow */
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
-            transition: transform 0.1s ease-out;
-        }
-
-        .app:active .icon {
-            transform: scale(0.9);
-        }
-        
-        .app span {
-            font-size: 12px;
-            font-weight: 500;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-bottom: 10px;
-        }
-        .pagination .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: rgba(255,255,255,0.4);
-            margin: 0 4px;
-            transition: background-color 0.3s;
-        }
-        .pagination .dot.active {
-            background-color: rgba(255,255,255,0.9);
-        }
-
-        .dock {
-            width: 95%;
-            margin: 0 auto 10px auto;
-            padding: 5px;
-            border-radius: 25px;
-            background-color: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .dock .app .icon {
-            font-size: 40px;
-            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
-        }
-
-        /* Modal for app opening simulation */
-        .modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-            z-index: 200;
-        }
-        .modal-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-content {
-            background-color: rgba(44, 44, 46, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 20px 40px;
-            border-radius: 15px;
-            text-align: center;
-            color: white;
-            font-size: 18px;
-        }
+        /* Calculator App UI */
+        #calculator-app .display { text-align: right; font-size: 64px; font-weight: 300; padding: 60px 20px 20px 20px; height: 150px; box-sizing: border-box;}
+        #calculator-app .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex-grow: 1; padding: 0 10px 30px 10px;}
+        #calculator-app .key { background-color: #333; color: white; border-radius: 50%; font-size: 32px; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center;}
+        #calculator-app .key.operator { background-color: #ff9500; }
+        #calculator-app .key.utility { background-color: #a5a5a5; color: #000;}
 
     </style>
 </head>
@@ -222,213 +141,135 @@
     <div class="screen">
         <div class="notch"></div>
         <header class="status-bar">
-            <div class="time">6:39 AM</div>
-            <div class="status-bar-right">
-                <!-- SVGs from previous version -->
-                <svg fill="white" viewBox="0 0 100 100"><path d="M86.2,81.2c-2.3-2.3-5.2-3.8-8.2-4.1c-1.3-0.1-2.5-0.5-3.6-1.1c-4.2-2.3-8.8-3.4-13.4-3.4s-9.2,1.1-13.4,3.4 c-1.1,0.6-2.4,1-3.6,1.1c-3.1,0.3-6,1.8-8.2,4.1c-2.3,2.3-3.8,5.2-4.1,8.2c-0.1,1.3-0.5,2.5-1.1,3.6C18.8,97.2,17.7,100,15,100 s-3.8-2.8-3.4-5.2c0.6-4.2,2.3-8.8,5.2-12.3c2.9-3.5,6.8-6,11.2-7.2c1.2-0.3,2.3-0.8,3.3-1.4C37.8,70.1,43.4,69,49,69 s11.2,1.1,17.7,4.7c1,0.6,2.1,1.1,3.3,1.4c4.4,1.2,8.3,3.7,11.2,7.2c2.9,3.5,4.6,8.1,5.2,12.3c0.3,2.4-1.1,5.2-3.4,5.2 s-2.8-2.8-3.4-5.2C85.7,86.5,85.5,84,84.4,82.3C85.2,82.8,85.7,82,86.2,81.2z M65,49c0,8.8-7.2,16-16,16s-16-7.2-16-16 s7.2-16,16-16S65,40.2,65,49z M82.3,17.7C78.8,14.8,74.2,13.1,70,12.5C67.6,12.2,66,9.9,66.4,7.6c0.3-2.4,2.8-3.8,5.2-3.4 c4.2,0.6,8.8,2.3,12.3,5.2c3.5,2.9,6,6.8,7.2,11.2c0.3,1.2,0.8,2.3,1.4,3.3c3.6,6.5,4.7,12.1,4.7,17.7c0,2.8-2.8,3.8-5.2,3.4 c-2.4-0.3-3.8-2.8-3.4-5.2c0.3-4.4-0.8-8.3-3.3-11.2C85.2,25,84,21.5,82.3,17.7z"></path></svg>
-                <svg fill="white" viewBox="0 0 24 24"><path d=" M 20.496094 4.0703125 A 1.0001 1.0001 0 0 0 19.490234 5.9296875 C 16.941406 8.3632812 15.5 11.554688 15.5 15 C 15.5 18.445313 16.941406 21.636719 19.490234 24.070312 A 1.0001 1.0001 0 1 0 20.904297 22.65625 C 18.730469 20.59375 17.5 17.917969 17.5 15 C 17.5 12.082031 18.730469 9.40625 20.904297 7.34375 A 1.0001 1.0001 0 0 0 20.496094 4.0703125 z M 1.5136719 8.0839844 A 1.0001 1.0001 0 0 0 0.50976562 9.9414062 C 2.4570312 12.089844 3.5 15.015625 3.5 18 C 3.5 20.984375 2.4570312 23.910156 0.50976562 26.058594 A 1.0001 1.0001 0 1 0 1.9238281 27.472656 C 4.2695312 24.917969 5.5 21.621094 5.5 18 C 5.5 14.378906 4.2695312 11.082031 1.9238281 8.5273438 A 1.0001 1.0001 0 0 0 1.5136719 8.0839844 z M 10.5 0 C 6.910156 0 3.5 1.582031 3.5 3.5 L 3.5 20.5 C 3.5 22.417969 6.910156 24 10.5 24 C 14.089844 24 17.5 22.417969 17.5 20.5 L 17.5 3.5 C 17.5 1.582031 14.089844 0 10.5 0 z M 10.5 2 C 13.585938 2 15.5 3.105469 15.5 4 L 15.5 20 C 15.5 20.894531 13.585938 22 10.5 22 C 7.414063 22 5.5 20.894531 5.5 20 L 5.5 4 C 5.5 3.105469 7.414063 2 10.5 2 z"></path></svg>
-                <svg fill="white" viewBox="0 0 32 32"><path d="M 23.5 4 C 22.671875 4 22 4.671875 22 5.5 L 22 6 L 10 6 L 10 5.5 C 10 4.671875 9.328125 4 8.5 4 C 7.671875 4 7 4.671875 7 5.5 L 7 7 L 6 7 C 4.894531 7 4 7.894531 4 9 L 4 25 C 4 26.105469 4.894531 27 6 27 L 26 27 C 27.105469 27 28 26.105469 28 25 L 28 9 C 28 7.894531 27.105469 7 26 7 L 25 7 L 25 5.5 C 25 4.671875 24.328125 4 23.5 4 z M 6 9 L 26 9 L 26 25 L 6 25 Z"></path></svg>
-            </div>
-        </header>
+            <div class="time" id="currentTime"></div>
+            </header>
 
-        <main class="content">
-            <div class="pages-container">
-                <div class="page">
-                    <div class="app-grid">
-                        <div class="app" data-app-name="Camera">
-                            <div class="icon">📷</div>
-                            <span>Camera</span>
-                        </div>
-                        <div class="app" data-app-name="Photos">
-                            <div class="icon">🖼️</div>
-                            <span>Photos</span>
-                        </div>
-                        <div class="app" data-app-name="Settings">
-                            <div class="icon">⚙️</div>
-                            <span>Settings</span>
-                        </div>
-                        <div class="app" data-app-name="Calculator">
-                            <div class="icon">🧮</div>
-                            <span>Calculator</span>
-                        </div>
-                         <!-- Add more apps here for the first page -->
-                    </div>
+        <div id="home-screen" class="app-container active">
+            <main class="content">
+                <div class="search-bar">Search OlOrh...</div>
+                <div class="app-grid">
+                    <div class="app" data-app-target="camera-app"><div class="icon">📸</div><span>Camera</span></div>
+                    <div class="app" data-app-target="browser-app"><div class="icon">🌐</div><span>Browser</span></div>
+                    <div class="app" data-app-target="settings-app"><div class="icon">⚙️</div><span>Settings</span></div>
+                    <div class="app" data-app-target="calculator-app"><div class="icon">🧮</div><span>Calc</span></div>
+                    <div class="app" data-app-target="photos-app"><div class="icon">🏞️</div><span>Photos</span></div>
                 </div>
-                <div class="page">
-                     <div class="app-grid">
-                        <!-- Add apps for the second page here -->
-                     </div>
-                </div>
-            </div>
-        </main>
-        
-        <div class="pagination">
-            <div class="dot active"></div>
-            <div class="dot"></div>
+            </main>
+            <footer class="dock">
+                <div class="app" data-app-target="phone-app"><div class="icon">📞</div></div>
+                <div class="app" data-app-target="messages-app"><div class="icon">💬</div></div>
+                <div class="app" data-app-target="store-app"><div class="icon">🛍️</div></div>
+                <div class="app" data-app-target="drawer-app"><div class="icon">···</div></div>
+            </footer>
         </div>
 
-        <footer class="dock">
-            <div class="app" data-app-name="Phone">
-                <div class="icon">📞</div>
+        <div id="camera-app" class="app-container">
+            <div class="viewfinder">Viewfinder</div>
+            <div class="controls">
+                <div class="shutter-button home-button"></div>
             </div>
-            <div class="app" data-app-name="Messages">
-                <div class="icon">💬</div>
-            </div>
-            <div class="app" data-app-name="Browser">
-                <div class="icon">🌐</div>
-            </div>
-            <div class="app" data-app-name="App Drawer">
-                <div class="icon" style="font-size: 30px;">⠿</div>
-            </div>
-        </footer>
+        </div>
         
-        <div class="modal-overlay">
-            <div class="modal-content">
-                <p>Opening <span id="app-name-modal"></span>...</p>
+        <div id="settings-app" class="app-container">
+            <header class="app-header">
+                <button class="back-button home-button">‹</button>
+                <h1 class="title">Settings</h1>
+            </header>
+            <main class="app-content">
+                <div class="setting-item"><span>✈️ Airplane Mode</span><div class="toggle-switch"></div></div>
+                <div class="setting-item"><span>🌐 Wi-Fi</span><div class="toggle-switch active"></div></div>
+                <div class="setting-item"><span>💧 Bluetooth</span><div class="toggle-switch active"></div></div>
+                <div class="setting-item"><span>☀️ Display & Brightness</span></div>
+                <div class="setting-item"><span>🔋 Battery</span></div>
+            </main>
+        </div>
+
+        <div id="photos-app" class="app-container">
+            <header class="app-header">
+                <button class="back-button home-button">‹</button>
+                <h1 class="title">Photos</h1>
+            </header>
+            <main class="app-content">
+                <div class="photo-grid">
+                    <div class="photo-item" style="background-image: url('https://source.unsplash.com/random/200x200?nature,1')"></div>
+                    <div class="photo-item" style="background-image: url('https://source.unsplash.com/random/200x200?nature,2')"></div>
+                    <div class="photo-item" style="background-image: url('https://source.unsplash.com/random/200x200?city,1')"></div>
+                    <div class="photo-item" style="background-image: url('https://source.unsplash.com/random/200x200?animal,1')"></div>
+                    <div class="photo-item" style="background-image: url('https://source.unsplash.com/random/200x200?food,1')"></div>
+                    <div class="photo-item" style="background-image: url('https://source.unsplash.com/random/200x200?tech,1')"></div>
+                </div>
+            </main>
+        </div>
+
+        <div id="calculator-app" class="app-container" style="background-color:#000">
+             <header class="app-header" style="position: absolute; top:0;">
+                <button class="back-button home-button" style="color:#FFF">‹</button>
+            </header>
+            <div class="display">0</div>
+            <div class="keypad">
+                <button class="key utility">AC</button><button class="key utility">±</button><button class="key utility">%</button><button class="key operator">÷</button>
+                <button class="key">7</button><button class="key">8</button><button class="key">9</button><button class="key operator">×</button>
+                <button class="key">4</button><button class="key">5</button><button class="key">6</button><button class="key operator">-</button>
+                <button class="key">1</button><button class="key">2</button><button class="key">3</button><button class="key operator">+</button>
+                <button class="key" style="grid-column: span 2;">0</button><button class="key">.</button><button class="key operator">=</button>
             </div>
         </div>
 
+        <div class="home-bar home-button"></div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const pagesContainer = document.querySelector('.pages-container');
-    const apps = document.querySelectorAll('.app');
-    const modalOverlay = document.querySelector('.modal-overlay');
-    const appNameModal = document.getElementById('app-name-modal');
-    const dots = document.querySelectorAll('.pagination .dot');
-    
-    let isDragging = false;
-    let startX = 0;
-    let currentTranslate = 0;
-    let prevTranslate = 0;
-    let animationId = 0;
-    let currentIndex = 0;
-    const pageCount = 2; // We have 2 pages
-    
-    // Prevent default drag behavior for images/text
-    pagesContainer.addEventListener('dragstart', (e) => e.preventDefault());
+    // --- Universal Functions ---
+    const allAppContainers = document.querySelectorAll('.app-container');
+    const homeScreen = document.getElementById('home-screen');
 
-    // Touch events
-    pagesContainer.addEventListener('touchstart', touchStart);
-    pagesContainer.addEventListener('touchend', touchEnd);
-    pagesContainer.addEventListener('touchmove', touchMove);
-
-    // Mouse events
-    pagesContainer.addEventListener('mousedown', touchStart);
-    pagesContainer.addEventListener('mouseup', touchEnd);
-    pagesContainer.addEventListener('mouseleave', touchEnd);
-    pagesContainer.addEventListener('mousemove', touchMove);
-
-    function touchStart(event) {
-        if (event.type === 'mousedown' && event.button !== 0) return; // Only main mouse button
-        isDragging = true;
-        startX = getPositionX(event);
-        animationId = requestAnimationFrame(animation);
-        pagesContainer.style.transition = 'none'; // Disable transition while dragging
-        pagesContainer.style.cursor = 'grabbing';
-    }
-
-    function touchEnd() {
-        if (!isDragging) return;
-        isDragging = false;
-        cancelAnimationFrame(animationId);
-        
-        const movedBy = currentTranslate - prevTranslate;
-
-        // Snap to the next/prev page if moved more than a threshold
-        if (movedBy < -50 && currentIndex < pageCount - 1) {
-            currentIndex += 1;
-        }
-        if (movedBy > 50 && currentIndex > 0) {
-            currentIndex -= 1;
-        }
-
-        setPositionByIndex();
-        pagesContainer.style.transition = 'transform 0.3s ease-out';
-        pagesContainer.style.cursor = 'grab';
-    }
-
-    function touchMove(event) {
-        if (isDragging) {
-            const currentPosition = getPositionX(event);
-            currentTranslate = prevTranslate + currentPosition - startX;
-        }
-    }
-
-    function getPositionX(event) {
-        return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
-    }
-
-    function animation() {
-        setSliderPosition();
-        if (isDragging) requestAnimationFrame(animation);
-    }
-
-    function setSliderPosition() {
-        pagesContainer.style.transform = `translateX(${currentTranslate}px)`;
-    }
-    
-    function setPositionByIndex() {
-        const screenWidth = document.querySelector('.screen').clientWidth;
-        currentTranslate = currentIndex * -screenWidth;
-        prevTranslate = currentTranslate;
-        setSliderPosition();
-        updateDots();
-    }
-    
-    function updateDots() {
-        dots.forEach(dot => dot.classList.remove('active'));
-        dots[currentIndex].classList.add('active');
-    }
-    
-    // App click simulation
-    apps.forEach(app => {
-        let clickStart = 0;
-        app.addEventListener('mousedown', (e) => {
-             if (e.button !== 0) return;
-             clickStart = Date.now();
+    function navigateTo(pageId) {
+        allAppContainers.forEach(container => {
+            container.classList.remove('active');
         });
-        app.addEventListener('touchstart', () => clickStart = Date.now());
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+    }
 
-        app.addEventListener('mouseup', (e) => {
-            if (e.button !== 0) return;
-            // Only fire click if mouse hasn't moved much (i.e., not a drag)
-            if (Date.now() - clickStart < 200 && Math.abs(currentTranslate - prevTranslate) < 5) {
-                showModal(app);
+    // --- Time Update ---
+    function updateTime() {
+        const timeElement = document.getElementById('currentTime');
+        timeElement.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    updateTime();
+    setInterval(updateTime, 30000); // Update every 30 seconds is enough
+
+    // --- Event Listeners ---
+    // App Icon Clicks to Open Apps
+    document.querySelectorAll('[data-app-target]').forEach(icon => {
+        icon.addEventListener('click', () => {
+            const targetId = icon.dataset.appTarget;
+            // For apps not built in this mockup
+            if (!document.getElementById(targetId)) {
+                alert(`Opening ${targetId.replace('-app','')}... (UI not built in this prototype)`);
+                return;
             }
-        });
-        app.addEventListener('touchend', () => {
-             if (Date.now() - clickStart < 200 && Math.abs(currentTranslate - prevTranslate) < 5) {
-                showModal(app);
-            }
+            navigateTo(targetId);
         });
     });
 
-    function showModal(app) {
-        const appName = app.dataset.appName;
-        if (appName) {
-            appNameModal.textContent = appName;
-            modalOverlay.classList.add('visible');
-            
-            // Hide the modal after a short delay
-            setTimeout(() => {
-                modalOverlay.classList.remove('visible');
-            }, 1000);
-        }
-    }
-    
-    // Hide modal if clicked
-    modalOverlay.addEventListener('click', () => {
-         modalOverlay.classList.remove('visible');
+    // Home/Back Button Clicks to Return Home
+    document.querySelectorAll('.home-button').forEach(button => {
+        button.addEventListener('click', () => {
+            navigateTo('home-screen');
+        });
     });
 
-    // Initial setup
-    setPositionByIndex();
-    window.addEventListener('resize', setPositionByIndex);
-});
+    // Settings Toggles
+    document.querySelectorAll('.toggle-switch').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+        });
+    });
+
 </script>
 </body>
 </html>
-
